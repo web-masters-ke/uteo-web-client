@@ -330,16 +330,15 @@ export default function LandingPage() {
             alt="Hiring team reviewing candidates"
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#192C67]/85 via-[#192C67]/50 to-transparent" />
         </div>
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full py-24">
           <div className="max-w-xl">
             <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider mb-6">For Employers</span>
-            <h2 className="text-4xl lg:text-6xl font-black text-white leading-[1.05] mb-6">Hire smarter not harder.</h2>
-            <p className="text-lg text-white/55 leading-relaxed mb-8">Post jobs and get matched with qualified candidates from our talent pool. Manage your entire hiring pipeline in one place.</p>
+            <h2 className="text-4xl lg:text-6xl font-black text-white leading-[1.05] mb-6 drop-shadow-2xl">Hire smarter not harder.</h2>
+            <p className="text-lg text-white leading-relaxed mb-8 drop-shadow-lg">Post jobs and get matched with qualified candidates from our talent pool. Manage your entire hiring pipeline in one place.</p>
             <div className="grid grid-cols-2 gap-3 mb-8">
               {['Skill matched candidates', 'Post unlimited jobs', 'Manage all applications', 'Shortlist and interview', 'Company profile page', 'Live notifications'].map(item => (
-                <div key={item} className="flex items-center gap-2 text-white/65 text-sm">
+                <div key={item} className="flex items-center gap-2 text-white text-sm drop-shadow">
                   <svg className="h-4 w-4 text-[#F77B0F] shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   {item}
                 </div>
