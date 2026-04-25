@@ -132,7 +132,7 @@ const NAV: NavItem[] = [
   { href: "/messages",      label: "Messages",        icon: "messages",     group: "Activity",  roles: ["CLIENT"] },
   { href: "/notifications", label: "Notifications",   icon: "notifications",group: "Activity",  roles: ["CLIENT"] },
 
-  // ── RECRUITER / EMPLOYER (TRAINER) ──────────────────────────────────────────
+  // ── RECRUITER / EMPLOYER ────────────────────────────────────────────────────
   { href: "/recruiter",              label: "Dashboard",       icon: "recruiter",      group: "Hiring",  roles: ["TRAINER"] },
   { href: "/post-job",               label: "Post Job",        icon: "postJob",        group: "Hiring",  roles: ["TRAINER"] },
   { href: "/jobs",                   label: "My Jobs",         icon: "jobs",           group: "Hiring",  roles: ["TRAINER"] },
@@ -218,10 +218,10 @@ function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-10 z-20 w-80 rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="absolute right-0 top-10 z-20 w-80 rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-white/8 dark:bg-[#0f1522]">
           <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-2.5 dark:border-zinc-800">
             <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Notifications</span>
-            <button onClick={markAllRead} className="text-[11px] text-primary-500 hover:underline">Mark all read</button>
+            <button onClick={markAllRead} className="text-[11px] text-[#F77B0F] hover:underline">Mark all read</button>
           </div>
           <div className="max-h-80 overflow-y-auto">
             {items.length === 0 ? (
@@ -234,7 +234,7 @@ function NotificationBell() {
                   onClick={() => { markRead(n.id); setOpen(false); }}
                   className={clsx(
                     "block border-b border-zinc-50 px-3 py-2.5 text-xs last:border-b-0 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/60",
-                    !n.read && "bg-primary-50/40 dark:bg-primary-900/10",
+                    !n.read && "bg-[#192C67]/5 dark:bg-[#192C67]/10",
                   )}
                 >
                   <div className="font-medium text-zinc-900 dark:text-zinc-50">{n.title}</div>
@@ -245,7 +245,7 @@ function NotificationBell() {
             )}
           </div>
           <div className="border-t border-zinc-100 px-3 py-2 text-center dark:border-zinc-800">
-            <Link href="/notifications" onClick={() => setOpen(false)} className="text-[11px] font-medium text-primary-500 hover:underline">View all</Link>
+            <Link href="/notifications" onClick={() => setOpen(false)} className="text-[11px] font-medium text-[#F77B0F] hover:underline">View all</Link>
           </div>
         </div>
       )}
@@ -276,7 +276,7 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500 text-xs font-bold text-white hover:opacity-90 transition-opacity"
+        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#192C67] dark:bg-white/10 text-xs font-bold text-white hover:opacity-90 transition-opacity"
       >
         {user?.avatarUrl ? (
           <img src={user.avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
@@ -285,14 +285,14 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-10 z-50 w-56 rounded-xl border border-zinc-200 bg-white py-1 shadow-2xl dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="absolute right-0 top-10 z-50 w-56 rounded-xl border border-zinc-200 bg-white py-1 shadow-2xl dark:border-white/8 dark:bg-[#0f1522]">
           {user && (
             <div className="border-b border-zinc-100 px-3 py-2.5 dark:border-zinc-800">
               <div className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
                 {user.firstName} {user.lastName}
               </div>
               <div className="text-xs text-zinc-400">{user.email}</div>
-              <div className="mt-1 inline-block rounded bg-primary-50 px-1.5 py-0.5 text-[10px] font-medium text-primary-700 dark:bg-primary-900/30 dark:text-primary-300">
+              <div className="mt-1 inline-block rounded bg-[#192C67]/10 px-1.5 py-0.5 text-[10px] font-medium text-[#192C67] dark:bg-white/10 dark:text-white/60">
                 {user.role}
               </div>
             </div>
@@ -331,7 +331,7 @@ function Breadcrumb({ navItems }: { navItems: NavItem[] }) {
 
   // Find the matching nav item for the current path
   const current = navItems.find((n) =>
-    n.href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(n.href),
+    n.href === "/feed" ? pathname === "/feed" : pathname.startsWith(n.href),
   );
 
   // Build breadcrumb segments from the pathname
@@ -339,7 +339,7 @@ function Breadcrumb({ navItems }: { navItems: NavItem[] }) {
 
   return (
     <div className="flex items-center gap-1.5 text-sm">
-      <Link href="/dashboard" className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors">
+      <Link href="/feed" className="text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1v-9" />
         </svg>
@@ -378,7 +378,7 @@ function ShellInner({ children }: { children: ReactNode }) {
   const sidebar = (
     <div className="flex h-full flex-col">
       {/* Logo */}
-      <div className="flex items-center gap-1.5 px-4 py-4 border-b border-zinc-100 dark:border-zinc-800">
+      <div className="flex items-center gap-1.5 px-4 py-4 border-b border-zinc-100 dark:border-white/5">
         <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Uteo</span>
         <span className="w-1.5 h-1.5 rounded-full bg-[#F77B0F]" />
       </div>
@@ -433,9 +433,9 @@ function ShellInner({ children }: { children: ReactNode }) {
 
       {/* Bottom user pill */}
       {user && (
-        <div className="border-t border-zinc-100 dark:border-zinc-800 px-3 py-3">
+        <div className="border-t border-zinc-100 dark:border-white/5 px-3 py-3">
           <div className="flex items-center gap-2.5 rounded-lg px-2 py-1.5">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#F77B0F] text-xs font-bold text-white overflow-hidden">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#192C67] dark:bg-white/10 text-xs font-bold text-white overflow-hidden">
               {user.avatarUrl ? (
                 <img src={user.avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
               ) : (
@@ -453,14 +453,14 @@ function ShellInner({ children }: { children: ReactNode }) {
           </div>
         </div>
       )}
-      <div className="px-5 py-2.5 border-t border-zinc-100 dark:border-zinc-800 text-[10px] text-zinc-300 dark:text-zinc-600 tracking-widest uppercase">Uteo · Jobs Platform</div>
+      <div className="px-5 py-2.5 border-t border-zinc-100 dark:border-white/5 text-[10px] text-zinc-300 dark:text-white/20 tracking-widest uppercase">Uteo · Jobs Platform</div>
     </div>
   );
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-zinc-950">
+    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-[#0b0f1c]">
       {/* Desktop sidebar — scrolls independently via inner nav's overflow-y-auto */}
-      <aside className="hidden w-60 shrink-0 border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-[#0D1942] md:flex md:flex-col">
+      <aside className="hidden w-60 shrink-0 border-r border-zinc-200 bg-white dark:border-white/5 dark:bg-[#0b0f1c] md:flex md:flex-col">
         {sidebar}
       </aside>
 
@@ -471,7 +471,7 @@ function ShellInner({ children }: { children: ReactNode }) {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-64 overflow-y-auto bg-white shadow-2xl dark:bg-[#0D1942]">
+          <aside className="absolute left-0 top-0 h-full w-64 overflow-y-auto bg-white shadow-2xl dark:bg-[#0b0f1c]">
             {sidebar}
           </aside>
         </div>
@@ -480,7 +480,7 @@ function ShellInner({ children }: { children: ReactNode }) {
       {/* Main content area — flex col so header is fixed, main scrolls */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar — shrink-0 keeps it pinned at top without sticky */}
-        <header className="relative shrink-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-zinc-200 bg-white/90 px-4 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/90">
+        <header className="relative shrink-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-zinc-200 bg-white/90 px-4 backdrop-blur-md dark:border-white/5 dark:bg-[#0b0f1c]/95">
           <div className="flex items-center gap-2">
             {/* Mobile hamburger */}
             <button
