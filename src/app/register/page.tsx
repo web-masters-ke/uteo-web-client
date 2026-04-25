@@ -5,8 +5,10 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
+import { apiPost } from "@/lib/api";
 
 type RoleChoice = "seeker" | "recruiter";
+type RecruiterType = "individual" | "organization";
 type Step = 1 | 2;
 
 interface AccountData {
@@ -18,24 +20,40 @@ interface AccountData {
   confirmPassword: string;
 }
 
+interface CompanyData {
+  name: string;
+  industry: string;
+  size: string;
+  website: string;
+  location: string;
+}
+
 const inputCls =
   "w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-400 focus:border-[#192C67] focus:bg-white focus:ring-2 focus:ring-[#192C67]/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-[#5b8bc7] dark:focus:bg-zinc-900";
+
+const selectCls =
+  "w-full rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-2.5 text-sm text-zinc-900 outline-none transition focus:border-[#192C67] focus:bg-white focus:ring-2 focus:ring-[#192C67]/20 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:focus:border-[#5b8bc7]";
 
 function Field({
   label,
   error,
   children,
   action,
+  required,
 }: {
   label: string;
   error?: string;
   children: React.ReactNode;
   action?: React.ReactNode;
+  required?: boolean;
 }) {
   return (
     <div>
       <div className="mb-1.5 flex items-center justify-between">
-        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">{label}</label>
+        <label className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
+          {label}
+          {required && <span className="ml-0.5 text-red-500">*</span>}
+        </label>
         {action}
       </div>
       {children}
@@ -53,6 +71,7 @@ function RegisterPageInner() {
 
   const [step, setStep] = useState<Step>(1);
   const [role, setRole] = useState<RoleChoice>(defaultRole as RoleChoice);
+  const [recruiterType, setRecruiterType] = useState<RecruiterType>("individual");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -68,10 +87,25 @@ function RegisterPageInner() {
     confirmPassword: "",
   });
 
+  const [company, setCompany] = useState<CompanyData>({
+    name: "",
+    industry: "",
+    size: "",
+    website: "",
+    location: "",
+  });
+
   function setA(field: keyof AccountData, val: string) {
     setAccount((p) => ({ ...p, [field]: val }));
     setFieldErrors((p) => { const n = { ...p }; delete n[field]; return n; });
   }
+
+  function setC(field: keyof CompanyData, val: string) {
+    setCompany((p) => ({ ...p, [field]: val }));
+    setFieldErrors((p) => { const n = { ...p }; delete n[`company_${field}`]; return n; });
+  }
+
+  const isOrg = role === "recruiter" && recruiterType === "organization";
 
   function validate(): boolean {
     const errs: Record<string, string> = {};
@@ -83,6 +117,7 @@ function RegisterPageInner() {
     if (!account.password) errs.password = "Required";
     else if (account.password.length < 8) errs.password = "At least 8 characters";
     if (account.password !== account.confirmPassword) errs.confirmPassword = "Passwords don't match";
+    if (isOrg && !company.name.trim()) errs.company_name = "Company name is required";
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -92,7 +127,6 @@ function RegisterPageInner() {
     setError(null);
     setLoading(true);
     try {
-      // Map Uteo roles to the auth service's expected CLIENT/TRAINER roles
       const authRole = role === "recruiter" ? "TRAINER" : "CLIENT";
       await registerUser({
         firstName: account.firstName,
@@ -102,6 +136,23 @@ function RegisterPageInner() {
         password: account.password,
         role: authRole,
       });
+
+      // If org recruiter, create company (user is now authenticated)
+      if (isOrg && company.name.trim()) {
+        try {
+          await apiPost("/companies", {
+            name: company.name.trim(),
+            industry: company.industry.trim() || undefined,
+            size: company.size || undefined,
+            website: company.website.trim() || undefined,
+            location: company.location.trim() || undefined,
+          });
+        } catch {
+          // company creation failed non-critically — continue to onboarding
+          addToast("warning" as any, "Account created but company setup failed. You can set it up later.");
+        }
+      }
+
       addToast("success", "Account created! Let's set up your profile.");
       router.push("/onboarding");
     } catch (err: unknown) {
@@ -114,6 +165,14 @@ function RegisterPageInner() {
       setLoading(false);
     }
   }
+
+  const companySizes = [
+    { value: "STARTUP", label: "Startup (1-10)" },
+    { value: "SMALL", label: "Small (11-50)" },
+    { value: "MEDIUM", label: "Medium (51-200)" },
+    { value: "LARGE", label: "Large (201-1000)" },
+    { value: "ENTERPRISE", label: "Enterprise (1000+)" },
+  ];
 
   return (
     <div className="flex min-h-screen">
@@ -139,7 +198,7 @@ function RegisterPageInner() {
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-slate-400">
             {role === "recruiter"
-              ? "Post jobs, get matched with qualified candidates, and manage your hiring pipeline — all in one place."
+              ? "Post jobs, get AI-matched with qualified candidates, and manage your full hiring pipeline — all in one place."
               : "Build your profile once. Let AI match you with the right opportunities every day."}
           </p>
 
@@ -173,6 +232,24 @@ function RegisterPageInner() {
               );
             })}
           </div>
+
+          {/* Role badges on left panel */}
+          {step === 1 && role === "recruiter" && (
+            <div className="mt-8 space-y-2">
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F77B0F]" />
+                <span className="text-xs text-slate-400">AI candidate matching</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F77B0F]" />
+                <span className="text-xs text-slate-400">Video interview via Jitsi</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#F77B0F]" />
+                <span className="text-xs text-slate-400">Full pipeline management</span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="relative z-10">
           <p className="text-[11px] text-slate-600">
@@ -192,9 +269,9 @@ function RegisterPageInner() {
           <span className="text-xs text-zinc-400">Step {step} of 2</span>
         </div>
 
-        <div className="flex-1 flex items-center justify-center px-6 py-8 lg:px-16">
+        <div className="flex-1 flex items-start justify-center px-6 py-8 lg:px-16 overflow-y-auto">
           <div className="w-full max-w-lg">
-            {/* Step 1: Role choice */}
+            {/* ── Step 1: Role choice ─────────────────────────────────────────── */}
             {step === 1 && (
               <div>
                 <div className="mb-8">
@@ -203,7 +280,8 @@ function RegisterPageInner() {
                   <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Choose your role to get the right experience.</p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                  {/* Job seeker */}
                   <button
                     type="button"
                     onClick={() => setRole("seeker")}
@@ -227,6 +305,7 @@ function RegisterPageInner() {
                     )}
                   </button>
 
+                  {/* Recruiter */}
                   <button
                     type="button"
                     onClick={() => setRole("recruiter")}
@@ -251,69 +330,199 @@ function RegisterPageInner() {
                   </button>
                 </div>
 
+                {/* Recruiter sub-type — animated in when recruiter is selected */}
+                {role === "recruiter" && (
+                  <div className="mb-6 rounded-2xl border border-[#192C67]/20 bg-[#192C67]/3 dark:bg-[#192C67]/10 p-5">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-[#192C67] dark:text-blue-400 mb-3">
+                      What type of recruiter are you?
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setRecruiterType("individual")}
+                        className={`relative text-left rounded-xl border-2 p-4 transition-all ${
+                          recruiterType === "individual"
+                            ? "border-[#192C67] bg-white dark:bg-zinc-900"
+                            : "border-zinc-200 bg-white/60 dark:border-zinc-700 dark:bg-zinc-900/60"
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2.5 ${recruiterType === "individual" ? "bg-[#192C67] text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"}`}>
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                          </svg>
+                        </div>
+                        <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Individual</div>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Freelance or independent recruiter</p>
+                        {recruiterType === "individual" && (
+                          <div className="absolute right-2 top-2 w-4 h-4 rounded-full bg-[#192C67] flex items-center justify-center">
+                            <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                          </div>
+                        )}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setRecruiterType("organization")}
+                        className={`relative text-left rounded-xl border-2 p-4 transition-all ${
+                          recruiterType === "organization"
+                            ? "border-[#192C67] bg-white dark:bg-zinc-900"
+                            : "border-zinc-200 bg-white/60 dark:border-zinc-700 dark:bg-zinc-900/60"
+                        }`}
+                      >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2.5 ${recruiterType === "organization" ? "bg-[#192C67] text-white" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-500"}`}>
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                        </div>
+                        <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100">Organization</div>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">Hiring for a company or team</p>
+                        {recruiterType === "organization" && (
+                          <div className="absolute right-2 top-2 w-4 h-4 rounded-full bg-[#192C67] flex items-center justify-center">
+                            <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                          </div>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="w-full rounded-xl border-2 border-[#F77B0F] py-3 text-sm font-semibold text-[#F77B0F] hover:bg-[#F77B0F]/5 transition-colors"
+                  className="w-full rounded-xl bg-[#192C67] py-3 text-sm font-semibold text-white hover:bg-[#152356] transition-colors"
                 >
-                  Continue as {role === "seeker" ? "Job Seeker" : "Recruiter / Employer"}
+                  Continue as {role === "seeker" ? "Job Seeker" : recruiterType === "organization" ? "Organization Recruiter" : "Individual Recruiter"}
                 </button>
               </div>
             )}
 
-            {/* Step 2: Account details */}
+            {/* ── Step 2: Account + company details ──────────────────────────── */}
             {step === 2 && (
               <div>
-                <div className="mb-8">
+                <div className="mb-6">
                   <div className="mb-1 text-[11px] font-semibold uppercase tracking-widest text-[#F77B0F]">Step 2 of 2</div>
                   <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Create your account</h2>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                    Signing up as a{" "}
-                    <span className="font-semibold">{role === "seeker" ? "Job Seeker" : "Recruiter / Employer"}</span>
+                    Signing up as{" "}
+                    <span className="font-semibold">
+                      {role === "seeker" ? "Job Seeker" : recruiterType === "organization" ? "Organization Recruiter" : "Individual Recruiter"}
+                    </span>
                     {" "}—{" "}
                     <button type="button" onClick={() => setStep(1)} className="text-[#F77B0F] hover:underline text-sm">Change</button>
                   </p>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field label="First name" error={fieldErrors.firstName}>
-                      <input className={inputCls} value={account.firstName} onChange={(e) => setA("firstName", e.target.value)} placeholder="Jane" />
+                <div className="space-y-5">
+                  {/* Personal info */}
+                  <div className="rounded-2xl border border-zinc-100 dark:border-zinc-800 p-5 space-y-4">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Personal Information</p>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field label="First name" error={fieldErrors.firstName} required>
+                        <input className={inputCls} value={account.firstName} onChange={(e) => setA("firstName", e.target.value)} placeholder="Jane" />
+                      </Field>
+                      <Field label="Last name" error={fieldErrors.lastName} required>
+                        <input className={inputCls} value={account.lastName} onChange={(e) => setA("lastName", e.target.value)} placeholder="Doe" />
+                      </Field>
+                    </div>
+                    <Field label="Email address" error={fieldErrors.email} required>
+                      <input className={inputCls} type="email" value={account.email} onChange={(e) => setA("email", e.target.value)} placeholder="jane@example.com" autoComplete="email" />
                     </Field>
-                    <Field label="Last name" error={fieldErrors.lastName}>
-                      <input className={inputCls} value={account.lastName} onChange={(e) => setA("lastName", e.target.value)} placeholder="Doe" />
+                    <Field label="Phone number" error={fieldErrors.phone} required>
+                      <input className={inputCls} type="tel" value={account.phone} onChange={(e) => setA("phone", e.target.value)} placeholder="+254 700 000 000" />
+                    </Field>
+                    <Field
+                      label="Password"
+                      error={fieldErrors.password}
+                      required
+                      action={
+                        <label className="flex cursor-pointer select-none items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                          <input type="checkbox" checked={showPwd} onChange={(e) => setShowPwd(e.target.checked)} className="h-3 w-3 cursor-pointer" />
+                          Show
+                        </label>
+                      }
+                    >
+                      <input className={inputCls} type={showPwd ? "text" : "password"} value={account.password} onChange={(e) => setA("password", e.target.value)} placeholder="Min. 8 characters" autoComplete="new-password" />
+                    </Field>
+                    <Field
+                      label="Confirm password"
+                      error={fieldErrors.confirmPassword}
+                      required
+                      action={
+                        <label className="flex cursor-pointer select-none items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
+                          <input type="checkbox" checked={showConfirmPwd} onChange={(e) => setShowConfirmPwd(e.target.checked)} className="h-3 w-3 cursor-pointer" />
+                          Show
+                        </label>
+                      }
+                    >
+                      <input className={inputCls} type={showConfirmPwd ? "text" : "password"} value={account.confirmPassword} onChange={(e) => setA("confirmPassword", e.target.value)} placeholder="Repeat password" autoComplete="new-password" />
                     </Field>
                   </div>
-                  <Field label="Email address" error={fieldErrors.email}>
-                    <input className={inputCls} type="email" value={account.email} onChange={(e) => setA("email", e.target.value)} placeholder="jane@example.com" autoComplete="email" />
-                  </Field>
-                  <Field label="Phone number" error={fieldErrors.phone}>
-                    <input className={inputCls} type="tel" value={account.phone} onChange={(e) => setA("phone", e.target.value)} placeholder="+254 700 000 000" />
-                  </Field>
-                  <Field
-                    label="Password"
-                    error={fieldErrors.password}
-                    action={
-                      <label className="flex cursor-pointer select-none items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                        <input type="checkbox" checked={showPwd} onChange={(e) => setShowPwd(e.target.checked)} className="h-3 w-3 cursor-pointer" />
-                        Show
-                      </label>
-                    }
-                  >
-                    <input className={inputCls} type={showPwd ? "text" : "password"} value={account.password} onChange={(e) => setA("password", e.target.value)} placeholder="Min. 8 characters" autoComplete="new-password" />
-                  </Field>
-                  <Field
-                    label="Confirm password"
-                    error={fieldErrors.confirmPassword}
-                    action={
-                      <label className="flex cursor-pointer select-none items-center gap-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">
-                        <input type="checkbox" checked={showConfirmPwd} onChange={(e) => setShowConfirmPwd(e.target.checked)} className="h-3 w-3 cursor-pointer" />
-                        Show
-                      </label>
-                    }
-                  >
-                    <input className={inputCls} type={showConfirmPwd ? "text" : "password"} value={account.confirmPassword} onChange={(e) => setA("confirmPassword", e.target.value)} placeholder="Repeat password" autoComplete="new-password" />
-                  </Field>
+
+                  {/* Organization section — only for org recruiters */}
+                  {isOrg && (
+                    <div className="rounded-2xl border border-[#192C67]/20 bg-[#192C67]/3 dark:bg-[#192C67]/10 dark:border-[#192C67]/30 p-5 space-y-4">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-[#192C67] flex items-center justify-center">
+                          <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                        </div>
+                        <p className="text-xs font-semibold uppercase tracking-widest text-[#192C67] dark:text-blue-400">Hiring Organization</p>
+                      </div>
+
+                      <Field label="Company / Organization Name" error={fieldErrors.company_name} required>
+                        <input
+                          className={inputCls}
+                          value={company.name}
+                          onChange={(e) => setC("name", e.target.value)}
+                          placeholder="e.g. Acme Corp, Safaricom PLC, The Startup"
+                        />
+                      </Field>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <Field label="Industry">
+                          <input
+                            className={inputCls}
+                            value={company.industry}
+                            onChange={(e) => setC("industry", e.target.value)}
+                            placeholder="e.g. Technology, Finance"
+                          />
+                        </Field>
+                        <Field label="Company Size">
+                          <select
+                            className={selectCls}
+                            value={company.size}
+                            onChange={(e) => setC("size", e.target.value)}
+                          >
+                            <option value="">Select size</option>
+                            {companySizes.map((s) => (
+                              <option key={s.value} value={s.value}>{s.label}</option>
+                            ))}
+                          </select>
+                        </Field>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <Field label="Website">
+                          <input
+                            className={inputCls}
+                            value={company.website}
+                            onChange={(e) => setC("website", e.target.value)}
+                            placeholder="https://example.com"
+                          />
+                        </Field>
+                        <Field label="Location">
+                          <input
+                            className={inputCls}
+                            value={company.location}
+                            onChange={(e) => setC("location", e.target.value)}
+                            placeholder="e.g. Nairobi, Kenya"
+                          />
+                        </Field>
+                      </div>
+                    </div>
+                  )}
 
                   {error && (
                     <div className="flex items-start gap-2.5 rounded-xl bg-red-50 px-4 py-3 text-xs text-red-700 dark:bg-red-950/50 dark:text-red-300">
@@ -340,14 +549,14 @@ function RegisterPageInner() {
                     type="button"
                     onClick={submit}
                     disabled={loading}
-                    className="flex-1 rounded-xl border-2 border-[#F77B0F] py-2.5 text-sm font-semibold text-[#F77B0F] transition hover:bg-[#F77B0F]/5 disabled:opacity-60"
+                    className="flex-1 rounded-xl bg-[#192C67] py-2.5 text-sm font-semibold text-white transition hover:bg-[#152356] disabled:opacity-60"
                   >
                     {loading ? (
                       <span className="flex items-center justify-center gap-2">
                         <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                         Creating account...
                       </span>
-                    ) : "Create Account"}
+                    ) : isOrg ? "Create Account & Company" : "Create Account"}
                   </button>
                 </div>
               </div>

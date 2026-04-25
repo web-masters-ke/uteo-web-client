@@ -45,13 +45,6 @@ export const userService = {
     }
   },
   deleteAccount: async (): Promise<void> => {
-    let userId: string | undefined;
-    try {
-      const u = JSON.parse(localStorage.getItem("uteo-user") ?? "{}");
-      userId = u?.id;
-    } catch { /* noop */ }
-    if (userId) {
-      await apiDelete(`/users/${userId}`);
-    }
+    await apiDelete('/users/me');
   },
 };

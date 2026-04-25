@@ -8,7 +8,7 @@ import type { Notification } from '@/lib/types';
 import { formatRelative, cn } from '@/lib/utils';
 
 /* ─── Filter tabs ─── */
-type FilterTab = 'ALL' | 'BOOKING' | 'PAYMENT' | 'REVIEW' | 'SYSTEM' | 'MESSAGE' | 'FOLLOW' | 'COURSE';
+type FilterTab = 'ALL' | 'APPLICATION' | 'MESSAGE' | 'JOB' | 'SYSTEM';
 
 const FILTER_TABS: { label: string; value: FilterTab; icon: string }[] = [
   {
@@ -17,24 +17,9 @@ const FILTER_TABS: { label: string; value: FilterTab; icon: string }[] = [
     icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
   },
   {
-    label: 'Bookings',
-    value: 'BOOKING',
-    icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
-  },
-  {
-    label: 'Payments',
-    value: 'PAYMENT',
-    icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
-  },
-  {
-    label: 'Reviews',
-    value: 'REVIEW',
-    icon: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z',
-  },
-  {
-    label: 'System',
-    value: 'SYSTEM',
-    icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+    label: 'Applications',
+    value: 'APPLICATION',
+    icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
   },
   {
     label: 'Messages',
@@ -42,70 +27,40 @@ const FILTER_TABS: { label: string; value: FilterTab; icon: string }[] = [
     icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
   },
   {
-    label: 'People',
-    value: 'FOLLOW',
-    icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
+    label: 'Jobs',
+    value: 'JOB',
+    icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
   },
   {
-    label: 'Courses',
-    value: 'COURSE',
-    icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+    label: 'System',
+    value: 'SYSTEM',
+    icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
   },
 ];
 
 /* ─── Type‑specific icon SVG paths ─── */
 const TYPE_ICONS: Record<string, string> = {
-  BOOKING:
-    'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
-  PAYMENT:
-    'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
-  REVIEW:
-    'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z',
-  SYSTEM:
-    'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+  APPLICATION:
+    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
   MESSAGE:
     'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
-  FOLLOW:
-    'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
-  COURSE:
-    'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+  JOB:
+    'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+  SYSTEM:
+    'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
   DEFAULT:
     'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
 };
 
 /* ─── Type‑specific accent colors (light / dark) ─── */
 const TYPE_COLORS: Record<string, { bg: string; bgDark: string; text: string; textDark: string; iconBg: string; iconBgDark: string }> = {
-  BOOKING: {
-    bg: 'bg-blue-50',
-    bgDark: 'dark:bg-blue-900/10',
-    text: 'text-blue-600',
-    textDark: 'dark:text-blue-400',
-    iconBg: 'bg-blue-100',
-    iconBgDark: 'dark:bg-blue-900/30',
-  },
-  PAYMENT: {
-    bg: 'bg-emerald-50',
-    bgDark: 'dark:bg-emerald-900/10',
-    text: 'text-emerald-600',
-    textDark: 'dark:text-emerald-400',
-    iconBg: 'bg-emerald-100',
-    iconBgDark: 'dark:bg-emerald-900/30',
-  },
-  REVIEW: {
-    bg: 'bg-amber-50',
-    bgDark: 'dark:bg-amber-900/10',
-    text: 'text-amber-600',
-    textDark: 'dark:text-amber-400',
-    iconBg: 'bg-amber-100',
-    iconBgDark: 'dark:bg-amber-900/30',
-  },
-  SYSTEM: {
-    bg: 'bg-purple-50',
-    bgDark: 'dark:bg-purple-900/10',
-    text: 'text-purple-600',
-    textDark: 'dark:text-purple-400',
-    iconBg: 'bg-purple-100',
-    iconBgDark: 'dark:bg-purple-900/30',
+  APPLICATION: {
+    bg: 'bg-orange-50',
+    bgDark: 'dark:bg-orange-900/10',
+    text: 'text-[#F77B0F]',
+    textDark: 'dark:text-orange-400',
+    iconBg: 'bg-orange-100',
+    iconBgDark: 'dark:bg-orange-900/30',
   },
   MESSAGE: {
     bg: 'bg-teal-50',
@@ -115,21 +70,21 @@ const TYPE_COLORS: Record<string, { bg: string; bgDark: string; text: string; te
     iconBg: 'bg-teal-100',
     iconBgDark: 'dark:bg-teal-900/30',
   },
-  FOLLOW: {
-    bg: 'bg-pink-50',
-    bgDark: 'dark:bg-pink-900/10',
-    text: 'text-pink-600',
-    textDark: 'dark:text-pink-400',
-    iconBg: 'bg-pink-100',
-    iconBgDark: 'dark:bg-pink-900/30',
+  JOB: {
+    bg: 'bg-blue-50',
+    bgDark: 'dark:bg-blue-900/10',
+    text: 'text-[#192C67]',
+    textDark: 'dark:text-blue-400',
+    iconBg: 'bg-blue-100',
+    iconBgDark: 'dark:bg-blue-900/30',
   },
-  COURSE: {
-    bg: 'bg-orange-50',
-    bgDark: 'dark:bg-orange-900/10',
-    text: 'text-[#F77B0F]',
-    textDark: 'dark:text-orange-400',
-    iconBg: 'bg-orange-100',
-    iconBgDark: 'dark:bg-orange-900/30',
+  SYSTEM: {
+    bg: 'bg-purple-50',
+    bgDark: 'dark:bg-purple-900/10',
+    text: 'text-purple-600',
+    textDark: 'dark:text-purple-400',
+    iconBg: 'bg-purple-100',
+    iconBgDark: 'dark:bg-purple-900/30',
   },
   OTHER: {
     bg: 'bg-gray-50',
@@ -152,13 +107,10 @@ const CHANNEL_CONFIG: Record<string, { label: string; class: string }> = {
 /* ─── Helpers ─── */
 function getTypeCategory(type: string | undefined): string {
   const t = (type ?? '').toUpperCase();
-  if (t.includes('BOOKING') || t.includes('SESSION') || t.includes('SCHEDULE')) return 'BOOKING';
-  if (t.includes('PAY') || t.includes('WALLET') || t.includes('DEPOSIT') || t.includes('WITHDRAW') || t.includes('ESCROW')) return 'PAYMENT';
-  if (t.includes('REVIEW') || t.includes('RATING')) return 'REVIEW';
-  if (t.includes('SYSTEM') || t.includes('ALERT') || t.includes('ACCOUNT')) return 'SYSTEM';
+  if (t.includes('APPLICATION') || t.includes('APPLY') || t.includes('HIRED') || t.includes('SHORTLIST') || t.includes('REJECTED')) return 'APPLICATION';
   if (t.includes('MESSAGE') || t.includes('CHAT') || t.includes('CONVERSATION')) return 'MESSAGE';
-  if (t.includes('FOLLOW') || t.includes('SUBSCRIBER')) return 'FOLLOW';
-  if (t.includes('COURSE') || t.includes('LESSON') || t.includes('ENROL')) return 'COURSE';
+  if (t.includes('JOB') || t.includes('POSTING') || t.includes('VACANCY')) return 'JOB';
+  if (t.includes('SYSTEM') || t.includes('ALERT') || t.includes('ACCOUNT') || t.includes('SECURITY')) return 'SYSTEM';
   return 'OTHER';
 }
 
@@ -210,23 +162,21 @@ function groupByDate(items: Notification[]): DateGroup[] {
 
 function tabEmptyTitle(tab: FilterTab): string {
   switch (tab) {
-    case 'BOOKING': return 'No booking notifications';
-    case 'PAYMENT': return 'No payment notifications';
-    case 'REVIEW': return 'No review notifications';
-    case 'SYSTEM': return 'No system notifications';
+    case 'APPLICATION': return 'No application notifications';
     case 'MESSAGE': return 'No message notifications';
+    case 'JOB': return 'No job notifications';
+    case 'SYSTEM': return 'No system notifications';
     default: return 'No notifications yet';
   }
 }
 
 function tabEmptyDesc(tab: FilterTab): string {
   switch (tab) {
-    case 'BOOKING': return 'You will be notified when bookings are created, confirmed, or updated.';
-    case 'PAYMENT': return 'You will be notified when payments are processed, deposits land, or withdrawals complete.';
-    case 'REVIEW': return 'You will be notified when someone leaves a review or rates your session.';
-    case 'SYSTEM': return 'System alerts and account notifications will appear here.';
-    case 'MESSAGE': return 'You will be notified when you receive new messages.';
-    default: return 'You will be notified when bookings are made, payments processed, and reviews submitted.';
+    case 'APPLICATION': return 'You will be notified when your application status changes or when someone applies to your job.';
+    case 'MESSAGE': return 'You will be notified when a recruiter or candidate sends you a message.';
+    case 'JOB': return 'You will be notified about new job matches and posting updates.';
+    case 'SYSTEM': return 'Account alerts and security notifications will appear here.';
+    default: return 'Apply for jobs and you will see updates on your applications here.';
   }
 }
 
@@ -332,9 +282,9 @@ export default function NotificationsPage() {
       router.push(n.link);
     } else if (n.metadata && typeof n.metadata === 'object') {
       const meta = n.metadata as Record<string, any>;
-      if (meta.bookingId) router.push(`/bookings/${meta.bookingId}`);
-      else if (meta.transactionId) router.push(`/wallet`);
-      else if (meta.reviewId) router.push(`/reviews`);
+      if (meta.applicationId) router.push(`/applications`);
+      else if (meta.jobId) router.push(`/jobs/${meta.jobId}`);
+      else if (meta.conversationId) router.push(`/messages`);
     }
   }, [router]);
 
@@ -365,7 +315,7 @@ export default function NotificationsPage() {
 
   /* Tab unread counts */
   const tabCounts = useMemo(() => {
-    const counts: Record<FilterTab, number> = { ALL: 0, BOOKING: 0, PAYMENT: 0, REVIEW: 0, SYSTEM: 0, MESSAGE: 0, FOLLOW: 0, COURSE: 0 };
+    const counts: Record<FilterTab, number> = { ALL: 0, APPLICATION: 0, MESSAGE: 0, JOB: 0, SYSTEM: 0 };
     for (const n of notifications) {
       if (!isNotifRead(n)) {
         counts.ALL++;

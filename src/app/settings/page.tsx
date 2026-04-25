@@ -8,11 +8,13 @@ import { useTheme } from '@/lib/theme';
 import { useAuth } from '@/lib/auth';
 import { useToast } from '@/lib/toast';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/services/auth';
 import { userService } from '@/lib/services/users';
 import type { NotificationPreferences } from '@/lib/types';
 import ConfirmDialog from '@/components/ui/ConfirmDialog';
 import { cn } from '@/lib/utils';
+import { apiGet, apiPatch } from '@/lib/api';
 
 const passwordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -66,10 +68,10 @@ function Card({ children, className }: { children: React.ReactNode; className?: 
   );
 }
 
-function ToggleSwitch({ checked, onChange }: { checked: boolean; onChange: () => void }) {
+function ToggleSwitch({ checked, onChange, disabled }: { checked: boolean; onChange: () => void; disabled?: boolean }) {
   return (
-    <button onClick={onChange}
-      className={cn('relative w-11 h-6 rounded-full transition-colors flex-shrink-0', checked ? 'bg-[#192C67]' : 'bg-zinc-200 dark:bg-zinc-700')}>
+    <button onClick={onChange} disabled={disabled}
+      className={cn('relative w-11 h-6 rounded-full transition-colors flex-shrink-0 disabled:opacity-50', checked ? 'bg-[#192C67]' : 'bg-zinc-200 dark:bg-zinc-700')}>
       <div className={cn('absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all', checked ? 'left-[22px]' : 'left-0.5')} />
     </button>
   );
@@ -91,6 +93,7 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAuth();
   const { addToast } = useToast();
+  const router = useRouter();
   const [tab, setTab] = useState<SettingsTab>('account');
 
   const [passwordSaving, setPasswordSaving] = useState(false);
@@ -107,6 +110,12 @@ export default function SettingsPage() {
   const [language, setLanguage] = useState('en');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [showDeactivateDialog, setShowDeactivateDialog] = useState(false);
+  const [deactivating, setDeactivating] = useState(false);
+
+  // Job preferences (CLIENT only)
+  const [openToWork, setOpenToWork] = useState(true);
+  const [openToWorkSaving, setOpenToWorkSaving] = useState(false);
 
   useEffect(() => {
     userService.getNotificationPreferences().then(setPrefs).catch(() => {});
@@ -118,7 +127,14 @@ export default function SettingsPage() {
       if (s.showOnlineStatus !== undefined) setShowOnlineStatus(s.showOnlineStatus);
       if (s.allowMessages !== undefined) setAllowMessages(s.allowMessages);
     } catch { /* ignore */ }
-  }, []);
+
+    if ((user as any)?.role === 'CLIENT') {
+      apiGet<any>('/profile/me').then((data) => {
+        const jsp = data?.jobSeekerProfile ?? data;
+        if (jsp?.openToWork !== undefined) setOpenToWork(jsp.openToWork);
+      }).catch(() => {});
+    }
+  }, [user]);
 
   const saveLocal = (updates: Record<string, any>) => {
     try {
@@ -155,6 +171,22 @@ export default function SettingsPage() {
     }
   };
 
+  const toggleOpenToWork = async () => {
+    const next = !openToWork;
+    setOpenToWork(next);
+    setOpenToWorkSaving(true);
+    try {
+      await apiPatch('/profile/me', { openToWork: next });
+      addToast('success', next ? 'You\'re now open to work' : 'Open to work turned off');
+      router.refresh(); // bust Next.js router cache so profile page re-fetches on next visit
+    } catch {
+      setOpenToWork(!next);
+      addToast('error', 'Failed to update preference');
+    } finally {
+      setOpenToWorkSaving(false);
+    }
+  };
+
   const handleDelete = async () => {
     setDeleting(true);
     try {
@@ -168,24 +200,42 @@ export default function SettingsPage() {
     }
   };
 
+  const handleDeactivate = async () => {
+    setDeactivating(true);
+    try {
+      await apiPatch('/users/me/deactivate', {});
+      addToast('success', 'Account deactivated. Log back in to reactivate.');
+      logout();
+    } catch {
+      addToast('error', 'Failed to deactivate account');
+    } finally {
+      setDeactivating(false);
+    }
+  };
+
+  const initials = ((user?.firstName?.[0] ?? '') + (user?.lastName?.[0] ?? '')).toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U';
+  const displayName = `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || user?.email || 'User';
+
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
 
       {/* ─── Hero ─── */}
-      <div className="relative overflow-hidden"
-        style={{ backgroundImage: "url('/images/settings-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-2xl bg-[#192C67] flex items-center justify-center flex-shrink-0">
               <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            <div>
-              <h1 className="text-2xl font-black text-white tracking-tight">Settings</h1>
-              <p className="text-sm text-white/60 mt-0.5">{user?.email}</p>
+            <div className="min-w-0">
+              <h1 className="text-2xl font-black text-zinc-900 dark:text-white tracking-tight">Settings</h1>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-sm text-zinc-500 dark:text-zinc-400 truncate">{displayName}</p>
+                <span className="text-zinc-300 dark:text-zinc-600">·</span>
+                <p className="text-sm text-zinc-400 dark:text-zinc-500 truncate">{user?.email}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -235,12 +285,12 @@ export default function SettingsPage() {
                       { label: 'Name', value: `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || '—' },
                       { label: 'Email', value: user?.email || '—' },
                       { label: 'Role', value: user?.role || '—', badge: true },
-                      { label: 'Phone', value: user?.phone || 'Not set' },
+                      { label: 'Phone', value: (user as any)?.phone || 'Not set' },
                     ].map(({ label, value, badge }) => (
                       <div key={label}>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">{label}</p>
                         {badge ? (
-                          <span className="inline-flex items-center rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/30 dark:text-[#F77B0F]/60 px-2.5 py-0.5 text-xs font-semibold capitalize">
+                          <span className="inline-flex items-center rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/30 dark:text-[#F77B0F]/80 px-2.5 py-0.5 text-xs font-semibold capitalize">
                             {value.toLowerCase()}
                           </span>
                         ) : (
@@ -249,20 +299,39 @@ export default function SettingsPage() {
                       </div>
                     ))}
                   </div>
-                  {user?.role === 'CLIENT' && (
-                    <div className="mt-5 pt-5 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-4">
-                      <div>
-                        <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Learning Preferences</p>
-                        <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-0.5">Goals, level, session types, budget — used for trainer recommendations.</p>
+                  <div className="mt-5 pt-5 border-t border-zinc-100 dark:border-zinc-800">
+                    <Link href="/profile"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#192C67] dark:text-[#F77B0F] hover:underline">
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                      Edit full profile
+                    </Link>
+                  </div>
+                </Card>
+
+                {(user as any)?.role === 'CLIENT' && (
+                  <Card>
+                    <SectionTitle>Job Preferences</SectionTitle>
+                    <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-4">Control how you appear to employers and recruiters.</p>
+                    <SettingRow
+                      label="Open to Work"
+                      desc="Show recruiters and employers that you're actively looking for opportunities"
+                    >
+                      <div className="flex items-center gap-2">
+                        {openToWork && (
+                          <span className="text-[10px] font-bold uppercase tracking-wide text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">Active</span>
+                        )}
+                        <ToggleSwitch checked={openToWork} onChange={toggleOpenToWork} disabled={openToWorkSaving} />
                       </div>
-                      <Link href="/onboarding?edit=1"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#192C67] text-white text-xs font-semibold rounded-xl hover:bg-[#162354] transition-colors whitespace-nowrap">
-                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                        Update Needs
+                    </SettingRow>
+                    <div className="pt-3">
+                      <Link href="/profile?tab=about"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#192C67] dark:text-[#F77B0F] hover:underline">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                        Edit headline, location &amp; bio on your profile
                       </Link>
                     </div>
-                  )}
-                </Card>
+                  </Card>
+                )}
 
                 <Card>
                   <SectionTitle>Change Password</SectionTitle>
@@ -317,12 +386,12 @@ export default function SettingsPage() {
                 </div>
                 <p className="text-xs text-zinc-400 dark:text-zinc-500 mb-5">Choose how you want to be notified about updates and activity.</p>
                 {[
-                  { key: 'emailNotifications' as const, label: 'Email Notifications', desc: 'Booking updates, reviews, and promotions via email', icon: 'M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75' },
-                  { key: 'smsNotifications' as const, label: 'SMS Notifications', desc: 'Text messages for session reminders and important updates', icon: 'M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3' },
-                  { key: 'pushNotifications' as const, label: 'Push Notifications', desc: 'Real-time booking and chat alerts in the browser', icon: 'M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0' },
+                  { key: 'emailNotifications' as const, label: 'Email Notifications', desc: 'Job alerts, application updates, and messages via email' },
+                  { key: 'smsNotifications' as const,   label: 'SMS Notifications',   desc: 'Text messages for important updates and reminders' },
+                  { key: 'pushNotifications' as const,  label: 'Push Notifications',  desc: 'Real-time job match and message alerts in the browser' },
                 ].map((item) => (
                   <SettingRow key={item.key} label={item.label} desc={item.desc}>
-                    <ToggleSwitch checked={prefs[item.key]} onChange={() => handlePrefChange(item.key)} />
+                    <ToggleSwitch checked={prefs[item.key]} onChange={() => handlePrefChange(item.key)} disabled={prefsSaving} />
                   </SettingRow>
                 ))}
               </Card>
@@ -336,7 +405,7 @@ export default function SettingsPage() {
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-w-sm">
                   {[
                     { value: 'light', label: 'Light', sub: 'Bright & clean', iconColor: 'text-yellow-500', iconPath: 'M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z' },
-                    { value: 'dark', label: 'Dark', sub: 'Easy on the eyes', iconColor: 'text-indigo-500', iconPath: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' },
+                    { value: 'dark',  label: 'Dark',  sub: 'Easy on the eyes', iconColor: 'text-indigo-500', iconPath: 'M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z' },
                   ].map((t) => (
                     <button key={t.value} onClick={() => setTheme(t.value as 'light' | 'dark')}
                       className={cn(
@@ -388,7 +457,7 @@ export default function SettingsPage() {
                 <SettingRow label="Show Online Status" desc="Let others see when you are active">
                   <ToggleSwitch checked={showOnlineStatus} onChange={() => { setShowOnlineStatus(!showOnlineStatus); saveLocal({ showOnlineStatus: !showOnlineStatus }); }} />
                 </SettingRow>
-                <SettingRow label="Allow Messages from Anyone" desc="When off, only users with active bookings can message you">
+                <SettingRow label="Allow Messages from Anyone" desc="When off, only users with active applications can message you">
                   <ToggleSwitch checked={allowMessages} onChange={() => { setAllowMessages(!allowMessages); saveLocal({ allowMessages: !allowMessages }); }} />
                 </SettingRow>
               </Card>
@@ -403,7 +472,7 @@ export default function SettingsPage() {
                   <div className="flex items-center justify-between p-4 rounded-2xl border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-800/40">
                     <div>
                       <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">Export Your Data</p>
-                      <p className="text-xs text-zinc-400 mt-0.5">Download all your bookings, messages, and reviews.</p>
+                      <p className="text-xs text-zinc-400 mt-0.5">Download all your applications, messages, and activity.</p>
                     </div>
                     <button className="px-4 py-2 text-sm font-semibold text-zinc-600 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
                       Export
@@ -414,14 +483,15 @@ export default function SettingsPage() {
                       <p className="text-sm font-semibold text-amber-700 dark:text-amber-400">Deactivate Account</p>
                       <p className="text-xs text-zinc-400 mt-0.5">Temporarily hide your profile. Reactivate by logging back in.</p>
                     </div>
-                    <button className="px-4 py-2 text-sm font-semibold text-amber-600 border border-amber-300 dark:border-amber-800 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors">
+                    <button onClick={() => setShowDeactivateDialog(true)}
+                      className="px-4 py-2 text-sm font-semibold text-amber-600 border border-amber-300 dark:border-amber-800 rounded-xl hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors">
                       Deactivate
                     </button>
                   </div>
                   <div className="flex items-center justify-between p-4 rounded-2xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10">
                     <div>
                       <p className="text-sm font-semibold text-red-600 dark:text-red-400">Delete Account Permanently</p>
-                      <p className="text-xs text-zinc-400 mt-0.5">All data, bookings, wallet balance, and reviews will be lost forever.</p>
+                      <p className="text-xs text-zinc-400 mt-0.5">All data, applications, messages, and history will be lost forever.</p>
                     </div>
                     <button onClick={() => setShowDeleteDialog(true)}
                       className="px-4 py-2 text-sm font-semibold text-red-600 border border-red-300 dark:border-red-800 rounded-xl hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
@@ -436,12 +506,23 @@ export default function SettingsPage() {
       </div>
 
       <ConfirmDialog
+        isOpen={showDeactivateDialog}
+        onClose={() => setShowDeactivateDialog(false)}
+        onConfirm={handleDeactivate}
+        title="Deactivate Account"
+        message="Your profile will be hidden and you'll be logged out. Log back in at any time to reactivate your account — all your data will still be here."
+        confirmText="Yes, Deactivate"
+        variant="warning"
+        isLoading={deactivating}
+      />
+
+      <ConfirmDialog
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
         onConfirm={handleDelete}
-        title="Delete Account"
-        message="Are you absolutely sure? All data, bookings, messages, wallet balance, and reviews will be permanently lost. This cannot be undone."
-        confirmText="Delete My Account"
+        title="Delete Account Permanently"
+        message="Are you absolutely sure? All your data — applications, messages, profile, and history — will be permanently and irreversibly lost."
+        confirmText="Delete My Account Forever"
         variant="danger"
         isLoading={deleting}
       />

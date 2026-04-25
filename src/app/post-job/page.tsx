@@ -5,12 +5,108 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { jobsService } from '@/lib/services/jobs';
 import { companiesService } from '@/lib/services/companies';
-import { apiGet } from '@/lib/api';
+import { apiGet, apiPost } from '@/lib/api';
 import type { Company } from '@/lib/uteo-types';
 
-interface Skill {
-  id: string;
+interface Skill { id: string; name: string; }
+
+interface HiringStage {
+  order: number;
   name: string;
+  description: string;
+}
+
+const DEFAULT_STAGES: HiringStage[] = [
+  { order: 1, name: 'Application Review', description: 'Initial screening of applications' },
+  { order: 2, name: 'Phone / Video Screen', description: 'Short 15–30 min introductory call' },
+  { order: 3, name: 'Technical Assessment', description: 'Skills test or take-home task' },
+  { order: 4, name: 'Final Interview', description: 'In-depth interview with the team' },
+  { order: 5, name: 'Offer', description: 'Extend offer to successful candidate' },
+];
+
+const inputCls = "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F] text-sm";
+const labelCls = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5";
+
+function SectionCard({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-5">
+      <div>
+        <h2 className="text-base font-semibold text-gray-900 dark:text-white">{title}</h2>
+        {subtitle && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{subtitle}</p>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function PostedSuccess({
+  job,
+  jobUrl,
+  copied,
+  onCopy,
+}: {
+  job: { id: string; title: string; companyName: string };
+  jobUrl: string;
+  copied: boolean;
+  onCopy: () => void;
+}) {
+  const encodedUrl = encodeURIComponent(jobUrl);
+  const shareText = `We're hiring! ${job.title}${job.companyName ? ` at ${job.companyName}` : ''}. Apply now`;
+  const encodedText = encodeURIComponent(shareText);
+
+  const platforms = [
+    { name: 'LinkedIn', color: 'text-[#0A66C2]', href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` },
+    { name: 'X / Twitter', color: 'text-gray-900 dark:text-white', href: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}` },
+    { name: 'WhatsApp', color: 'text-[#25D366]', href: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + jobUrl)}` },
+    { name: 'Facebook', color: 'text-[#1877F2]', href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
+  ];
+
+  return (
+    <div className="max-w-lg mx-auto py-16 px-4 space-y-8">
+      <div className="text-center space-y-2">
+        <div className="text-4xl mb-3">&#x1F389;</div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Job posted!</h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          <span className="font-medium text-gray-900 dark:text-white">{job.title}</span>
+          {job.companyName && <span> &middot; {job.companyName}</span>}
+        </p>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-5">
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Share your listing</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Post to your networks to reach more candidates</p>
+        </div>
+
+        <div className="divide-y divide-gray-100 dark:divide-gray-700">
+          {platforms.map((p) => (
+            <a
+              key={p.name}
+              href={p.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 py-3 hover:opacity-70 transition-opacity"
+            >
+              <span className={`text-sm font-semibold ${p.color}`}>{p.name}</span>
+              <span className="ml-auto text-xs text-gray-400">Share &#x2192;</span>
+            </a>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3 rounded-xl border border-gray-200 dark:border-gray-600 px-4 py-2.5">
+          <span className="flex-1 text-xs text-gray-500 dark:text-gray-400 truncate font-mono">{jobUrl}</span>
+          <button type="button" onClick={onCopy} className="text-xs font-semibold text-[#F77B0F] hover:underline shrink-0">
+            {copied ? 'Copied ✓' : 'Copy link'}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between text-sm">
+        <a href="/recruiter" className="text-gray-500 dark:text-gray-400 hover:underline">&#x2190; Back to dashboard</a>
+        <a href={`/jobs/${job.id}`} className="font-semibold text-[#F77B0F] hover:underline">View job listing &#x2192;</a>
+      </div>
+    </div>
+  );
 }
 
 function PostJobContent() {
@@ -23,6 +119,7 @@ function PostJobContent() {
   const [skillSearch, setSkillSearch] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState(0);
 
   const [form, setForm] = useState({
     title: '',
@@ -35,17 +132,21 @@ function PostJobContent() {
     salaryMax: '',
     currency: 'KES',
     expiresAt: '',
+    experienceLevel: '',
+    remotePolicy: '',
   });
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
+  const [hiringStages, setHiringStages] = useState<HiringStage[]>(DEFAULT_STAGES);
+  const [editingStage, setEditingStage] = useState<number | null>(null);
+  const [companyMode, setCompanyMode] = useState<'select' | 'new'>('select');
+  const [newCompanyName, setNewCompanyName] = useState('');
+  const [addingSkill, setAddingSkill] = useState(false);
+  const [postedJob, setPostedJob] = useState<{ id: string; title: string; companyName: string } | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.replace('/login?redirect=/post-job');
-      return;
-    }
-    if (!authLoading && isAuthenticated && !isRecruiter) {
-      router.replace('/feed');
-    }
+    if (!authLoading && !isAuthenticated) { router.replace('/login?redirect=/post-job'); return; }
+    if (!authLoading && isAuthenticated && !isRecruiter) router.replace('/feed');
   }, [isAuthenticated, authLoading, isRecruiter, router]);
 
   useEffect(() => {
@@ -57,49 +158,98 @@ function PostJobContent() {
   async function loadCompanies() {
     try {
       const data = await companiesService.list();
-      setCompanies((data as any)?.items ?? []);
-    } catch {
-      // silent
-    }
+      const items: Company[] = (data as any)?.items ?? [];
+      setCompanies(items);
+      if (items.length === 1) setForm((f) => ({ ...f, companyId: items[0].id }));
+    } catch { /* silent */ }
   }
 
   async function loadSkills() {
     try {
       const data = await apiGet<{ items: Skill[] }>('/skills');
       setAllSkills((data as any)?.items ?? []);
-    } catch {
-      // silent
-    }
+    } catch { /* silent */ }
   }
 
   function toggleSkill(skill: Skill) {
-    setSelectedSkills((prev) => {
-      if (prev.find((s) => s.id === skill.id)) {
-        return prev.filter((s) => s.id !== skill.id);
-      }
-      return [...prev, skill];
+    setSelectedSkills((prev) =>
+      prev.find((s) => s.id === skill.id) ? prev.filter((s) => s.id !== skill.id) : [...prev, skill]
+    );
+  }
+
+  async function addNewSkill(name: string) {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    if (selectedSkills.some((s) => s.name.toLowerCase() === trimmed.toLowerCase())) {
+      setSkillSearch('');
+      return;
+    }
+    setAddingSkill(true);
+    try {
+      const created = await apiPost<Skill>('/skills', { name: trimmed });
+      const skill: Skill = { id: (created as any)?.id, name: (created as any)?.name ?? trimmed };
+      setSelectedSkills((prev) => [...prev, skill]);
+      setAllSkills((prev) => prev.some((s) => s.id === skill.id) ? prev : [...prev, skill]);
+      setSkillSearch('');
+    } catch {
+      // skill creation failed silently — don't block
+    } finally {
+      setAddingSkill(false);
+    }
+  }
+
+  // Hiring stages helpers
+  function addStage() {
+    const next = hiringStages.length + 1;
+    setHiringStages((s) => [...s, { order: next, name: '', description: '' }]);
+    setEditingStage(next - 1);
+  }
+
+  function removeStage(idx: number) {
+    setHiringStages((s) => s.filter((_, i) => i !== idx).map((st, i) => ({ ...st, order: i + 1 })));
+    if (editingStage === idx) setEditingStage(null);
+  }
+
+  function updateStage(idx: number, field: 'name' | 'description', val: string) {
+    setHiringStages((s) => s.map((st, i) => i === idx ? { ...st, [field]: val } : st));
+  }
+
+  function moveStage(idx: number, dir: -1 | 1) {
+    const next = idx + dir;
+    if (next < 0 || next >= hiringStages.length) return;
+    setHiringStages((s) => {
+      const arr = [...s];
+      [arr[idx], arr[next]] = [arr[next], arr[idx]];
+      return arr.map((st, i) => ({ ...st, order: i + 1 }));
     });
   }
 
   const filteredSkills = allSkills.filter(
-    (s) =>
-      s.name.toLowerCase().includes(skillSearch.toLowerCase()) &&
-      !selectedSkills.find((sel) => sel.id === s.id),
+    (s) => s.name.toLowerCase().includes(skillSearch.toLowerCase()) && !selectedSkills.find((sel) => sel.id === s.id)
   );
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-
     if (!form.title.trim()) { setError('Job title is required'); return; }
-    if (!form.companyId) { setError('Please select a company'); return; }
+    if (companyMode === 'select' && !form.companyId) { setError('Please select a company'); return; }
+    if (companyMode === 'new' && !newCompanyName.trim()) { setError('Please enter a company name'); return; }
     if (!form.description.trim()) { setError('Job description is required'); return; }
+    const invalidStage = hiringStages.find((s) => !s.name.trim());
+    if (invalidStage) { setError('All hiring stages must have a name'); return; }
 
     setSubmitting(true);
     try {
+      let companyId = form.companyId;
+      if (companyMode === 'new') {
+        const created = await companiesService.create({ name: newCompanyName.trim() });
+        companyId = (created as any)?.id ?? (created as any)?.data?.id;
+        if (!companyId) throw new Error('Failed to create company');
+      }
+
       const payload: Record<string, any> = {
         title: form.title.trim(),
-        companyId: form.companyId,
+        companyId,
         description: form.description.trim(),
         jobType: form.jobType,
       };
@@ -110,11 +260,14 @@ function PostJobContent() {
       if (form.currency) payload.currency = form.currency;
       if (form.expiresAt) payload.expiresAt = new Date(form.expiresAt).toISOString();
       if (selectedSkills.length > 0) payload.skillIds = selectedSkills.map((s) => s.id);
+      if (hiringStages.length > 0) payload.hiringStages = hiringStages;
 
       const job = await jobsService.create(payload);
       const jobId = (job as any)?.id ?? (job as any)?.data?.id;
+      const jobTitle = (job as any)?.title ?? form.title;
+      const jobCompany = (job as any)?.company?.name ?? newCompanyName ?? '';
       if (jobId) {
-        router.push(`/jobs/${jobId}`);
+        setPostedJob({ id: jobId, title: jobTitle, companyName: jobCompany });
       } else {
         router.push('/recruiter');
       }
@@ -133,77 +286,127 @@ function PostJobContent() {
     );
   }
 
+  const jobUrl = postedJob
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/jobs/${postedJob.id}`
+    : '';
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(jobUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (_e) { /* silent */ }
+  };
+
+  if (postedJob) {
+    return (
+      <PostedSuccess
+        job={postedJob}
+        jobUrl={jobUrl}
+        copied={copied}
+        onCopy={copyLink}
+      />
+    );
+  }
+
+  const sections = ['Basic Info', 'Details', 'Compensation', 'Skills', 'Hiring Pipeline', 'Publish'];
+
   return (
     <div className="max-w-3xl mx-auto">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Post a Job</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">Find the best candidates for your open role</p>
+        <p className="text-gray-500 dark:text-gray-400 mt-1">Build a detailed listing to attract the right candidates</p>
+      </div>
+
+      {/* Section progress pills */}
+      <div className="flex items-center gap-2 mb-6 flex-wrap">
+        {sections.map((s, i) => (
+          <button
+            key={s}
+            type="button"
+            onClick={() => setActiveSection(i)}
+            className={`px-3 py-1 text-xs font-medium transition-colors border-b-2 rounded-none ${
+              activeSection === i
+                ? 'border-[#F77B0F] text-[#F77B0F] font-semibold'
+                : 'border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            {i + 1}. {s}
+          </button>
+        ))}
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Error banner */}
         {error && (
           <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-sm text-red-600 dark:text-red-400">
             {error}
           </div>
         )}
 
-        {/* Basic info */}
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-5">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Basic Information</h2>
-
-          {/* Title */}
+        {/* ── 1. Basic Info ────────────────────────────────────────────────── */}
+        <SectionCard title="1. Basic Information" subtitle="The essentials that appear at the top of your listing">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Job Title <span className="text-red-500">*</span>
-            </label>
+            <label className={labelCls}>Job Title <span className="text-red-500">*</span></label>
             <input
               type="text"
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-              placeholder="e.g. Senior Frontend Engineer"
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
+              placeholder="e.g. Senior Frontend Engineer, Product Manager, Data Scientist"
+              className={inputCls}
             />
           </div>
 
-          {/* Company */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Company <span className="text-red-500">*</span>
-            </label>
-            {companies.length > 0 ? (
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Company <span className="text-red-500">*</span>
+              </label>
+              {companies.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCompanyMode((m) => m === 'select' ? 'new' : 'select');
+                    setNewCompanyName('');
+                    setForm((f) => ({ ...f, companyId: '' }));
+                  }}
+                  className="text-xs font-medium text-[#F77B0F] hover:underline"
+                >
+                  {companyMode === 'select' ? '+ Add company' : '← Select existing'}
+                </button>
+              )}
+            </div>
+
+            {companyMode === 'new' || companies.length === 0 ? (
+              <>
+                <input
+                  type="text"
+                  value={newCompanyName}
+                  onChange={(e) => setNewCompanyName(e.target.value)}
+                  placeholder="Company name e.g. Safaricom, Andela, YourStartup..."
+                  className={inputCls}
+                  autoFocus={companyMode === 'new'}
+                />
+                <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
+                  Added to the platform — other recruiters will see it in their list too.
+                </p>
+              </>
+            ) : (
               <select
                 value={form.companyId}
                 onChange={(e) => setForm((f) => ({ ...f, companyId: e.target.value }))}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
+                className={inputCls}
               >
                 <option value="">Select company</option>
-                {companies.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
+                {companies.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
               </select>
-            ) : (
-              <div className="rounded-xl border border-dashed border-gray-300 dark:border-gray-600 p-4 text-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">No companies found. Set one up first.</p>
-                <a href="/onboarding" className="text-sm font-medium text-[#F77B0F] hover:underline">
-                  Set up company profile
-                </a>
-              </div>
             )}
           </div>
 
-          {/* Job type + location row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Job Type
-              </label>
-              <select
-                value={form.jobType}
-                onChange={(e) => setForm((f) => ({ ...f, jobType: e.target.value }))}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
-              >
+              <label className={labelCls}>Job Type</label>
+              <select value={form.jobType} onChange={(e) => setForm((f) => ({ ...f, jobType: e.target.value }))} className={inputCls}>
                 <option value="FULL_TIME">Full-time</option>
                 <option value="PART_TIME">Part-time</option>
                 <option value="CONTRACT">Contract</option>
@@ -213,120 +416,88 @@ function PostJobContent() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Location
-              </label>
+              <label className={labelCls}>Experience Level</label>
+              <select value={form.experienceLevel} onChange={(e) => setForm((f) => ({ ...f, experienceLevel: e.target.value }))} className={inputCls}>
+                <option value="">Any level</option>
+                <option value="ENTRY">Entry Level (0-2 yrs)</option>
+                <option value="MID">Mid Level (2-5 yrs)</option>
+                <option value="SENIOR">Senior (5-10 yrs)</option>
+                <option value="LEAD">Lead / Principal (10+ yrs)</option>
+                <option value="EXECUTIVE">Executive / C-Suite</option>
+              </select>
+            </div>
+            <div>
+              <label className={labelCls}>Location</label>
               <input
                 type="text"
                 value={form.location}
                 onChange={(e) => setForm((f) => ({ ...f, location: e.target.value }))}
-                placeholder="e.g. Nairobi, Kenya or Remote"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
+                placeholder="e.g. Nairobi, Kenya"
+                className={inputCls}
               />
             </div>
           </div>
-        </div>
+        </SectionCard>
 
-        {/* Description & Requirements */}
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-5">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Job Details</h2>
-
+        {/* ── 2. Description & Requirements ───────────────────────────────── */}
+        <SectionCard title="2. Job Details" subtitle="Describe the role clearly to attract the right people">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Description <span className="text-red-500">*</span>
-            </label>
+            <label className={labelCls}>Job Description <span className="text-red-500">*</span></label>
             <textarea
-              rows={6}
+              rows={7}
               value={form.description}
               onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-              placeholder="Describe the role, responsibilities, and what a typical day looks like..."
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F] resize-none"
+              placeholder="Describe the role, team, key responsibilities, and what success looks like in this position..."
+              className={`${inputCls} resize-none`}
             />
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{form.description.length} characters · Aim for at least 200</p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Requirements
-            </label>
+            <label className={labelCls}>Requirements & Qualifications</label>
             <textarea
               rows={5}
               value={form.requirements}
               onChange={(e) => setForm((f) => ({ ...f, requirements: e.target.value }))}
-              placeholder="List qualifications, skills, years of experience, education, etc..."
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F] resize-none"
+              placeholder={`• Bachelor's degree in Computer Science or related field\n• 3+ years of experience with React\n• Strong communication skills\n• Experience with TypeScript is a plus`}
+              className={`${inputCls} resize-none`}
             />
           </div>
-        </div>
+        </SectionCard>
 
-        {/* Salary */}
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-5">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Compensation</h2>
+        {/* ── 3. Compensation ──────────────────────────────────────────────── */}
+        <SectionCard title="3. Compensation" subtitle="Transparent salary ranges increase application rates by up to 30%">
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Currency
-              </label>
-              <select
-                value={form.currency}
-                onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))}
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
-              >
+              <label className={labelCls}>Currency</label>
+              <select value={form.currency} onChange={(e) => setForm((f) => ({ ...f, currency: e.target.value }))} className={inputCls}>
                 <option value="KES">KES</option>
                 <option value="USD">USD</option>
                 <option value="EUR">EUR</option>
                 <option value="GBP">GBP</option>
+                <option value="ZAR">ZAR</option>
+                <option value="NGN">NGN</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Min Salary
-              </label>
-              <input
-                type="number"
-                value={form.salaryMin}
-                onChange={(e) => setForm((f) => ({ ...f, salaryMin: e.target.value }))}
-                placeholder="e.g. 80000"
-                min="0"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
-              />
+              <label className={labelCls}>Min Salary</label>
+              <input type="number" value={form.salaryMin} onChange={(e) => setForm((f) => ({ ...f, salaryMin: e.target.value }))} placeholder="e.g. 80000" min="0" className={inputCls} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-                Max Salary
-              </label>
-              <input
-                type="number"
-                value={form.salaryMax}
-                onChange={(e) => setForm((f) => ({ ...f, salaryMax: e.target.value }))}
-                placeholder="e.g. 120000"
-                min="0"
-                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
-              />
+              <label className={labelCls}>Max Salary</label>
+              <input type="number" value={form.salaryMax} onChange={(e) => setForm((f) => ({ ...f, salaryMax: e.target.value }))} placeholder="e.g. 120000" min="0" className={inputCls} />
             </div>
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500">
-            Displaying salary range increases application rates by up to 30%.
-          </p>
-        </div>
+        </SectionCard>
 
-        {/* Skills */}
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-4">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Required Skills</h2>
-
-          {/* Selected skills */}
+        {/* ── 4. Skills ────────────────────────────────────────────────────── */}
+        <SectionCard title="4. Required Skills" subtitle="Skills are used to match your listing with qualified candidates">
           {selectedSkills.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {selectedSkills.map((skill) => (
-                <span
-                  key={skill.id}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F77B0F]/10 text-[#F77B0F] text-sm font-medium"
-                >
+                <span key={skill.id} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F77B0F]/10 text-[#F77B0F] text-sm font-medium">
                   {skill.name}
-                  <button
-                    type="button"
-                    onClick={() => toggleSkill(skill)}
-                    className="hover:text-red-500 transition-colors"
-                  >
+                  <button type="button" onClick={() => toggleSkill(skill)} className="hover:text-red-500 transition-colors">
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -336,51 +507,188 @@ function PostJobContent() {
             </div>
           )}
 
-          {/* Search */}
-          <input
-            type="text"
-            value={skillSearch}
-            onChange={(e) => setSkillSearch(e.target.value)}
-            placeholder="Search skills (e.g. React, Python, Project Management)"
-            className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={skillSearch}
+              onChange={(e) => setSkillSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  if (filteredSkills.length > 0) {
+                    toggleSkill(filteredSkills[0]);
+                    setSkillSearch('');
+                  } else if (skillSearch.trim()) {
+                    addNewSkill(skillSearch);
+                  }
+                }
+              }}
+              placeholder="Search skills — React, Python, Project Management, SQL..."
+              className={inputCls}
+            />
+            {addingSkill && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#F77B0F] border-t-transparent block" />
+              </div>
+            )}
+          </div>
 
-          {skillSearch && filteredSkills.length > 0 && (
-            <div className="rounded-xl border border-gray-200 dark:border-gray-600 max-h-40 overflow-y-auto">
-              {filteredSkills.slice(0, 15).map((skill) => (
+          {skillSearch && (
+            <div className="rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden">
+              {filteredSkills.slice(0, 12).map((skill) => (
                 <button
                   key={skill.id}
                   type="button"
                   onClick={() => { toggleSkill(skill); setSkillSearch(''); }}
-                  className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 first:rounded-t-xl last:rounded-b-xl"
+                  className="flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-0"
                 >
+                  <svg className="w-3.5 h-3.5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><circle cx="11" cy="11" r="8" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35" /></svg>
                   {skill.name}
                 </button>
               ))}
+              {/* Always show "Add" row at the bottom if typed text isn't an exact match */}
+              {skillSearch.trim() && !selectedSkills.some((s) => s.name.toLowerCase() === skillSearch.trim().toLowerCase()) && (
+                <button
+                  type="button"
+                  onClick={() => addNewSkill(skillSearch)}
+                  disabled={addingSkill}
+                  className="flex items-center gap-2 w-full text-left px-4 py-2.5 text-sm font-medium text-[#F77B0F] hover:bg-[#F77B0F]/5 dark:hover:bg-[#F77B0F]/10 border-t border-gray-100 dark:border-gray-700 disabled:opacity-50"
+                >
+                  <svg className="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
+                  Add "{skillSearch.trim()}" as new skill
+                </button>
+              )}
             </div>
           )}
-          {skillSearch && filteredSkills.length === 0 && (
-            <p className="text-sm text-gray-400 dark:text-gray-500">No matching skills found</p>
-          )}
-        </div>
 
-        {/* Expiry date */}
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-4">
-          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Listing Expiry</h2>
-          <div className="max-w-xs">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-              Expires On
-            </label>
-            <input
-              type="date"
-              value={form.expiresAt}
-              onChange={(e) => setForm((f) => ({ ...f, expiresAt: e.target.value }))}
-              min={new Date().toISOString().split('T')[0]}
-              className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
-            />
+          {!skillSearch && selectedSkills.length === 0 && (
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              Type to search existing skills, or type a new skill name and press Enter (or click "+ Add") to create it.
+            </p>
+          )}
+        </SectionCard>
+
+        {/* ── 5. Hiring Pipeline / Stages ──────────────────────────────────── */}
+        <SectionCard title="5. Hiring Pipeline" subtitle="Define the stages candidates will go through. These show up on their application timeline.">
+          <div className="divide-y divide-gray-100 dark:divide-gray-700 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            {hiringStages.map((stage, idx) => (
+              <div key={idx} className="bg-white dark:bg-gray-800/40">
+                {editingStage === idx ? (
+                  /* ── edit mode ── */
+                  <div className="p-4 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <span className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10px] font-bold flex items-center justify-center shrink-0">
+                        {stage.order}
+                      </span>
+                      <input
+                        type="text"
+                        value={stage.name}
+                        onChange={(e) => updateStage(idx, 'name', e.target.value)}
+                        placeholder="Stage name"
+                        autoFocus
+                        className="flex-1 text-sm font-medium bg-transparent outline-none text-gray-900 dark:text-white placeholder:text-gray-400 border-b border-gray-200 dark:border-gray-600 pb-0.5 focus:border-[#F77B0F]"
+                      />
+                    </div>
+                    <div className="pl-8">
+                      <input
+                        type="text"
+                        value={stage.description}
+                        onChange={(e) => updateStage(idx, 'description', e.target.value)}
+                        placeholder="Brief description — what happens at this stage (optional)"
+                        className="w-full text-xs text-gray-500 dark:text-gray-400 bg-transparent outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600"
+                      />
+                    </div>
+                    <div className="pl-8 flex items-center gap-4 pt-1">
+                      <button type="button" onClick={() => setEditingStage(null)} className="text-xs font-medium text-[#F77B0F] hover:underline">Done</button>
+                      <button type="button" onClick={() => removeStage(idx)} disabled={hiringStages.length <= 1} className="text-xs text-red-500 hover:underline disabled:opacity-30">Remove</button>
+                    </div>
+                  </div>
+                ) : (
+                  /* ── view mode ── */
+                  <div className="flex items-start gap-3 px-4 py-3">
+                    <span className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                      {stage.order}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
+                        {stage.name || <span className="text-gray-400 italic font-normal">Unnamed stage</span>}
+                      </p>
+                      {stage.description && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{stage.description}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0 text-xs text-gray-400 dark:text-gray-500">
+                      <button type="button" onClick={() => moveStage(idx, -1)} disabled={idx === 0} className="hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-25">↑</button>
+                      <button type="button" onClick={() => moveStage(idx, 1)} disabled={idx === hiringStages.length - 1} className="hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-25">↓</button>
+                      <button type="button" onClick={() => setEditingStage(idx)} className="hover:text-[#F77B0F]">Edit</button>
+                      <button type="button" onClick={() => removeStage(idx)} disabled={hiringStages.length <= 1} className="hover:text-red-500 disabled:opacity-25">Remove</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-          <p className="text-xs text-gray-400 dark:text-gray-500">Leave blank to keep the listing active indefinitely.</p>
-        </div>
+          <button
+            type="button"
+            onClick={addStage}
+            className="text-sm font-medium text-[#F77B0F] hover:underline"
+          >
+            + Add Stage
+          </button>
+        </SectionCard>
+
+        {/* ── 6. Publish / Expiry ──────────────────────────────────────────── */}
+        <SectionCard title="6. Publish Settings" subtitle="Control when your listing goes live and when it expires">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className={labelCls}>
+                <span className="flex items-center gap-1.5">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Listing Expires On
+                </span>
+              </label>
+              <input
+                type="date"
+                value={form.expiresAt}
+                onChange={(e) => setForm((f) => ({ ...f, expiresAt: e.target.value }))}
+                min={new Date().toISOString().split('T')[0]}
+                className={inputCls}
+              />
+              <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">Leave blank to keep it active indefinitely.</p>
+            </div>
+            <div className="rounded-xl bg-[#192C67]/5 dark:bg-[#192C67]/15 p-4">
+              <p className="text-xs font-semibold text-[#192C67] dark:text-blue-400 mb-2">Listing Preview</p>
+              <div className="space-y-1 text-xs text-gray-500 dark:text-gray-400">
+                <div className="flex justify-between">
+                  <span>Title</span>
+                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-[140px]">{form.title || '—'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Type</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{form.jobType.replace('_', ' ')}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Location</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{form.location || 'Not set'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Skills</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{selectedSkills.length} selected</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Pipeline</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{hiringStages.length} stages</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Expires</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{form.expiresAt || 'Never'}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </SectionCard>
 
         {/* Submit */}
         <div className="flex items-center justify-between pb-8">
@@ -394,20 +702,15 @@ function PostJobContent() {
           <button
             type="submit"
             disabled={submitting}
-            className="flex items-center gap-2 px-6 py-2.5 bg-[#F77B0F] text-white rounded-xl font-medium hover:bg-[#e06a0d] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+            className="flex items-center gap-1.5 text-sm font-semibold text-[#F77B0F] hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting ? (
               <>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#F77B0F] border-t-transparent" />
                 Posting...
               </>
             ) : (
-              <>
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-                Post Job
-              </>
+              'Post Job →'
             )}
           </button>
         </div>
@@ -418,13 +721,7 @@ function PostJobContent() {
 
 export default function PostJobPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#F77B0F] border-t-transparent" />
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="h-8 w-8 animate-spin rounded-full border-2 border-[#F77B0F] border-t-transparent" /></div>}>
       <PostJobContent />
     </Suspense>
   );

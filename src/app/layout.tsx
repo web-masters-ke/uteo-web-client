@@ -6,6 +6,7 @@ import { AuthProvider } from "@/lib/auth";
 import { ToastProvider } from "@/lib/toast";
 import { CallProvider } from "@/lib/call-context";
 import LayoutShell from "@/components/layout/LayoutShell";
+import AiAdvisor from "@/components/AiAdvisor";
 
 export const metadata: Metadata = {
   title: "Uteo — AI-Powered Job Matching. Your Dream Job Finds You.",
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <ToastProvider>
               <CallProvider>
                 <LayoutShell>{children}</LayoutShell>
+                <AiAdvisor />
               </CallProvider>
             </ToastProvider>
           </AuthProvider>

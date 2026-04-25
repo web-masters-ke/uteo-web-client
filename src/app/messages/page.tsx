@@ -2,7 +2,7 @@
 
 import { KeyboardEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { apiGet, apiPost, apiPatch, extractItems, api } from '@/lib/api';
+import { apiGet, apiPost, extractItems, api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useToast } from '@/lib/toast';
 import type { Conversation, ChatMessage, User } from '@/lib/types';
@@ -361,6 +361,7 @@ export default function MessagesPage() {
   const [q, setQ] = useState('');
   const [showNewModal, setShowNewModal] = useState(false);
   const [sending, setSending] = useState(false);
+  const sendingRef = useRef(false);
   const [showEmoji, setShowEmoji] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -564,7 +565,8 @@ export default function MessagesPage() {
 
   // ── send text message ─────────────────────────────────────────────
   const send = async () => {
-    if (!draft.trim() || !activeId) return;
+    if (!draft.trim() || !activeId || sendingRef.current) return;
+    sendingRef.current = true;
     const body = draft.trim();
     setDraft('');
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
@@ -583,7 +585,7 @@ export default function MessagesPage() {
     try {
       await apiPost(`/conversations/${activeId}/messages`, { content: body });
     } catch { /* keep optimistic */ }
-    finally { setSending(false); }
+    finally { setSending(false); sendingRef.current = false; }
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -659,7 +661,7 @@ export default function MessagesPage() {
     const blobUrl = audioPreviewUrl!;
     const convId = activeId;
 
-    // Clear input area immediately — do NOT revoke blobUrl yet (audio player needs it)
+    // Clear recording UI immediately
     if (timerRef.current) { clearInterval(timerRef.current); timerRef.current = null; }
     if (mediaRecorderRef.current?.state !== 'inactive') mediaRecorderRef.current?.stop();
     streamRef.current?.getTracks().forEach((t) => t.stop());
@@ -668,51 +670,39 @@ export default function MessagesPage() {
     setVoiceState('idle');
     setRecSeconds(0);
 
-    // Save to DB immediately (no fileUrl yet) so message survives any reload
-    // Then upload in background and PATCH with real URL
+    // Upload first, then create message with real URL so it persists on reload
+    const tempId = `msg-${Date.now()}`;
+    setMessages((prev) => [...prev, {
+      id: tempId, conversationId: convId, senderId: myId,
+      senderName: 'You', body: 'Voice note', type: 'VOICE_NOTE',
+      attachmentUrl: blobUrl, uploading: true, createdAt: new Date().toISOString(),
+    } as any]);
+    setConversations((prev) => prev.map((c) => c.id === convId
+      ? { ...c, lastMessage: 'Voice note', lastMessageAt: new Date().toISOString() }
+      : c));
+
     (async () => {
-      let serverMsgId: string | null = null;
-      let tempId = `msg-${Date.now()}`;
-      let swappedToRealUrl = false;
-
-      try {
-        const saved = await apiPost<any>(`/conversations/${convId}/messages`, {
-          content: 'Voice note', messageType: 'VOICE_NOTE',
-        });
-        serverMsgId = saved?.id ?? null;
-        if (serverMsgId) tempId = serverMsgId;
-      } catch { /* silent — still show optimistic */ }
-
-      // Show in chat with local blob URL
-      setMessages((prev) => {
-        if (serverMsgId && prev.some((m: any) => m.id === serverMsgId)) return prev;
-        return [...prev, {
-          id: tempId, conversationId: convId, senderId: myId,
-          senderName: 'You', body: 'Voice note', type: 'VOICE_NOTE',
-          attachmentUrl: blobUrl, createdAt: new Date().toISOString(),
-        } as any];
-      });
-      setConversations((prev) => prev.map((c) => c.id === convId
-        ? { ...c, lastMessage: 'Voice note', lastMessageAt: new Date().toISOString() }
-        : c));
-
       try {
         const formData = new FormData();
         formData.append('file', blob, 'voice-note.webm');
         const res = await api.post(`/media/upload`, formData);
         const uploadedUrl: string = res.data?.data?.url ?? res.data?.url ?? '';
-        if (uploadedUrl) {
-          setMessages((prev) => prev.map((m: any) =>
-            m.id === tempId ? { ...m, attachmentUrl: uploadedUrl } : m));
-          swappedToRealUrl = true;
-          if (serverMsgId) {
-            await apiPatch<any>(`/conversations/messages/${serverMsgId}/file`, { fileUrl: uploadedUrl })
-              .catch(() => {});
-          }
-        }
-      } catch { /* blob URL stays valid */ }
-      finally {
-        if (swappedToRealUrl) setTimeout(() => URL.revokeObjectURL(blobUrl), 500);
+        if (!uploadedUrl) throw new Error('No URL from upload');
+
+        const saved = await apiPost<any>(`/conversations/${convId}/messages`, {
+          content: 'Voice note', messageType: 'VOICE_NOTE', fileUrl: uploadedUrl,
+        });
+        const serverMsgId = saved?.id ?? null;
+
+        setMessages((prev) => prev.map((m: any) =>
+          m.id === tempId
+            ? { ...m, id: serverMsgId ?? tempId, attachmentUrl: uploadedUrl, uploading: false }
+            : m));
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 500);
+      } catch {
+        // Upload failed — keep blob URL in current session, mark as not uploading
+        setMessages((prev) => prev.map((m: any) =>
+          m.id === tempId ? { ...m, uploading: false } : m));
       }
     })();
   };
@@ -733,55 +723,42 @@ export default function MessagesPage() {
       });
     }
 
-    // 1. Save to DB immediately (no fileUrl yet) so message survives any reload
-    let serverMsgId: string | null = null;
-    try {
-      const saved = await apiPost<any>(`/conversations/${convId}/messages`, {
-        content: file.name,
-        messageType: isImage ? 'IMAGE' : 'FILE',
-      });
-      serverMsgId = saved?.id ?? null;
-    } catch { /* silent — optimistic still shows */ }
-
-    // 2. Show optimistic immediately with local preview
-    const tempId = serverMsgId ?? `msg-${Date.now()}`;
-    setMessages((prev) => {
-      if (serverMsgId && prev.some((m: any) => m.id === serverMsgId)) return prev;
-      return [...prev, {
-        id: tempId, conversationId: convId, senderId: myId, senderName: 'You',
-        body: file.name, type: isImage ? 'IMAGE' : 'FILE',
-        attachmentUrl: localPreview || null, uploading: true,
-        createdAt: new Date().toISOString(),
-      } as any];
-    });
+    // Show optimistic immediately with local preview
+    const tempId = `msg-${Date.now()}`;
+    setMessages((prev) => [...prev, {
+      id: tempId, conversationId: convId, senderId: myId, senderName: 'You',
+      body: file.name, type: isImage ? 'IMAGE' : 'FILE',
+      attachmentUrl: localPreview || null, uploading: true,
+      createdAt: new Date().toISOString(),
+    } as any]);
     setConversations((prev) => prev.map((c) => c.id === convId
       ? { ...c, lastMessage: isImage ? 'Image' : file.name, lastMessageAt: new Date().toISOString() }
       : c,
     ));
 
-    // 3. Upload to S3, then PATCH the message with the real URL
-    (async () => {
-      try {
-        const formData = new FormData();
-        formData.append('file', file, file.name);
-        const res = await api.post(`/media/upload`, formData);
-        const uploadedUrl: string = res.data?.data?.url ?? res.data?.url ?? '';
-        if (uploadedUrl) {
-          setMessages((prev) => prev.map((m: any) =>
-            m.id === tempId ? { ...m, attachmentUrl: uploadedUrl, uploading: false } : m));
-          if (serverMsgId) {
-            await apiPatch<any>(`/conversations/messages/${serverMsgId}/file`, { fileUrl: uploadedUrl })
-              .catch(() => {});
-          }
-        } else {
-          setMessages((prev) => prev.map((m: any) =>
-            m.id === tempId ? { ...m, uploading: false } : m));
-        }
-      } catch {
-        setMessages((prev) => prev.map((m: any) =>
-          m.id === tempId ? { ...m, uploading: false } : m));
-      }
-    })();
+    // Upload to S3 first, then create message with real URL in one shot (no PATCH needed)
+    try {
+      const formData = new FormData();
+      formData.append('file', file, file.name);
+      const res = await api.post(`/media/upload`, formData);
+      const uploadedUrl: string = res.data?.data?.url ?? res.data?.url ?? '';
+      if (!uploadedUrl) throw new Error('No URL from upload');
+
+      const saved = await apiPost<any>(`/conversations/${convId}/messages`, {
+        content: file.name,
+        messageType: isImage ? 'IMAGE' : 'FILE',
+        fileUrl: uploadedUrl,
+      });
+      const serverMsgId = saved?.id ?? null;
+
+      setMessages((prev) => prev.map((m: any) =>
+        m.id === tempId
+          ? { ...m, id: serverMsgId ?? tempId, attachmentUrl: uploadedUrl, uploading: false }
+          : m));
+    } catch {
+      setMessages((prev) => prev.map((m: any) =>
+        m.id === tempId ? { ...m, uploading: false } : m));
+    }
   };
 
   // ── helper: get display name for conversation ─────────────────────
@@ -882,19 +859,25 @@ export default function MessagesPage() {
             </span>
           )}
         </div>
-        <button
-          onClick={() => setShowNewModal(true)}
-          className="px-4 py-2 text-sm font-medium text-white bg-[#F77B0F] rounded-lg hover:bg-[#e06a0d] transition-colors"
-        >
-          New Message
-        </button>
+        {user?.role !== 'CLIENT' && (
+          <button
+            onClick={() => setShowNewModal(true)}
+            className="px-4 py-2 text-sm font-medium text-white bg-[#F77B0F] rounded-lg hover:bg-[#e06a0d] transition-colors"
+          >
+            New Message
+          </button>
+        )}
       </div>
 
       {conversations.length === 0 ? (
         <EmptyState
           title="No conversations yet"
-          description="Start a conversation with a trainer or client."
-          action={{ label: 'New Conversation', onClick: () => setShowNewModal(true) }}
+          description={
+            user?.role === 'CLIENT'
+              ? 'Apply for a job and a conversation with the recruiter will open automatically.'
+              : 'Start a conversation with a job seeker.'
+          }
+          action={user?.role !== 'CLIENT' ? { label: 'New Conversation', onClick: () => setShowNewModal(true) } : undefined}
         />
       ) : (
         <div className="flex bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden" style={{ height: '75vh' }}>
@@ -913,17 +896,19 @@ export default function MessagesPage() {
                 onChange={(e) => setQ(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-[#F77B0F] outline-none"
               />
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowNewModal(true)}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-200 py-1.5 text-xs font-medium text-gray-600 hover:border-[#F77B0F]/50 hover:bg-[#F77B0F]/10 hover:text-[#F77B0F] dark:border-gray-700 dark:text-gray-400 dark:hover:border-[#F77B0F] dark:hover:text-[#F77B0F]/80"
-                >
-                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                  </svg>
-                  New Message
-                </button>
-              </div>
+              {user?.role !== 'CLIENT' && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowNewModal(true)}
+                    className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-200 py-1.5 text-xs font-medium text-gray-600 hover:border-[#F77B0F]/50 hover:bg-[#F77B0F]/10 hover:text-[#F77B0F] dark:border-gray-700 dark:text-gray-400 dark:hover:border-[#F77B0F] dark:hover:text-[#F77B0F]/80"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                    New Message
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Conversation list */}
@@ -1000,7 +985,8 @@ export default function MessagesPage() {
                         <p className="flex items-center gap-1 text-[10px] text-gray-400">
                           {(() => {
                             const other = getOtherParticipant(active);
-                            return other?.role ? other.role.charAt(0) + other.role.slice(1).toLowerCase() : 'Offline';
+                            const roleLabel = other?.role === 'TRAINER' ? 'Recruiter' : other?.role === 'CLIENT' ? 'Job Seeker' : other?.role ?? 'Offline';
+                            return roleLabel;
                           })()}
                         </p>
                       )}
@@ -1294,12 +1280,14 @@ export default function MessagesPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 <p className="text-sm text-gray-400">Select a conversation to start messaging</p>
-                <button
-                  onClick={() => setShowNewModal(true)}
-                  className="px-4 py-2 text-sm font-medium text-[#F77B0F] border border-[#F77B0F]/30 rounded-lg hover:bg-[#F77B0F]/10 dark:text-[#F77B0F]/80 dark:border-[#F77B0F] dark:hover:bg-[#192C67]/20"
-                >
-                  New Conversation
-                </button>
+                {user?.role !== 'CLIENT' && (
+                  <button
+                    onClick={() => setShowNewModal(true)}
+                    className="px-4 py-2 text-sm font-medium text-[#F77B0F] border border-[#F77B0F]/30 rounded-lg hover:bg-[#F77B0F]/10 dark:text-[#F77B0F]/80 dark:border-[#F77B0F] dark:hover:bg-[#192C67]/20"
+                  >
+                    New Conversation
+                  </button>
+                )}
               </div>
             )}
           </div>

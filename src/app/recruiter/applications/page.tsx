@@ -254,11 +254,8 @@ function RecruiterApplicationsContent() {
             {filterJobId || filterStatus ? 'Try adjusting your filters' : 'Applications will appear here once candidates apply to your jobs'}
           </p>
           {!filterJobId && !filterStatus && (
-            <Link
-              href="/post-job"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#F77B0F] text-white rounded-xl text-sm font-medium hover:bg-[#e06a0d]"
-            >
-              Post a Job
+            <Link href="/post-job" className="text-sm font-semibold text-[#F77B0F] hover:underline">
+              Post a Job →
             </Link>
           )}
         </div>
@@ -315,7 +312,7 @@ function ApplicationCard({
           {avatarUrl ? (
             <img src={avatarUrl} alt="" className="h-10 w-10 rounded-xl object-cover" />
           ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#192C67] text-white text-xs font-bold">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs font-bold">
               {candidateInitials}
             </div>
           )}

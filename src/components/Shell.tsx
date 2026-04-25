@@ -51,6 +51,10 @@ const icons: Record<string, string> = {
   // Shared
   dashboard:
     "M3 12L12 3l9 9M5 10v9a1 1 0 001 1h4v-6h4v6h4a1 1 0 001-1v-9",
+  candidates:
+    "M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z",
+  interviews:
+    "M15 10l4.553-2.069A1 1 0 0121 8.82v6.361a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z",
   trainers:
     "M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z",
   bookings:
@@ -133,16 +137,19 @@ const NAV: NavItem[] = [
   { href: "/notifications", label: "Notifications",   icon: "notifications",group: "Activity",  roles: ["CLIENT"] },
 
   // ── RECRUITER / EMPLOYER ────────────────────────────────────────────────────
-  { href: "/recruiter",              label: "Dashboard",       icon: "recruiter",      group: "Hiring",  roles: ["TRAINER"] },
-  { href: "/post-job",               label: "Post Job",        icon: "postJob",        group: "Hiring",  roles: ["TRAINER"] },
-  { href: "/jobs",                   label: "My Jobs",         icon: "jobs",           group: "Hiring",  roles: ["TRAINER"] },
-  { href: "/recruiter/applications", label: "Applications",    icon: "applications",   group: "Hiring",  roles: ["TRAINER"] },
-  { href: "/messages",               label: "Messages",        icon: "messages",       group: "Hiring",  roles: ["TRAINER"] },
-  { href: "/notifications",          label: "Notifications",   icon: "notifications",  group: "Hiring",  roles: ["TRAINER"] },
-  { href: "/profile",                label: "Company Profile", icon: "companyProfile", group: "Hiring",  roles: ["TRAINER"] },
+  { href: "/recruiter",                label: "Dashboard",       icon: "recruiter",      group: "Hiring",    roles: ["TRAINER"] },
+  { href: "/post-job",                 label: "Post Job",         icon: "postJob",        group: "Hiring",    roles: ["TRAINER"] },
+  { href: "/jobs",                     label: "My Jobs",          icon: "jobs",           group: "Hiring",    roles: ["TRAINER"] },
+  { href: "/recruiter/applications",   label: "Applications",     icon: "applications",   group: "Hiring",    roles: ["TRAINER"] },
+  { href: "/recruiter/candidates",     label: "Candidates",       icon: "candidates",     group: "Talent",    roles: ["TRAINER"] },
+  { href: "/recruiter/interviews",     label: "Interviews",       icon: "interviews",     group: "Talent",    roles: ["TRAINER"] },
+  { href: "/recruiter/analytics",      label: "Analytics",        icon: "performance",    group: "Insights",  roles: ["TRAINER"] },
+  { href: "/recruiter/company",        label: "Company",          icon: "companies",      group: "Workspace", roles: ["TRAINER"] },
+  { href: "/messages",                 label: "Messages",         icon: "messages",       group: "Workspace", roles: ["TRAINER"] },
+  { href: "/notifications",            label: "Notifications",    icon: "notifications",  group: "Workspace", roles: ["TRAINER"] },
 
   // ── Account — visible to everyone ───────────────────────────────────────────
-  { href: "/profile",   label: "Profile",  icon: "profile",  group: "Account", roles: ["CLIENT"] },
+  { href: "/profile",   label: "Profile",  icon: "profile",  group: "Account" },
   { href: "/settings",  label: "Settings", icon: "settings", group: "Account" },
   { href: "/help",      label: "Help",     icon: "help",     group: "Account" },
 ];
@@ -261,7 +268,7 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
   const ref = useRef<HTMLDivElement>(null);
 
   const initials = user
-    ? (user.firstName[0] + (user.lastName?.[0] ?? "")).toUpperCase()
+    ? ((user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "")).toUpperCase()
     : "S";
 
   useEffect(() => {
@@ -278,8 +285,8 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
         onClick={() => setOpen((o) => !o)}
         className="flex h-8 w-8 items-center justify-center rounded-full bg-[#192C67] dark:bg-white/10 text-xs font-bold text-white hover:opacity-90 transition-opacity"
       >
-        {user?.avatarUrl ? (
-          <img src={user.avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+        {(user?.avatarUrl || (user as any)?.avatar) ? (
+          <img src={user?.avatarUrl || (user as any)?.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
         ) : (
           initials
         )}
@@ -398,7 +405,7 @@ function ShellInner({ children }: { children: ReactNode }) {
                 {groupItems.map((item) => {
                   // Exact-match pages (to avoid /feed matching /feed/... sub-paths that don't exist,
                   // and /recruiter matching /recruiter/applications accidentally)
-                  const exactMatchHrefs = ["/feed", "/recruiter", "/dashboard", "/post-job", "/saved-jobs"];
+                  const exactMatchHrefs = ["/feed", "/recruiter", "/dashboard", "/post-job", "/saved-jobs", "/recruiter/candidates", "/recruiter/interviews", "/recruiter/company", "/recruiter/analytics"];
                   const active = exactMatchHrefs.includes(item.href)
                     ? pathname === item.href
                     : pathname === item.href || pathname.startsWith(item.href + "/");
@@ -438,10 +445,10 @@ function ShellInner({ children }: { children: ReactNode }) {
         <div className="border-t border-zinc-100 dark:border-white/5 px-3 py-3">
           <div className="flex items-center gap-2.5 rounded-lg px-2 py-1.5">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#192C67] dark:bg-white/10 text-xs font-bold text-white overflow-hidden">
-              {user.avatarUrl ? (
-                <img src={user.avatarUrl} alt="" className="h-8 w-8 rounded-full object-cover" />
+              {(user.avatarUrl || (user as any).avatar) ? (
+                <img src={user.avatarUrl || (user as any).avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
               ) : (
-                (user.firstName[0] + (user.lastName?.[0] ?? "")).toUpperCase()
+                ((user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "")).toUpperCase()
               )}
             </div>
             <div className="min-w-0 flex-1">

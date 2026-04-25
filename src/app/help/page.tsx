@@ -82,7 +82,7 @@ export default function HelpPage() {
     setSubmitting(false);
   };
 
-  const ic = "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0f1724] px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-[#192C67] focus:border-[#192C67] transition-colors";
+  const ic = "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0f1724] px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-[#F77B0F] focus:border-[#F77B0F] transition-colors";
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -91,7 +91,7 @@ export default function HelpPage() {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Help & Support</h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">FAQs, guides, and support tickets</p>
         </div>
-        <button onClick={() => setShowNew(true)} className="px-5 py-2.5 bg-[#192C67] text-white text-sm font-semibold rounded-xl hover:bg-[#162d4a] transition-colors">
+        <button onClick={() => setShowNew(true)} className="px-5 py-2.5 bg-[#F77B0F] text-white text-sm font-semibold rounded-xl hover:bg-[#e06a0d] transition-colors">
           Raise a Ticket
         </button>
       </div>
@@ -99,17 +99,21 @@ export default function HelpPage() {
       {/* Contact info */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         {[
-          { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Email", value: "hello@uteo.co.ke" },
-          { icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", label: "Phone", value: "+254 700 000 000" },
-          { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Hours", value: "Mon-Fri 8am-5pm EAT" },
+          { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Email", value: "hello@uteo.co.ke", href: "mailto:hello@uteo.co.ke" },
+          { icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", label: "Phone", value: "+254 700 000 000", href: "tel:+254700000000" },
+          { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Hours", value: "Mon-Fri 8am-5pm EAT", href: null },
         ].map((c) => (
           <div key={c.label} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0f1724]">
-            <div className="h-10 w-10 rounded-lg bg-[#192C67]/10 flex items-center justify-center shrink-0">
-              <svg className="h-5 w-5 text-[#192C67] dark:text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={c.icon} /></svg>
+            <div className="h-10 w-10 rounded-lg bg-[#F77B0F]/10 flex items-center justify-center shrink-0">
+              <svg className="h-5 w-5 text-[#F77B0F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={c.icon} /></svg>
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{c.label}</p>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">{c.value}</p>
+              {c.href ? (
+                <a href={c.href} className="text-sm font-medium text-[#F77B0F] hover:underline">{c.value}</a>
+              ) : (
+                <p className="text-sm font-medium text-gray-900 dark:text-white">{c.value}</p>
+              )}
             </div>
           </div>
         ))}
@@ -120,10 +124,10 @@ export default function HelpPage() {
         <div className="flex items-center gap-3 mb-6">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Frequently Asked Questions</h2>
           <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 p-0.5">
-            <button onClick={() => { setFaqSection("role"); setOpenFaq(null); }} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${faqSection === "role" ? "bg-[#192C67] text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"}`}>
+            <button onClick={() => { setFaqSection("role"); setOpenFaq(null); }} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${faqSection === "role" ? "bg-[#F77B0F] text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"}`}>
               {isTrainer ? "For Trainers" : "For Clients"}
             </button>
-            <button onClick={() => { setFaqSection("general"); setOpenFaq(null); }} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${faqSection === "general" ? "bg-[#192C67] text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"}`}>
+            <button onClick={() => { setFaqSection("general"); setOpenFaq(null); }} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${faqSection === "general" ? "bg-[#F77B0F] text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"}`}>
               General
             </button>
           </div>
@@ -133,7 +137,7 @@ export default function HelpPage() {
           {activeFaqs.map((f, i) => (
             <div key={i} className="bg-white dark:bg-[#0f1724]">
               <button onClick={() => setOpenFaq(openFaq === i ? null : i)} className="w-full flex items-center justify-between px-5 py-4 text-left group">
-                <span className="text-sm font-semibold text-gray-900 dark:text-white pr-6 group-hover:text-[#192C67] dark:group-hover:text-[#5b8bc7] transition-colors">{f.q}</span>
+                <span className="text-sm font-semibold text-gray-900 dark:text-white pr-6 group-hover:text-[#F77B0F] transition-colors">{f.q}</span>
                 <span className={`shrink-0 text-gray-400 transition-transform duration-200 ${openFaq === i ? "rotate-45" : ""}`}>
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                 </span>
@@ -148,7 +152,7 @@ export default function HelpPage() {
 
       {/* New ticket form */}
       {showNew && (
-        <div className="mb-8 p-6 rounded-2xl border-2 border-[#192C67]/20 bg-[#192C67]/[0.02] dark:bg-[#192C67]/[0.05]">
+        <div className="mb-8 p-6 rounded-2xl border-2 border-[#F77B0F]/20 bg-[#F77B0F]/[0.02] dark:bg-[#F77B0F]/[0.05]">
           <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4">New Support Ticket</h3>
           <form onSubmit={submitTicket} className="space-y-4">
             <div>
@@ -168,7 +172,7 @@ export default function HelpPage() {
               <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={4} className={ic} placeholder="Describe your issue in detail..." />
             </div>
             <div className="flex gap-3">
-              <button type="submit" disabled={submitting} className="px-5 py-2.5 bg-[#192C67] text-white text-sm font-semibold rounded-xl hover:bg-[#162d4a] disabled:opacity-50 transition-colors">
+              <button type="submit" disabled={submitting} className="px-5 py-2.5 bg-[#F77B0F] text-white text-sm font-semibold rounded-xl hover:bg-[#e06a0d] disabled:opacity-50 transition-colors">
                 {submitting ? "Submitting..." : "Submit Ticket"}
               </button>
               <button type="button" onClick={() => setShowNew(false)} className="px-5 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">

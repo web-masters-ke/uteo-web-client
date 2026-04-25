@@ -101,7 +101,7 @@ function RecruiterDashboardContent() {
         </div>
         <Link
           href="/post-job"
-          className="flex items-center gap-2 px-5 py-2.5 bg-[#F77B0F] text-white rounded-xl font-medium hover:bg-[#e06a0d] transition-colors shrink-0"
+          className="flex items-center gap-1.5 text-sm font-semibold text-[#F77B0F] hover:underline shrink-0"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -190,9 +190,9 @@ function RecruiterDashboardContent() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">No jobs posted yet</p>
               <Link
                 href="/post-job"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-[#F77B0F] text-white rounded-xl text-sm font-medium hover:bg-[#e06a0d]"
+                className="text-sm font-semibold text-[#F77B0F] hover:underline"
               >
-                Post your first job
+                Post your first job →
               </Link>
             </div>
           ) : (
@@ -240,32 +240,23 @@ function RecruiterDashboardContent() {
           )}
 
           {/* Quick actions */}
-          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-4 space-y-2 mt-4">
+          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-4 space-y-1 mt-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-3">Quick Actions</p>
-            <Link href="/post-job" className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <div className="h-8 w-8 rounded-lg bg-[#F77B0F]/10 flex items-center justify-center">
-                <svg className="w-4 h-4 text-[#F77B0F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                </svg>
-              </div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Post New Job</span>
-            </Link>
-            <Link href="/recruiter/applications" className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <div className="h-8 w-8 rounded-lg bg-[#192C67]/10 dark:bg-[#192C67]/30 flex items-center justify-center">
-                <svg className="w-4 h-4 text-[#192C67] dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Review Applications</span>
-            </Link>
-            <Link href="/profile" className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-              <div className="h-8 w-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-              </div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Company Profile</span>
-            </Link>
+            {[
+              { href: '/post-job', label: 'Post New Job' },
+              { href: '/recruiter/applications', label: 'Review Applications' },
+              { href: '/recruiter/candidates', label: 'Browse Candidates' },
+              { href: '/recruiter/company', label: 'Company Profile' },
+            ].map(({ href, label }) => (
+              <Link
+                key={href}
+                href={href}
+                className="flex items-center justify-between px-2 py-2 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/60 transition-colors"
+              >
+                {label}
+                <svg className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              </Link>
+            ))}
           </div>
         </div>
       </div>
@@ -277,22 +268,15 @@ function StatCard({
   label,
   value,
   icon,
-  color,
 }: {
   label: string;
   value: string;
   icon: React.ReactNode;
   color: 'orange' | 'navy' | 'yellow' | 'green';
 }) {
-  const colorMap = {
-    orange: 'bg-[#F77B0F]/10 text-[#F77B0F]',
-    navy: 'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-blue-400',
-    yellow: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400',
-    green: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
-  };
   return (
     <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-5">
-      <div className={`inline-flex h-10 w-10 items-center justify-center rounded-xl mb-3 ${colorMap[color]}`}>
+      <div className="text-gray-400 dark:text-gray-500 mb-3">
         {icon}
       </div>
       <div className="text-2xl font-bold text-gray-900 dark:text-white">{value}</div>
