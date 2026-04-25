@@ -310,12 +310,12 @@ function OnboardingInner() {
           {/* ── RECRUITER STEP 2: Done ── */}
           {isRecruiter && step === 2 && (
             <div className="text-center py-8">
-              <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              <div className="w-16 h-16 rounded-full bg-[#F77B0F]/10 flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-[#F77B0F]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               </div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">You're ready to hire!</h2>
               <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Your company profile has been created. Start posting jobs and finding great candidates.</p>
-              <Link href="/post-job" className="inline-flex items-center gap-2 px-6 py-3 bg-[#F77B0F] text-white font-semibold rounded-xl hover:bg-[#e06a0d] transition-colors">
+              <Link href="/post-job" className="inline-flex items-center gap-2 px-6 py-3 border-2 border-[#F77B0F] text-[#F77B0F] font-semibold rounded-xl hover:bg-[#F77B0F]/5 transition-colors">
                 Post Your First Job
               </Link>
             </div>
@@ -475,7 +475,7 @@ function OnboardingInner() {
           {/* ── SEEKER STEP 5: Resume ── */}
           {!isRecruiter && step === 5 && (
             <div className="space-y-4">
-              <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-sm text-blue-700 dark:text-blue-300">
+              <div className="p-4 rounded-xl bg-[#192C67]/5 dark:bg-[#192C67]/10 border border-[#192C67]/15 dark:border-[#192C67]/25 text-sm text-gray-600 dark:text-gray-300">
                 Add a link to your resume, portfolio, or LinkedIn profile. Employers will see these when you apply.
               </div>
               <Field label="Resume URL">
@@ -503,7 +503,7 @@ function OnboardingInner() {
                       onClick={() => toggleJobType(jt)}
                       className={`px-4 py-2 rounded-full text-xs font-semibold border-2 transition-all ${
                         jobTypes.includes(jt)
-                          ? "bg-[#F77B0F] text-white border-[#F77B0F]"
+                          ? "border-[#F77B0F] text-[#F77B0F]"
                           : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300"
                       }`}
                     >
@@ -552,7 +552,7 @@ function OnboardingInner() {
                 type="button"
                 onClick={saveStepAndAdvance}
                 disabled={saving}
-                className="flex-1 rounded-xl bg-[#F77B0F] py-2.5 text-sm font-semibold text-white hover:bg-[#e06a0d] disabled:opacity-60"
+                className="flex-1 rounded-xl border-2 border-[#F77B0F] py-2.5 text-sm font-semibold text-[#F77B0F] hover:bg-[#F77B0F]/5 disabled:opacity-60"
               >
                 {saving ? (
                   <span className="flex items-center justify-center gap-2">
