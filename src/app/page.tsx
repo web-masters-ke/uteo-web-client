@@ -93,7 +93,7 @@ export default function LandingPage() {
               <span className="text-[#F77B0F]">Finds You.</span>
             </h1>
             <p className="mt-8 text-lg lg:text-xl text-white/55 max-w-lg leading-relaxed">
-              AI-powered personalized job feed — opportunities that match your skills, not the other way around.
+              A personalized job feed built on AI. Opportunities come to you based on your actual skills.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3">
               <Link href="/register" className="inline-flex items-center justify-center bg-[#F77B0F] text-white font-bold px-8 py-4 rounded-full hover:bg-[#e06a0d] transition-colors shadow-2xl shadow-[#F77B0F]/20 text-sm">
@@ -148,21 +148,21 @@ export default function LandingPage() {
               {
                 n: '01',
                 t: 'Build Your Profile',
-                d: 'Tell us your skills, experience, preferred job types, and salary expectations. Our AI learns what makes you unique.',
+                d: 'Tell us your skills experience job preferences and salary expectations. Our AI builds a picture of what makes you stand out.',
                 icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
                 color: 'bg-[#192C67]',
               },
               {
                 n: '02',
                 t: 'AI Matches You',
-                d: 'Our engine scans thousands of live jobs and surfaces the ones that truly fit your profile — ranked by match score.',
+                d: 'Our engine scans thousands of live jobs and surfaces the ones that truly fit your profile. Every result is ranked by match score.',
                 icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
                 color: 'bg-[#F77B0F]',
               },
               {
                 n: '03',
                 t: 'Apply in One Click',
-                d: 'Your profile is your resume. Apply to matched jobs in seconds, track every application in real time.',
+                d: 'Your profile is your resume. Apply to matched jobs in seconds and track every application in real time.',
                 icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
                 color: 'bg-emerald-500',
               },
@@ -209,7 +209,7 @@ export default function LandingPage() {
                   <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>
                 </div>
                 <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">Feed-Based<br />Discovery</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Your personalized job feed updates daily. The more you interact, the smarter it gets — surfacing roles before you even know to search for them.</p>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Your personalized job feed updates every day. The more you use it the smarter it gets. Roles show up before you even think to search for them.</p>
               </div>
             </div>
 
@@ -230,7 +230,7 @@ export default function LandingPage() {
                   <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 </div>
                 <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">One-Click<br />Apply</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Your Uteo profile is your application. Apply to any job in seconds — no repetitive form filling.</p>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Your Uteo profile is your application. Apply to any job in seconds with no forms to fill in.</p>
               </div>
             </div>
 
@@ -272,7 +272,7 @@ export default function LandingPage() {
                   <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                 </div>
                 <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">Employer<br />Tools</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Post jobs, review applications, shortlist candidates, and manage your entire hiring pipeline in one place.</p>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Post jobs and review applications. Shortlist candidates and manage your entire hiring pipeline in one place.</p>
               </div>
             </div>
 
@@ -314,7 +314,7 @@ export default function LandingPage() {
                   <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                 </div>
                 <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">Instant<br />Alerts</h3>
-                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Get notified the moment a role matches your profile or your application status changes.</p>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Get notified the moment a role matches your profile or when your application status is updated.</p>
               </div>
             </div>
 
@@ -335,10 +335,10 @@ export default function LandingPage() {
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full py-24">
           <div className="max-w-xl">
             <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/10 text-white text-xs font-bold uppercase tracking-wider mb-6">For Employers</span>
-            <h2 className="text-4xl lg:text-6xl font-black text-white leading-[1.05] mb-6">Hire smarter, not harder.</h2>
-            <p className="text-lg text-white/55 leading-relaxed mb-8">Post jobs, get matched with qualified candidates from our talent pool, and manage your entire hiring pipeline — all in one place.</p>
+            <h2 className="text-4xl lg:text-6xl font-black text-white leading-[1.05] mb-6">Hire smarter not harder.</h2>
+            <p className="text-lg text-white/55 leading-relaxed mb-8">Post jobs and get matched with qualified candidates from our talent pool. Manage your entire hiring pipeline in one place.</p>
             <div className="grid grid-cols-2 gap-3 mb-8">
-              {['Skill-matched candidates', 'Post unlimited jobs', 'Manage all applications', 'Shortlist & interview', 'Company profile page', 'Real-time notifications'].map(item => (
+              {['Skill matched candidates', 'Post unlimited jobs', 'Manage all applications', 'Shortlist and interview', 'Company profile page', 'Live notifications'].map(item => (
                 <div key={item} className="flex items-center gap-2 text-white/65 text-sm">
                   <svg className="h-4 w-4 text-[#F77B0F] shrink-0" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
                   {item}
@@ -361,9 +361,9 @@ export default function LandingPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
             {[
-              { quote: 'Uteo surfaced a role I never would have found on my own. The AI match was spot-on — I applied in 30 seconds and got an interview within 48 hours.', name: 'Amara Osei', role: 'Software Engineer, hired at Fintech startup', rating: 5 },
-              { quote: 'As a recruiter, the candidate quality from Uteo is exceptional. The skill matching means we only see candidates who are genuinely relevant. Cut our time-to-hire by half.', name: 'James Mutua', role: 'Head of Talent, Nairobi', rating: 5 },
-              { quote: 'I had been job hunting for months with no luck. Uteo rebuilt my profile, matched me with 12 relevant jobs in one day, and I landed my dream role in two weeks.', name: 'Fatima Diallo', role: 'Marketing Manager, placed at NGO', rating: 5 },
+              { quote: 'Uteo surfaced a role I never would have found on my own. The match was perfect. I applied in 30 seconds and got an interview within 48 hours.', name: 'Amara Osei', role: 'Software Engineer hired at a Fintech startup', rating: 5 },
+              { quote: 'The candidate quality from Uteo is exceptional. The skill matching means we only see people who are genuinely relevant. We cut our hiring time in half.', name: 'James Mutua', role: 'Head of Talent Nairobi', rating: 5 },
+              { quote: 'I had been job hunting for months with no luck. Uteo rebuilt my profile and matched me with 12 relevant jobs in one day. I landed my dream role in two weeks.', name: 'Fatima Diallo', role: 'Marketing Manager placed at an NGO', rating: 5 },
             ].map((t, i) => (
               <div key={i} className="p-8 rounded-3xl border border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-white/[0.02] hover:shadow-xl transition-all">
                 <div className="flex items-center gap-1 mb-6">
@@ -389,12 +389,12 @@ export default function LandingPage() {
           </div>
           <div className="space-y-2">
             {[
-              { q: 'How does the AI job feed work?', a: 'When you create a profile and add your skills, experience, and preferences, our AI analyzes thousands of live job postings to surface the ones with the highest match score for you. Your feed refreshes daily and improves as you interact with it.' },
-              { q: 'Is Uteo free to use?', a: 'Yes, completely free for job seekers. Create a profile, get matched with jobs, and apply — no fees ever. Employers pay for job postings.' },
-              { q: 'How does one-click apply work?', a: 'Your Uteo profile serves as your application. When you click Apply on a job, your full profile (including skills, experience, and resume) is sent to the employer instantly. No forms to fill.' },
-              { q: 'How do I track my applications?', a: 'All your applications are in the My Applications section. You can see real-time status updates: Submitted, Reviewed, Shortlisted, Interview Scheduled, Hired, or Rejected.' },
-              { q: 'Can employers find me directly?', a: "Yes. Recruiters can search our talent pool and reach out to you directly based on your skills and profile. You control what's visible on your profile." },
-              { q: 'How do I post a job as an employer?', a: 'Register as a recruiter, create a company profile, and use Post Job to create your listing. Our AI will immediately start surfacing your job to matched candidates.' },
+              { q: 'How does the AI job feed work?', a: 'When you create a profile and add your skills experience and preferences our AI analyzes thousands of live job postings and surfaces the ones with the highest match score for you. Your feed refreshes daily and gets smarter as you use it.' },
+              { q: 'Is Uteo free to use?', a: 'Completely free for job seekers. Create your profile get matched with jobs and apply. No fees ever. Employers pay for job postings.' },
+              { q: 'How does one click apply work?', a: 'Your Uteo profile serves as your application. When you click Apply your full profile including skills experience and resume is sent to the employer instantly. No forms to fill.' },
+              { q: 'How do I track my applications?', a: 'All your applications are in the My Applications section. You can see live status updates including Submitted Reviewed Shortlisted Interview Scheduled and Hired.' },
+              { q: 'Can employers find me directly?', a: "Yes. Recruiters can search our talent pool and reach out directly based on your skills and profile. You control what is visible." },
+              { q: 'How do I post a job as an employer?', a: 'Register as a recruiter and create a company profile. Use Post Job to create your listing and our AI will immediately start surfacing it to matched candidates.' },
             ].map((faq, i) => (
               <div key={i} className="rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden bg-white dark:bg-white/[0.02]">
                 <button onClick={() => setActiveQ(activeQ === i ? null : i)} className="w-full flex items-center justify-between p-6 text-left group">
@@ -432,7 +432,7 @@ export default function LandingPage() {
             <span className="text-[#F77B0F]">starts here.</span>
           </h2>
           <p className="text-xl text-white/40 max-w-md mx-auto mb-10">
-            Free for job seekers. Always. Build your profile in minutes and let the jobs come to you.
+            Free for job seekers. Always. Build your profile in minutes and let the right jobs find you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/register" className="inline-flex items-center justify-center bg-[#F77B0F] text-white font-bold px-10 py-4 rounded-full hover:bg-[#e06a0d] transition-colors shadow-2xl shadow-[#F77B0F]/20 text-sm">
