@@ -31,7 +31,12 @@ function SavedJobsContent() {
       setLoading(true);
       setError(null);
       const data = await jobsService.saved();
-      setJobs(Array.isArray(data) ? data : (data as any)?.items ?? []);
+      const raw: any[] = Array.isArray(data) ? data : (data as any)?.items ?? [];
+      // Backend returns SavedJob[] with nested job — extract the job and preserve savedAt
+      const jobs = raw.map((s: any) =>
+        s.job ? { ...s.job, _savedAt: s.createdAt } : s
+      );
+      setJobs(jobs);
     } catch (e: any) {
       setError(e?.message ?? 'Failed to load saved jobs');
     } finally {
@@ -265,7 +270,7 @@ function JobCard({
       {/* Footer */}
       <div className="mt-4 flex items-center justify-between">
         <span className="text-xs text-gray-400 dark:text-gray-500">
-          Saved · {new Date(job.createdAt).toLocaleDateString()}
+          Saved · {new Date((job as any)._savedAt ?? job.createdAt).toLocaleDateString()}
         </span>
         <Link
           href={`/jobs/${job.id}`}
