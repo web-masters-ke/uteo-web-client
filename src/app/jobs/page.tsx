@@ -154,7 +154,7 @@ function JobsPageInner() {
     setLoading(true);
     try {
       const params: Record<string, any> = { page, limit: LIMIT };
-      if (keyword.trim()) params.keyword = keyword.trim();
+      if (keyword.trim()) params.search = keyword.trim();
       if (location.trim()) params.location = location.trim();
       if (selectedTypes.size > 0) params.jobType = [...selectedTypes].join(',');
       if (salaryMin) params.salaryMin = Number(salaryMin);
