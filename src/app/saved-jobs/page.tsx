@@ -169,7 +169,7 @@ function JobCard({
       ? `${job.currency} ${job.salaryMin.toLocaleString()}+`
       : null;
 
-  const initials = job.company.name
+  const initials = (job.company?.name ?? 'CO')
     .split(' ')
     .slice(0, 2)
     .map((w) => w[0])
@@ -181,10 +181,10 @@ function JobCard({
       <div className="flex gap-4">
         {/* Company logo / initials */}
         <div className="shrink-0">
-          {job.company.logoUrl ? (
+          {job.company?.logoUrl ? (
             <img
-              src={job.company.logoUrl}
-              alt={job.company.name}
+              src={job.company?.logoUrl}
+              alt={job.company?.name ?? ""}
               className="h-12 w-12 rounded-xl object-cover"
             />
           ) : (
@@ -204,7 +204,7 @@ function JobCard({
               >
                 {job.title}
               </Link>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{job.company.name}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{job.company?.name ?? ""}</p>
             </div>
             {/* Unsave button */}
             <button
