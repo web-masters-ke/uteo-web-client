@@ -34,14 +34,14 @@ function jobTypeLabel(type: string) {
 
 function jobTypeColor(type: string): string {
   const map: Record<string, string> = {
-    FULL_TIME: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-    PART_TIME: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
-    CONTRACT: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-    INTERNSHIP: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300',
-    REMOTE: 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300',
-    HYBRID: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300',
+    FULL_TIME:   'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
+    PART_TIME:   'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
+    CONTRACT:    'bg-[#F77B0F]/10 dark:bg-[#F77B0F]/20 text-[#F77B0F]',
+    INTERNSHIP:  'bg-[#F77B0F]/10 dark:bg-[#F77B0F]/20 text-[#F77B0F]',
+    REMOTE:      'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
+    HYBRID:      'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
   };
-  return map[type] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+  return map[type] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400';
 }
 
 function timeAgo(dateStr: string) {
@@ -187,7 +187,7 @@ function JobFeedCard({
             <div className="flex items-center gap-1.5">
               <span className="text-sm font-semibold text-gray-900 dark:text-white truncate">{job.company.name}</span>
               {job.company.isVerified && (
-                <svg className="w-4 h-4 text-blue-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <svg className="w-4 h-4 text-[#192C67] dark:text-[#5b8bc7] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
               )}
@@ -221,7 +221,7 @@ function JobFeedCard({
           {jobTypeLabel(job.jobType)}
         </span>
         {salary && (
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400">
+          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold text-[#F77B0F]">
             {salary}
           </span>
         )}
@@ -476,7 +476,7 @@ export default function FeedPage() {
               <div key={job.id} className="relative">
                 <JobFeedCard job={job} onApply={setApplyJob} onSaveToggle={handleSaveToggle} savedIds={savedIds} />
                 <div className="absolute inset-0 bg-white/70 dark:bg-gray-900/70 rounded-2xl flex items-center justify-center">
-                  <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 text-sm font-semibold">
+                  <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7] text-sm font-semibold">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
@@ -521,7 +521,7 @@ export default function FeedPage() {
       {toast && (
         <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm font-medium ${
           toast.type === 'success'
-            ? 'bg-green-600 text-white'
+            ? 'bg-[#192C67] text-white'
             : 'bg-red-600 text-white'
         }`}>
           {toast.type === 'success' ? (

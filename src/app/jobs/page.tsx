@@ -30,14 +30,14 @@ function formatSalary(min?: number, max?: number, currency = 'KES') {
 
 function jobTypeColor(type: string): string {
   const map: Record<string, string> = {
-    FULL_TIME: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-    PART_TIME: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
-    CONTRACT: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-    INTERNSHIP: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300',
-    REMOTE: 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300',
-    HYBRID: 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300',
+    FULL_TIME:   'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
+    PART_TIME:   'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
+    CONTRACT:    'bg-[#F77B0F]/10 dark:bg-[#F77B0F]/20 text-[#F77B0F]',
+    INTERNSHIP:  'bg-[#F77B0F]/10 dark:bg-[#F77B0F]/20 text-[#F77B0F]',
+    REMOTE:      'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
+    HYBRID:      'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
   };
-  return map[type] ?? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300';
+  return map[type] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400';
 }
 
 function jobTypeLabel(type: string) {
@@ -81,7 +81,7 @@ function JobCard({ job }: { job: Job }) {
           <div className="flex items-center gap-1">
             <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 truncate">{job.company.name}</span>
             {job.company.isVerified && (
-              <svg className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+              <svg className="w-3.5 h-3.5 text-[#192C67] dark:text-[#5b8bc7] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
             )}
@@ -106,7 +106,7 @@ function JobCard({ job }: { job: Job }) {
           {jobTypeLabel(job.jobType)}
         </span>
         {salary && (
-          <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400">
+          <span className="px-2 py-0.5 rounded-full text-xs font-semibold text-[#F77B0F]">
             {salary}
           </span>
         )}
