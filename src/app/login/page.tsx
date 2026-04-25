@@ -32,7 +32,7 @@ export default function LoginPage() {
     try {
       await login({ email: data.email, password: data.password });
       addToast("success", "Welcome back!");
-      router.push("/dashboard");
+      router.push("/feed");
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { message?: string } } };
       addToast("error", axiosErr.response?.data?.message || "Invalid email or password");
@@ -48,22 +48,25 @@ export default function LoginPage() {
       {/* Left — Image */}
       <div className="hidden lg:flex lg:w-1/2 flex-col relative">
         <img
-          src="https://images.unsplash.com/photo-1589156280159-27698a70f29e?auto=format&fit=crop&w=4096&q=100"
-          alt="Professional training session"
-          className="absolute inset-0 h-full w-full object-cover"
+          src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=2400&q=100"
+          alt="Professional at work"
+          className="absolute inset-0 h-full w-full object-cover object-top"
         />
-        <div className="absolute inset-0 bg-[#0a1628]/70" />
+        <div className="absolute inset-0 bg-[#0a1628]/50" />
         <div className="relative flex-1" />
         <div className="relative px-12 pb-12">
-          <img src="/logo-white.png" alt="SkillSasa" className="h-12 w-auto object-contain object-right mb-8" />
+          <div className="flex items-center gap-2 mb-8">
+            <span className="text-2xl font-black text-white">Uteo</span>
+            <span className="w-2 h-2 rounded-full bg-[#F77B0F]" />
+          </div>
           <h2 className="text-3xl font-black text-white leading-tight max-w-lg">
-            Train. Book. Grow.<br />Professional &amp; Vocational.
+            Your Dream Job<br />Finds You.
           </h2>
           <p className="mt-3 text-white/55 max-w-md leading-relaxed text-sm">
-            Kenya&apos;s AI-powered trainer marketplace for both professional and vocational training. Book sessions, buy courses, pay securely via escrow, and grow your skills.
+            AI-powered job discovery — personalized feeds, one-click apply, and real-time application tracking.
           </p>
           <div className="flex flex-wrap gap-2 mt-6">
-            {['Book Instructors', 'Online Courses', 'Escrow Payments', 'Video Sessions', 'Professional', 'Vocational', 'Verified Credentials'].map(f => (
+            {['AI Job Feed', 'One-Click Apply', 'Match Score', 'Track Applications', 'Recruiter Tools', 'Skill Matching'].map(f => (
               <span key={f} className="px-3 py-1.5 rounded-full bg-white/10 text-xs font-semibold text-white/80 backdrop-blur-sm">{f}</span>
             ))}
           </div>
@@ -76,7 +79,7 @@ export default function LoginPage() {
         <div className="flex-1 flex items-center justify-center px-6 py-10">
           <div className="w-full max-w-sm">
             <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-1">Welcome back</h1>
-            <p className="text-gray-500 dark:text-gray-400 mb-7 text-sm">Sign in to your SkillSasa account</p>
+            <p className="text-gray-500 dark:text-gray-400 mb-7 text-sm">Sign in to your Uteo account</p>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
@@ -104,7 +107,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 bg-[#192C67] text-white font-bold rounded-xl hover:bg-[#162d4a] disabled:opacity-50 transition-colors text-sm uppercase tracking-wider"
+                className="w-full py-3.5 border-2 border-[#192C67] dark:border-[#5b8bc7] text-[#192C67] dark:text-[#5b8bc7] font-bold rounded-xl hover:bg-[#192C67]/5 dark:hover:bg-[#5b8bc7]/10 disabled:opacity-40 transition-colors text-sm uppercase tracking-wider"
               >
                 {submitting ? "Signing in..." : "Sign In"}
               </button>
@@ -117,10 +120,9 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Logo pinned to bottom-left of the form panel */}
-        <div className="shrink-0 px-8 pb-8 flex justify-end">
-          <img src="/skillsasa-logo.png" alt="SkillSasa" className="h-12 w-auto object-contain object-right dark:hidden" />
-          <img src="/logo-white.png" alt="SkillSasa" className="hidden h-12 w-auto object-contain object-right dark:block" />
+        <div className="shrink-0 px-8 pb-8 flex justify-end items-center gap-1.5">
+          <span className="text-sm font-black text-gray-400 dark:text-gray-600 tracking-tight">Uteo</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#F77B0F]" />
         </div>
       </div>
     </div>

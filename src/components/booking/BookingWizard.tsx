@@ -14,26 +14,25 @@ import { formatCurrency, formatTime, formatDate, cn, DAYS_OF_WEEK } from '@/lib/
 import { format, startOfDay, addMonths, subMonths, startOfMonth, endOfMonth, getDay, getDaysInMonth } from 'date-fns';
 
 /* ============================================================
-   SkillSasa Booking Wizard
-   Adapts the Postnet multi-step wizard pattern for the SkillSasa
-   trainer marketplace. Supports BOTH:
-     - TRAINER creating bookings for their clients
-     - CLIENT creating bookings with a trainer
+   Uteo Interview Booking Wizard
+   Supports BOTH:
+     - RECRUITER scheduling interviews with candidates
+     - JOB_SEEKER booking interview slots with a recruiter
    ============================================================ */
 
 // ── Step definitions ──────────────────────────────────────────
-const TRAINER_STEPS = [
-  { id: 1, label: 'Select Client', icon: 'user' },
-  { id: 2, label: 'Session Details', icon: 'file' },
+const RECRUITER_STEPS = [
+  { id: 1, label: 'Select Candidate', icon: 'user' },
+  { id: 2, label: 'Interview Details', icon: 'file' },
   { id: 3, label: 'Date & Time', icon: 'calendar' },
   { id: 4, label: 'Review & Confirm', icon: 'check' },
 ] as const;
 
-const CLIENT_STEPS = [
-  { id: 1, label: 'Select Trainer', icon: 'user' },
-  { id: 2, label: 'Session Details', icon: 'file' },
+const CANDIDATE_STEPS = [
+  { id: 1, label: 'Select Recruiter', icon: 'user' },
+  { id: 2, label: 'Interview Details', icon: 'file' },
   { id: 3, label: 'Date & Time', icon: 'calendar' },
-  { id: 4, label: 'Payment & Confirm', icon: 'check' },
+  { id: 4, label: 'Review & Confirm', icon: 'check' },
 ] as const;
 
 // ── SVG icons ─────────────────────────────────────────────────
@@ -148,20 +147,20 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
   const { user } = useAuth();
   const { addToast } = useToast();
 
-  const isTrainer = user?.role === 'TRAINER';
-  const steps = isTrainer ? TRAINER_STEPS : CLIENT_STEPS;
+  const isRecruiter = user?.role === 'TRAINER';
+  const steps = isRecruiter ? RECRUITER_STEPS : CANDIDATE_STEPS;
 
   // ── Wizard state ──────────────────────────────────────────
   const [currentStep, setCurrentStep] = useState(1);
   const [animDir, setAnimDir] = useState<'forward' | 'back'>('forward');
 
-  // Step 1: Client/Trainer selection
+  // Step 1: Candidate/Recruiter selection
   const [selectedTrainer, setSelectedTrainer] = useState<Trainer | null>(preselectedTrainer || null);
   const [trainerSearch, setTrainerSearch] = useState('');
   const [trainers, setTrainers] = useState<Trainer[]>([]);
   const [trainersLoading, setTrainersLoading] = useState(false);
 
-  // Step 1 (trainer flow): client selection
+  // Step 1 (recruiter flow): candidate selection
   const [clientMode, setClientMode] = useState<'existing' | 'new'>('existing');
   const [clientSearch, setClientSearch] = useState('');
   const [clients, setClients] = useState<User[]>([]);
@@ -171,7 +170,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
   const [newClientEmail, setNewClientEmail] = useState('');
   const [newClientPhone, setNewClientPhone] = useState('');
 
-  // Consultant/department assignment (trainer/firm flow)
+  // Interviewer/department assignment (recruiter flow)
   const [teamMembers, setTeamMembers] = useState<{ id: string; userId: string; role: string; title?: string; user: { id: string; firstName: string; lastName: string; avatar?: string } }[]>([]);
   const [departments, setDepartments] = useState<{ id: string; name: string; _count?: { members: number } }[]>([]);
   const [assignMode, setAssignMode] = useState<'self' | 'team' | 'department' | 'individual'>('self');
@@ -184,9 +183,6 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
   const [topic, setTopic] = useState('');
   const [location, setLocation] = useState('');
   const [meetingLink, setMeetingLink] = useState('');
-  const [selectedCourseId, setSelectedCourseId] = useState<string>('');
-  const [selectedLessonId, setSelectedLessonId] = useState<string>('');
-  const [trainerCourses, setTrainerCourses] = useState<any[]>([]);
 
   // Step 2: Advanced session options
   const [isGroupSession, setIsGroupSession] = useState(false);
@@ -206,23 +202,22 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
 
   // Step 4: Payment
-  const [paymentMethod, setPaymentMethod] = useState<'WALLET' | 'MPESA'>('WALLET');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   // ── Trainer the session is with ─────────────────────────
-  const activeTrainer = isTrainer ? null : selectedTrainer;
-  const trainerId = isTrainer ? user?.id : selectedTrainer?.userId || selectedTrainer?.id;
+  const activeTrainer = isRecruiter ? null : selectedTrainer;
+  const trainerId = isRecruiter ? user?.id : (selectedTrainer?.userId || selectedTrainer?.id);
 
   // ── Calculate amount ────────────────────────────────────
-  const hourlyRate = isTrainer
+  const hourlyRate = isRecruiter
     ? (user?.hourlyRate || 0)
     : (selectedTrainer?.hourlyRate || 0);
   const amount = hourlyRate * (duration / 60);
 
   // ── Search trainers (client flow) ───────────────────────
   useEffect(() => {
-    if (isTrainer || preselectedTrainer) return;
+    if (isRecruiter || preselectedTrainer) return;
     setTrainersLoading(true);
     const params: any = { limit: 20 };
     if (trainerSearch) params.keyword = trainerSearch;
@@ -230,11 +225,11 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
       .then((res) => setTrainers(res.items))
       .catch(() => setTrainers([]))
       .finally(() => setTrainersLoading(false));
-  }, [trainerSearch, isTrainer, preselectedTrainer]);
+  }, [trainerSearch, isRecruiter, preselectedTrainer]);
 
-  // ── Search clients (trainer flow) ───────────────────────
+  // ── Search candidates (recruiter flow) ──────────────────
   useEffect(() => {
-    if (!isTrainer || clientMode !== 'existing') return;
+    if (!isRecruiter || clientMode !== 'existing') return;
     setClientsLoading(true);
     const q = clientSearch ? `?search=${encodeURIComponent(clientSearch)}` : '';
     apiGet<any>(`/users?role=CLIENT${clientSearch ? '&search=' + encodeURIComponent(clientSearch) : ''}`)
@@ -244,11 +239,11 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
       })
       .catch(() => setClients([]))
       .finally(() => setClientsLoading(false));
-  }, [clientSearch, isTrainer, clientMode]);
+  }, [clientSearch, isRecruiter, clientMode]);
 
   // ── Fetch team members + departments (trainer flow) ─────
   useEffect(() => {
-    if (!isTrainer) return;
+    if (!isRecruiter) return;
     apiGet<any>('/team/members')
       .then((data: any) => {
         const items = Array.isArray(data) ? data : data?.items ?? [];
@@ -261,18 +256,8 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
         setDepartments(items.filter((d: any) => d.isActive !== false));
       })
       .catch(() => setDepartments([]));
-  }, [isTrainer]);
+  }, [isRecruiter]);
 
-  // ── Load trainer courses when PRE_RECORDED selected ─────
-  useEffect(() => {
-    if (sessionType !== 'PRE_RECORDED' || !trainerId) return;
-    apiGet<any>(`/courses?instructorId=${trainerId}&status=PUBLISHED&limit=50`)
-      .then((data: any) => {
-        const items = Array.isArray(data) ? data : data?.items ?? [];
-        setTrainerCourses(items);
-      })
-      .catch(() => setTrainerCourses([]));
-  }, [sessionType, trainerId]);
 
   // ── Fetch availability slots when date changes ──────────
   useEffect(() => {
@@ -348,7 +333,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
   };
 
   // ── Step 1 validation ──────────────────────────────────
-  const step1Valid = isTrainer
+  const step1Valid = isRecruiter
     ? (clientMode === 'existing' ? !!selectedClient : (newClientName.trim().length >= 2 && newClientEmail.includes('@') && newClientPhone.length >= 10))
     : !!selectedTrainer;
 
@@ -376,12 +361,12 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
       const endM = String(endMinutes % 60).padStart(2, '0');
 
       const payload: any = {
-        trainerId: isTrainer
+        trainerId: isRecruiter
           ? (assignMode === 'individual' && assignedConsultantId ? assignedConsultantId : user?.id)
           : (selectedTrainer?.userId || selectedTrainer?.id),
-        ...(isTrainer && assignMode === 'department' && assignedDepartmentId ? { departmentId: assignedDepartmentId } : {}),
-        ...(isTrainer && assignMode === 'team' ? { assignToTeam: true } : {}),
-        amount: amount || 0,
+        ...(isRecruiter && assignMode === 'department' && assignedDepartmentId ? { departmentId: assignedDepartmentId } : {}),
+        ...(isRecruiter && assignMode === 'team' ? { assignToTeam: true } : {}),
+        amount: 0,
         date: dateStr,
         startTime: selectedTime,
         endTime: `${endH}:${endM}`,
@@ -389,8 +374,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
         duration,
         sessionType,
         notes: topic || undefined,
-        location: sessionType !== 'VIRTUAL' && sessionType !== 'PRE_RECORDED' ? location : undefined,
-        ...(sessionType === 'PRE_RECORDED' && selectedCourseId ? { courseId: selectedCourseId, lessonId: selectedLessonId || undefined } : {}),
+        location: sessionType === 'PHYSICAL' || sessionType === 'HYBRID' ? location : undefined,
         ...(meetingLink ? { meetingLink } : {}),
         timezone,
         ...(reminders.length > 0 ? { reminders } : {}),
@@ -399,8 +383,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
         ...(isGroupSession && planBreakoutRooms ? { breakoutRooms: { count: breakoutRoomCount, assignMode: breakoutAssignMode } } : {}),
       };
 
-      // If trainer flow with new client
-      if (isTrainer) {
+      if (isRecruiter) {
         if (clientMode === 'existing' && selectedClient) {
           payload.clientId = selectedClient.id;
         } else {
@@ -408,12 +391,10 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
           payload.clientEmail = newClientEmail;
           payload.clientPhone = newClientPhone;
         }
-      } else {
-        payload.paymentMethod = paymentMethod;
       }
 
       const booking = await bookingService.create(payload);
-      addToast('success', 'Booking created successfully!');
+      addToast('success', 'Interview scheduled successfully!');
       if (onSuccess) {
         onSuccess(booking);
       } else {
@@ -466,7 +447,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
     </div>
   );
 
-  // ── Step 1: Select Client (Trainer flow) ────────────────
+  // ── Step 1: Select Candidate (Recruiter flow) ───────────
   const renderTrainerStep1 = () => (
     <div className="transition-all duration-300">
       {/* Mode toggle */}
@@ -480,7 +461,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
               : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
           )}
         >
-          Existing Client
+          Existing Candidate
         </button>
         <button
           onClick={() => setClientMode('new')}
@@ -491,14 +472,14 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
               : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
           )}
         >
-          New Client
+          New Candidate
         </button>
       </div>
 
       {clientMode === 'existing' ? (
         <>
           <SearchBar
-            placeholder="Search clients by name or email..."
+            placeholder="Search candidates by name or email..."
             onSearch={setClientSearch}
             className="mb-4"
           />
@@ -510,7 +491,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
                   <div className="flex-1"><div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2" /><div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-48" /></div>
                 </div>
               ))
-            ) : clients.length > 0 ? (
+            ) : clients.length > 0 ? ( // candidates list
               clients.map((client) => (
                 <button
                   key={client.id}
@@ -536,9 +517,9 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
               ))
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">No clients found</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm mb-2">No candidates found</p>
                 <button onClick={() => setClientMode('new')} className="text-primary-500 hover:text-primary-600 text-sm font-medium">
-                  + Add a new client instead
+                  + Add a new candidate instead
                 </button>
               </div>
             )}
@@ -581,11 +562,11 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
     </div>
   );
 
-  // ── Step 1: Select Trainer (Client flow) ────────────────
+  // ── Step 1: Select Recruiter (Candidate flow) ───────────
   const renderClientStep1 = () => (
     <div className="transition-all duration-300">
       <SearchBar
-        placeholder="Search trainers..."
+        placeholder="Search recruiters or employers..."
         onSearch={setTrainerSearch}
         className="mb-4"
       />
@@ -631,7 +612,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
                     )}
                   </div>
                   <p className="text-xs text-primary-600 dark:text-primary-400 font-medium mt-0.5">
-                    {trainer.specialization || 'General Trainer'}
+                    {trainer.specialization || 'Recruiter'}
                   </p>
                   <div className="flex items-center gap-3 mt-1">
                     <span className="text-sm font-bold text-secondary-500 dark:text-secondary-400">
@@ -650,7 +631,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
           ))
         ) : (
           <div className="text-center py-8">
-            <p className="text-gray-500 dark:text-gray-400 text-sm">No trainers found. Try a different search.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm">No recruiters found. Try a different search.</p>
           </div>
         )}
       </div>
@@ -663,13 +644,12 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
       <div className="space-y-6">
         {/* Session Type */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Session Type</label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Interview Type</label>
+          <div className="grid grid-cols-3 gap-3">
             {([
-              { value: 'VIRTUAL' as const, label: 'Virtual', desc: 'Online meeting', icon: 'video' },
-              { value: 'PHYSICAL' as const, label: 'In-Person', desc: 'Meet face to face', icon: 'map-pin' },
+              { value: 'VIRTUAL' as const, label: 'Video Call', desc: 'Online interview', icon: 'video' },
+              { value: 'PHYSICAL' as const, label: 'On-Site', desc: 'In-person interview', icon: 'map-pin' },
               { value: 'HYBRID' as const, label: 'Hybrid', desc: 'Flexible format', icon: 'phone' },
-              { value: 'PRE_RECORDED' as const, label: 'Pre-recorded', desc: 'Watch a lesson', icon: 'play' },
             ]).map((opt) => (
               <button
                 key={opt.value}
@@ -696,41 +676,6 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
           </div>
         </div>
 
-        {/* Course/Lesson selector for PRE_RECORDED */}
-        {sessionType === 'PRE_RECORDED' && (
-          <div className="p-4 rounded-2xl bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800">
-            <label className="block text-sm font-semibold text-teal-800 dark:text-teal-300 mb-3">Select Course &amp; Lesson</label>
-            {trainerCourses.length === 0 ? (
-              <p className="text-sm text-teal-600 dark:text-teal-400">This trainer has no published courses yet. You can still book a pre-recorded session — the trainer will share the content.</p>
-            ) : (
-              <>
-                <select
-                  value={selectedCourseId}
-                  onChange={(e) => { setSelectedCourseId(e.target.value); setSelectedLessonId(''); }}
-                  className="w-full px-4 py-2.5 rounded-lg border border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-800 text-sm mb-3"
-                >
-                  <option value="">Choose a course...</option>
-                  {trainerCourses.map((c: any) => (
-                    <option key={c.id} value={c.id}>{c.title} — KES {Number(c.price || 0).toLocaleString()}</option>
-                  ))}
-                </select>
-                {selectedCourseId && (
-                  <select
-                    value={selectedLessonId}
-                    onChange={(e) => setSelectedLessonId(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-lg border border-teal-300 dark:border-teal-700 bg-white dark:bg-gray-800 text-sm"
-                  >
-                    <option value="">All lessons (full course)</option>
-                    {(trainerCourses.find((c: any) => c.id === selectedCourseId)?.lessons || []).map((l: any) => (
-                      <option key={l.id} value={l.id}>Lesson {l.sortOrder + 1}: {l.title} ({l.duration || '?'} min)</option>
-                    ))}
-                  </select>
-                )}
-              </>
-            )}
-          </div>
-        )}
-
         {/* Duration */}
         <div>
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Duration</label>
@@ -750,19 +695,17 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
               </button>
             ))}
           </div>
-          <p className="text-xs text-gray-400 mt-2">
-            Estimated cost: <span className="font-semibold text-secondary-500">{formatCurrency(amount)}</span>
-          </p>
+          <p className="text-xs text-gray-400 mt-2">Interviews on Uteo are always free for candidates.</p>
         </div>
 
-        {/* Topic / Description */}
+        {/* Role / Position */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Topic / Description (optional)</label>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Role / Position (optional)</label>
           <textarea
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             rows={3}
-            placeholder="What would you like to work on in this session?"
+            placeholder="Which role or position is this interview for?"
             className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900/30 transition resize-none placeholder-gray-400"
           />
         </div>
@@ -777,7 +720,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
               type="text"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="Enter meeting location, gym, or address..."
+              placeholder="Enter interview location or office address..."
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900/30 transition placeholder-gray-400"
             />
           </div>
@@ -796,7 +739,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
               placeholder="https://meet.jitsi.si/... or Zoom/Google Meet link"
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900/30 transition placeholder-gray-400"
             />
-            <p className="text-xs text-gray-400 mt-1">A Jitsi meeting link will be generated automatically if not provided.</p>
+            <p className="text-xs text-gray-400 mt-1">A Jitsi meeting room will be generated automatically if not provided.</p>
           </div>
         )}
 
@@ -804,8 +747,8 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
         <div className="rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">Group Session</p>
-              <p className="text-xs text-gray-400 mt-0.5">Allow multiple participants to join this session</p>
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">Panel Interview</p>
+              <p className="text-xs text-gray-400 mt-0.5">Multiple interviewers joining the same call</p>
             </div>
             <button
               type="button"
@@ -822,7 +765,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
             <div className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                  Max Participants: <span className="text-primary-500">{maxParticipants}</span>
+                  Max Interviewers: <span className="text-primary-500">{maxParticipants}</span>
                 </label>
                 <input
                   type="range"
@@ -840,7 +783,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">Breakout Rooms</p>
-                    <p className="text-xs text-gray-400 mt-0.5">Split participants into smaller groups during the session</p>
+                    <p className="text-xs text-gray-400 mt-0.5">Split interviewers into separate breakout rooms</p>
                   </div>
                   <button
                     type="button"
@@ -918,7 +861,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
             </div>
             <div>
               <p className="text-sm font-semibold text-gray-900 dark:text-white">Record Session</p>
-              <p className="text-xs text-gray-400 mt-0.5">Save a recording for the client to review later</p>
+              <p className="text-xs text-gray-400 mt-0.5">Record the interview for post-interview review</p>
             </div>
           </div>
           <button
@@ -957,8 +900,8 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
 
         {/* Reminders */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Client Reminders</label>
-          <p className="text-xs text-gray-400 mb-3">Automated reminders sent to the client before the session</p>
+          <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Interview Reminders</label>
+          <p className="text-xs text-gray-400 mb-3">Automated reminders sent to all participants before the interview</p>
           <div className="flex flex-wrap gap-2">
             {([
               { value: '24h', label: '24 hours before' },
@@ -994,10 +937,10 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
         </div>
 
         {/* Assign To (trainer/firm flow only) */}
-        {isTrainer && (teamMembers.length > 0 || departments.length > 0) && (
+        {isRecruiter && (teamMembers.length > 0 || departments.length > 0) && (
           <div>
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Assign To</label>
-            <p className="text-xs text-gray-400 mb-3">Who will deliver this training session?</p>
+            <p className="text-xs text-gray-400 mb-3">Who will conduct this interview?</p>
 
             {/* Mode selector */}
             <div className="flex flex-wrap gap-2 mb-4">
@@ -1082,10 +1025,10 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
 
             {/* Info text */}
             <p className="text-xs text-gray-400 mt-3">
-              {assignMode === 'self' && 'You will personally deliver this training session.'}
-              {assignMode === 'team' && 'Any available consultant from your team can handle this session.'}
-              {assignMode === 'department' && 'Any member of the selected department can handle this session.'}
-              {assignMode === 'individual' && 'The selected consultant will be assigned to deliver this session.'}
+              {assignMode === 'self' && 'You will personally conduct this interview.'}
+              {assignMode === 'team' && 'Any available interviewer from your team can join this session.'}
+              {assignMode === 'department' && 'Any member of the selected department can conduct this interview.'}
+              {assignMode === 'individual' && 'This interviewer will be assigned to conduct the interview.'}
             </p>
           </div>
         )}
@@ -1200,37 +1143,37 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
 
   // ── Step 4: Review & Confirm ────────────────────────────
   const renderStep4 = () => {
-    const clientName = isTrainer
+    const clientName = isRecruiter
       ? (clientMode === 'existing' && selectedClient
         ? `${selectedClient.firstName} ${selectedClient.lastName}`
         : newClientName)
       : null;
     const trainerName = selectedTrainer
       ? `${selectedTrainer.firstName || selectedTrainer.user?.firstName || ''} ${selectedTrainer.lastName || selectedTrainer.user?.lastName || ''}`.trim()
-      : (isTrainer ? `${user?.firstName || ''} ${user?.lastName || ''}`.trim() : '');
+      : (isRecruiter ? `${user?.firstName || ''} ${user?.lastName || ''}`.trim() : '');
 
     return (
       <div className="transition-all duration-300">
         {/* Summary card */}
         <div className="rounded-2xl bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800/30 p-6 mb-6">
-          <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-lg">Booking Summary</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-white mb-4 text-lg">Interview Summary</h3>
           <div className="space-y-3 text-sm">
-            {isTrainer && clientName && (
+            {isRecruiter && clientName && (
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Client</span>
+                <span className="text-gray-500 dark:text-gray-400">Candidate</span>
                 <span className="font-medium text-gray-900 dark:text-white">{clientName}</span>
               </div>
             )}
-            {!isTrainer && trainerName && (
+            {!isRecruiter && trainerName && (
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Trainer</span>
+                <span className="text-gray-500 dark:text-gray-400">Recruiter</span>
                 <span className="font-medium text-gray-900 dark:text-white">{trainerName}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Session Type</span>
+              <span className="text-gray-500 dark:text-gray-400">Interview Type</span>
               <span className="font-medium text-gray-900 dark:text-white capitalize">
-                {sessionType === 'VIRTUAL' ? 'Virtual (Online)' : sessionType === 'PHYSICAL' ? 'In-Person' : sessionType === 'PRE_RECORDED' ? 'Pre-recorded Lesson' : 'Hybrid'}
+                {sessionType === 'VIRTUAL' ? 'Video Call' : sessionType === 'PHYSICAL' ? 'On-Site' : 'Hybrid'}
               </span>
             </div>
             <div className="flex justify-between">
@@ -1239,7 +1182,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
             </div>
             {topic && (
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Topic</span>
+                <span className="text-gray-500 dark:text-gray-400">Role</span>
                 <span className="font-medium text-gray-900 dark:text-white text-right max-w-[60%]">{topic}</span>
               </div>
             )}
@@ -1267,9 +1210,9 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
             </div>
             {isGroupSession && (
               <div className="flex justify-between">
-                <span className="text-gray-500 dark:text-gray-400">Session Format</span>
+                <span className="text-gray-500 dark:text-gray-400">Format</span>
                 <span className="font-medium text-gray-900 dark:text-white">
-                  Group · {maxParticipants} participants{planBreakoutRooms ? ` · ${breakoutRoomCount} breakout rooms` : ''}
+                  Panel · {maxParticipants} interviewers{planBreakoutRooms ? ` · ${breakoutRoomCount} breakout rooms` : ''}
                 </span>
               </div>
             )}
@@ -1280,28 +1223,13 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
               </div>
             )}
             <div className="flex justify-between border-t border-primary-100 dark:border-primary-800/30 pt-3 mt-3">
-              <span className="font-semibold text-gray-900 dark:text-white text-base">Total Amount</span>
-              <span className="font-bold text-2xl text-primary-600 dark:text-primary-400">
-                {formatCurrency(amount)}
-              </span>
+              <span className="font-semibold text-gray-900 dark:text-white text-base">Cost</span>
+              <span className="font-bold text-2xl text-emerald-500">Free</span>
             </div>
           </div>
         </div>
 
-        {/* Escrow info */}
-        <div className="flex items-start gap-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 mb-6">
-          <div className="flex-shrink-0 mt-0.5 text-blue-500">
-            <StepIcon type="shield" size={20} />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Escrow Protection</p>
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
-              Payment is held securely in escrow until the session is completed. You can dispute the charge within 48 hours of completion.
-            </p>
-          </div>
-        </div>
-
-        {/* Cancellation Policy */}
+        {/* Rescheduling Policy */}
         <div className="flex items-start gap-3 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/40 p-4 mb-6">
           <div className="flex-shrink-0 mt-0.5">
             <svg className="w-5 h-5 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1309,51 +1237,13 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
             </svg>
           </div>
           <div>
-            <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">Cancellation Policy</p>
+            <p className="text-sm font-semibold text-amber-700 dark:text-amber-300">Rescheduling Policy</p>
             <ul className="text-xs text-amber-600 dark:text-amber-400 mt-1.5 space-y-1">
-              <li>• More than 48 hours before — <strong>100% refund</strong></li>
-              <li>• 24–48 hours before — <strong>50% refund</strong></li>
-              <li>• Less than 24 hours before — <strong>No refund</strong></li>
+              <li>• Cancel or reschedule more than 24 hours before — <strong>no penalty</strong></li>
+              <li>• Cancellations under 24 hours — <strong>may affect your profile score</strong></li>
             </ul>
           </div>
         </div>
-
-        {/* Payment method (client flow only) */}
-        {!isTrainer && (
-          <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Payment Method</label>
-            <div className="grid grid-cols-2 gap-3">
-              {([
-                { value: 'WALLET' as const, label: 'SkillSasa Wallet', desc: 'Pay from wallet balance', icon: 'wallet' },
-                { value: 'MPESA' as const, label: 'M-Pesa', desc: 'Pay via STK push', icon: 'phone' },
-              ]).map((method) => (
-                <button
-                  key={method.value}
-                  onClick={() => setPaymentMethod(method.value)}
-                  className={cn(
-                    'flex items-center gap-3 p-4 rounded-xl border-2 transition-all text-left',
-                    paymentMethod === method.value
-                      ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 bg-white dark:bg-gray-800'
-                  )}
-                >
-                  <div className={cn(
-                    'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
-                    paymentMethod === method.value
-                      ? 'bg-primary-500 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-500'
-                  )}>
-                    <StepIcon type={method.icon} size={18} />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white text-sm">{method.label}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{method.desc}</p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Error */}
         {submitError && (
@@ -1367,10 +1257,10 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
 
   // ── Step subtitle helper ────────────────────────────────
   const stepSubtitle: Record<number, string> = {
-    1: isTrainer ? 'Choose an existing client or add someone new' : 'Search by name or specialization',
-    2: 'Configure your session type, duration and topic',
-    3: 'Choose when you would like the session',
-    4: isTrainer ? 'Review details before confirming' : 'Review details and choose payment',
+    1: isRecruiter ? 'Choose an existing candidate or add someone new' : 'Search recruiters or employers by name',
+    2: 'Configure interview type, duration and role details',
+    3: 'Choose the interview date and time',
+    4: 'Review all details before confirming',
   };
 
   // ── Sidebar summary (what has been picked so far) ───────
@@ -1381,14 +1271,14 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
     const clientName = selectedClient
       ? `${selectedClient.firstName} ${selectedClient.lastName}`
       : newClientName || null;
-    const personName = isTrainer ? clientName : trainerName;
+    const personName = isRecruiter ? clientName : trainerName;
 
     const hasSomething = personName || selectedDate || (amount > 0 && currentStep >= 2);
     if (!hasSomething) return null;
 
     return (
       <div className="mt-auto pt-6 border-t border-white/10 space-y-3">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">Your booking</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">Your interview</p>
         {personName && (
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-[#F77B0F]/20 border border-[#F77B0F]/40 flex items-center justify-center shrink-0">
@@ -1410,7 +1300,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
             </span>
             <span>·</span>
             <span>{duration >= 60 ? `${duration / 60}h` : `${duration}m`}</span>
-            {isGroupSession && <><span>·</span><span className="text-emerald-300">{maxParticipants}p group</span></>}
+            {isGroupSession && <><span>·</span><span className="text-emerald-300">Panel · {maxParticipants}</span></>}
           </div>
         )}
         {selectedDate && selectedTime && (
@@ -1433,7 +1323,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
       <div className="w-64 shrink-0 bg-[#192C67] flex flex-col p-7 rounded-l-2xl overflow-hidden">
         {/* Brand */}
         <div className="mb-10 shrink-0">
-          <img src="/logo-white.png" alt="SkillSasa" className="h-8 w-auto object-contain" />
+          <span className="text-lg font-black text-white tracking-tight">Uteo</span>
         </div>
 
         {/* Steps */}
@@ -1481,7 +1371,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
 
         {/* Scrollable step content */}
         <div className="flex-1 overflow-y-auto px-8 pb-4">
-          {currentStep === 1 && (isTrainer ? renderTrainerStep1() : renderClientStep1())}
+          {currentStep === 1 && (isRecruiter ? renderTrainerStep1() : renderClientStep1())}
           {currentStep === 2 && renderStep2()}
           {currentStep === 3 && renderStep3()}
           {currentStep === 4 && renderStep4()}
@@ -1529,7 +1419,7 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
               ) : (
                 <>
                   <StepIcon type="check" size={15} />
-                  {isTrainer ? 'Confirm Booking' : `Pay ${formatCurrency(amount)}`}
+                  Confirm Interview
                 </>
               )}
             </button>

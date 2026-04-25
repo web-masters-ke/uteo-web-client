@@ -254,7 +254,7 @@ function RegisterPageInner() {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="w-full rounded-xl bg-[#F77B0F] py-3 text-sm font-semibold text-white hover:bg-[#e06a0d] transition-colors"
+                  className="w-full rounded-xl border-2 border-[#F77B0F] py-3 text-sm font-semibold text-[#F77B0F] hover:bg-[#F77B0F]/5 transition-colors"
                 >
                   Continue as {role === "seeker" ? "Job Seeker" : "Recruiter / Employer"}
                 </button>
@@ -340,7 +340,7 @@ function RegisterPageInner() {
                     type="button"
                     onClick={submit}
                     disabled={loading}
-                    className="flex-1 rounded-xl bg-[#F77B0F] py-2.5 text-sm font-semibold text-white transition hover:bg-[#e06a0d] disabled:opacity-60"
+                    className="flex-1 rounded-xl border-2 border-[#F77B0F] py-2.5 text-sm font-semibold text-[#F77B0F] transition hover:bg-[#F77B0F]/5 disabled:opacity-60"
                   >
                     {loading ? (
                       <span className="flex items-center justify-center gap-2">

@@ -133,7 +133,7 @@ function NewConversationModal({
   const [creating, setCreating] = useState(false);
   const [searching, setSearching] = useState(false);
 
-  // CLIENT searches trainers, TRAINER searches clients + other trainers
+  // Job seekers see recruiters first; recruiters see all candidates
   const searchRole = userRole === 'CLIENT' ? 'TRAINER' : undefined;
 
   // Load suggested users on open (no typing required)
@@ -203,11 +203,11 @@ function NewConversationModal({
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-            {userRole === 'CLIENT' ? 'Search for a trainer or firm' : 'Search for a client or trainer'}
+            {userRole === 'CLIENT' ? 'Search for a recruiter or employer' : 'Search for a candidate or recruiter'}
           </label>
           <input
             type="text"
-            placeholder={userRole === 'CLIENT' ? 'Search trainer by name...' : 'Search by name or email...'}
+            placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoFocus
@@ -241,7 +241,7 @@ function NewConversationModal({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="font-medium text-gray-900 dark:text-white">{r.firstName} {r.lastName}</p>
-                  {r.role && <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${r.role === 'TRAINER' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'}`}>{r.role === 'TRAINER' ? 'Trainer' : 'Client'}</span>}
+                  {r.role && <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${r.role === 'TRAINER' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'}`}>{r.role === 'TRAINER' ? 'Recruiter' : 'Job Seeker'}</span>}
                 </div>
                 {(r as any).specialization && <p className="text-[10px] text-gray-400 truncate">{(r as any).specialization}</p>}
               </div>
@@ -441,7 +441,7 @@ export default function MessagesPage() {
     if (!targetUserId) {
       // No URL param — restore last active conversation
       if (!activeId) {
-        const saved = sessionStorage.getItem('skillsasa-chat-active');
+        const saved = sessionStorage.getItem('uteo-chat-active');
         if (saved && conversations.find((c) => c.id === saved)) {
           setActiveId(saved);
         }
@@ -548,7 +548,7 @@ export default function MessagesPage() {
 
   const selectConversation = (id: string) => {
     setActiveId(id);
-    sessionStorage.setItem('skillsasa-chat-active', id);
+    sessionStorage.setItem('uteo-chat-active', id);
     setConversations((prev) => prev.map((c) => c.id === id ? { ...c, unread: 0, unreadCount: 0 } : c));
     setShowEmoji(false);
     cancelVoice();
@@ -939,7 +939,7 @@ export default function MessagesPage() {
               {bookingChats.length > 0 && (
                 <>
                   <div className="px-3 pb-1 pt-3">
-                    <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Booking Chats</p>
+                    <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Interview Chats</p>
                   </div>
                   {bookingChats.map((c) => <ConvRow key={c.id} c={c} />)}
                 </>
@@ -1011,7 +1011,7 @@ export default function MessagesPage() {
                       onClick={() => router.push(`/bookings/${active.bookingId}`)}
                       className="text-xs text-primary-500 hover:text-primary-600 font-medium"
                     >
-                      View Booking
+                      View Interview
                     </button>
                   )}
                 </div>
@@ -1313,7 +1313,7 @@ export default function MessagesPage() {
           onCreate={(conv) => {
             setConversations((prev) => [conv, ...prev]);
             setActiveId(conv.id);
-            sessionStorage.setItem('skillsasa-chat-active', conv.id);
+            sessionStorage.setItem('uteo-chat-active', conv.id);
           }}
         />
       )}

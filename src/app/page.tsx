@@ -73,15 +73,14 @@ export default function LandingPage() {
 
       {/* ── HERO ── */}
       <section className="relative min-h-screen flex overflow-hidden bg-[#060d1f]">
-        <div className="absolute inset-0 lg:left-[45%]">
+        <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2400&q=100"
             alt="Professionals collaborating"
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#060d1f] via-[#060d1f]/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#060d1f]/90 via-[#060d1f]/50 to-transparent" />
         </div>
-        <div className="hidden lg:block absolute inset-y-0 left-0 w-2/3 bg-gradient-to-r from-[#060d1f] via-[#060d1f]/90 to-transparent" />
 
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full flex items-center pt-32 pb-20 lg:py-0 min-h-screen">
           <div className="max-w-2xl">
@@ -193,83 +192,132 @@ export default function LandingPage() {
             <h2 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.1]">Everything you need.<br />Nothing you don&apos;t.</h2>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Feed-based discovery — wide */}
-            <div className="col-span-2 rounded-3xl bg-[#192C67] p-8 lg:p-10 relative overflow-hidden">
-              <div className="absolute -right-10 -top-10 w-56 h-56 rounded-full bg-white/5" />
-              <div className="absolute right-8 -bottom-8 w-36 h-36 rounded-full bg-[#F77B0F]/10" />
-              <div className="relative">
-                <div className="w-12 h-12 rounded-2xl bg-[#F77B0F] flex items-center justify-center mb-6">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>
+          <div className="space-y-0">
+
+            {/* Row 1 — image left, text right */}
+            <div className="group flex flex-col lg:flex-row items-stretch gap-8 lg:gap-16 py-16 lg:py-24">
+              <div className="lg:w-[55%] rounded-3xl overflow-hidden min-h-[300px] lg:min-h-[420px] shrink-0">
+                <img
+                  src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1600&q=100"
+                  alt="Feed-based job discovery"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              </div>
+              <div className="lg:w-[45%] flex flex-col justify-center">
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#F77B0F] mb-4">01</span>
+                <div className="w-11 h-11 rounded-2xl bg-[#F77B0F] flex items-center justify-center mb-5">
+                  <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" /></svg>
                 </div>
-                <h3 className="text-2xl lg:text-3xl font-black text-white mb-3">Feed-Based Discovery</h3>
-                <p className="text-white/55 leading-relaxed max-w-lg">Your personalized job feed updates daily. The more you interact, the smarter it gets — surfacing roles before you even know to search for them.</p>
+                <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">Feed-Based<br />Discovery</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Your personalized job feed updates daily. The more you interact, the smarter it gets — surfacing roles before you even know to search for them.</p>
               </div>
             </div>
 
-            {/* One-click apply */}
-            <div className="rounded-3xl bg-[#F77B0F]/10 dark:bg-[#F77B0F]/5 border border-[#F77B0F]/20 p-6 lg:p-8">
-              <div className="w-10 h-10 rounded-xl bg-[#F77B0F] flex items-center justify-center mb-5">
-                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            <div className="h-px bg-gray-100 dark:bg-white/5" />
+
+            {/* Row 2 — text left, image right */}
+            <div className="group flex flex-col lg:flex-row-reverse items-stretch gap-8 lg:gap-16 py-16 lg:py-24">
+              <div className="lg:w-[55%] rounded-3xl overflow-hidden min-h-[300px] lg:min-h-[420px] shrink-0">
+                <img
+                  src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=100"
+                  alt="One-click apply"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
               </div>
-              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-2">One-Click Apply</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Your Uteo profile is your application. Apply to any job in seconds — no repetitive form filling.</p>
+              <div className="lg:w-[45%] flex flex-col justify-center">
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#192C67] dark:text-[#5b8bc7] mb-4">02</span>
+                <div className="w-11 h-11 rounded-2xl bg-[#192C67] flex items-center justify-center mb-5">
+                  <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                </div>
+                <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">One-Click<br />Apply</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Your Uteo profile is your application. Apply to any job in seconds — no repetitive form filling.</p>
+              </div>
             </div>
 
-            {/* Real-time tracking */}
-            <div className="rounded-3xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 p-6 lg:p-8">
-              <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center mb-5">
-                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+            <div className="h-px bg-gray-100 dark:bg-white/5" />
+
+            {/* Row 3 — image left, text right */}
+            <div className="group flex flex-col lg:flex-row items-stretch gap-8 lg:gap-16 py-16 lg:py-24">
+              <div className="lg:w-[55%] rounded-3xl overflow-hidden min-h-[300px] lg:min-h-[420px] shrink-0">
+                <img
+                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=100"
+                  alt="Real-time application tracking"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
               </div>
-              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-2">Real-Time Tracking</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Know exactly where you stand. Track every application from Submitted through to Hired.</p>
+              <div className="lg:w-[45%] flex flex-col justify-center">
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-500 mb-4">03</span>
+                <div className="w-11 h-11 rounded-2xl bg-emerald-500 flex items-center justify-center mb-5">
+                  <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                </div>
+                <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">Real-Time<br />Tracking</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Know exactly where you stand. Track every application from Submitted through to Hired.</p>
+              </div>
             </div>
 
-            {/* Employer tools */}
-            <div className="rounded-3xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 p-6 lg:p-8">
-              <div className="w-10 h-10 rounded-xl bg-[#192C67] flex items-center justify-center mb-5">
-                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+            <div className="h-px bg-gray-100 dark:bg-white/5" />
+
+            {/* Row 4 — text left, image right */}
+            <div className="group flex flex-col lg:flex-row-reverse items-stretch gap-8 lg:gap-16 py-16 lg:py-24">
+              <div className="lg:w-[55%] rounded-3xl overflow-hidden min-h-[300px] lg:min-h-[420px] shrink-0">
+                <img
+                  src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1600&q=100"
+                  alt="Employer hiring tools"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
               </div>
-              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-2">Employer Tools</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Post jobs, review applications, shortlist candidates, and manage your entire hiring pipeline in one place.</p>
+              <div className="lg:w-[45%] flex flex-col justify-center">
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#192C67] dark:text-[#5b8bc7] mb-4">04</span>
+                <div className="w-11 h-11 rounded-2xl bg-[#192C67] flex items-center justify-center mb-5">
+                  <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                </div>
+                <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">Employer<br />Tools</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Post jobs, review applications, shortlist candidates, and manage your entire hiring pipeline in one place.</p>
+              </div>
             </div>
 
-            {/* Smart matching */}
-            <div className="rounded-3xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 p-6 lg:p-8">
-              <div className="w-10 h-10 rounded-xl bg-purple-500 flex items-center justify-center mb-5">
-                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+            <div className="h-px bg-gray-100 dark:bg-white/5" />
+
+            {/* Row 5 — image left, text right */}
+            <div className="group flex flex-col lg:flex-row items-stretch gap-8 lg:gap-16 py-16 lg:py-24">
+              <div className="lg:w-[55%] rounded-3xl overflow-hidden min-h-[300px] lg:min-h-[420px] shrink-0">
+                <img
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=100"
+                  alt="Smart skill matching"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
               </div>
-              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-2">Smart Skill Match</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Every job is scored against your skills profile. See your match percentage before you apply.</p>
+              <div className="lg:w-[45%] flex flex-col justify-center">
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-purple-500 mb-4">05</span>
+                <div className="w-11 h-11 rounded-2xl bg-purple-500 flex items-center justify-center mb-5">
+                  <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                </div>
+                <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">Smart Skill<br />Match</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Every job is scored against your skills profile. See your match percentage before you apply.</p>
+              </div>
             </div>
 
-            {/* Notifications */}
-            <div className="rounded-3xl bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 p-6 lg:p-8">
-              <div className="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center mb-5">
-                <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-              </div>
-              <h3 className="text-lg font-black text-gray-900 dark:text-white mb-2">Instant Alerts</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">Get notified the moment a role matches your profile or your application status changes.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+            <div className="h-px bg-gray-100 dark:bg-white/5" />
 
-      {/* ── STATS ── */}
-      <section className="py-20 lg:py-28 bg-[#060d1f]">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            {[
-              { n: '10,000+', l: 'Active Jobs', sub: 'Across all industries' },
-              { n: '5,000+', l: 'Companies', sub: 'Hiring right now' },
-              { n: '50,000+', l: 'Job Seekers', sub: 'Found their next role' },
-            ].map(s => (
-              <div key={s.l} className="p-8 rounded-3xl bg-white/[0.03] border border-white/5">
-                <div className="text-5xl lg:text-6xl font-black text-[#F77B0F] mb-2">{s.n}</div>
-                <div className="text-xl font-bold text-white mb-1">{s.l}</div>
-                <div className="text-sm text-white/40">{s.sub}</div>
+            {/* Row 6 — text left, image right */}
+            <div className="group flex flex-col lg:flex-row-reverse items-stretch gap-8 lg:gap-16 py-16 lg:py-24">
+              <div className="lg:w-[55%] rounded-3xl overflow-hidden min-h-[300px] lg:min-h-[420px] shrink-0">
+                <img
+                  src="https://images.unsplash.com/photo-1611532736597-de2d4265fba3?auto=format&fit=crop&w=1600&q=100"
+                  alt="Instant job alerts"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
               </div>
-            ))}
+              <div className="lg:w-[45%] flex flex-col justify-center">
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-amber-500 mb-4">06</span>
+                <div className="w-11 h-11 rounded-2xl bg-amber-500 flex items-center justify-center mb-5">
+                  <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                </div>
+                <h3 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.05] mb-5">Instant<br />Alerts</h3>
+                <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-lg max-w-md">Get notified the moment a role matches your profile or your application status changes.</p>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -282,7 +330,7 @@ export default function LandingPage() {
             alt="Hiring team reviewing candidates"
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#192C67]/95 via-[#192C67]/80 to-[#192C67]/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#192C67]/85 via-[#192C67]/50 to-transparent" />
         </div>
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full py-24">
           <div className="max-w-xl">
@@ -372,7 +420,7 @@ export default function LandingPage() {
             alt=""
             className="h-full w-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#192C67]/90 via-[#0f1d4a]/88 to-[#060d1f]/95" />
+          <div className="absolute inset-0 bg-[#060d1f]/60" />
         </div>
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 mb-8">

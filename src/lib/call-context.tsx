@@ -109,8 +109,8 @@ export function CallProvider({ children }: { children: ReactNode }) {
     const top = Math.round((screen.height - h) / 2);
     const popup = window.open(
       meetingUrl,
-      "skillsasa-training-session",
-      `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no,location=no,status=no`,
+      "uteo-interview",
+      `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no,location=no,status=no`
     );
 
     meetingWindowRef.current = popup;

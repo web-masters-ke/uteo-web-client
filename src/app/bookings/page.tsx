@@ -33,24 +33,23 @@ const STATUS_DOT: Record<string, string> = {
 };
 
 const SESSION_TYPE_LABELS: Record<string, { label: string; color: string }> = {
-  VIRTUAL: { label: 'Virtual', color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' },
-  PHYSICAL: { label: 'In-Person', color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20' },
+  VIRTUAL: { label: 'Video Call', color: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20' },
+  PHYSICAL: { label: 'On-Site', color: 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20' },
   HYBRID: { label: 'Hybrid', color: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20' },
-  PRE_RECORDED: { label: 'Pre-recorded', color: 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20' },
 };
 
 const EMPTY_STATES: Record<string, { title: string; description: string }> = {
-  '': { title: 'No bookings yet', description: 'Create your first booking to get started.' },
-  CONFIRMED: { title: 'No upcoming bookings', description: 'You have no confirmed bookings scheduled.' },
-  COMPLETED: { title: 'No completed bookings', description: 'Completed sessions will appear here.' },
-  CANCELLED: { title: 'No cancelled bookings', description: 'No bookings have been cancelled.' },
-  DISPUTED: { title: 'No disputed bookings', description: 'No bookings are under dispute.' },
+  '': { title: 'No interviews yet', description: 'Schedule your first interview to get started.' },
+  CONFIRMED: { title: 'No upcoming interviews', description: 'You have no confirmed interviews scheduled.' },
+  COMPLETED: { title: 'No completed interviews', description: 'Completed interviews will appear here.' },
+  CANCELLED: { title: 'No cancelled interviews', description: 'No interviews have been cancelled.' },
+  DISPUTED: { title: 'No disputed interviews', description: 'No interviews are under dispute.' },
 };
 
 export default function BookingsPage() {
   const { user } = useAuth();
   const { addToast } = useToast();
-  const isTrainer = user?.role === 'TRAINER';
+  const isRecruiter = user?.role === 'TRAINER';
 
   const [activeTab, setActiveTab] = useState('');
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -89,28 +88,28 @@ export default function BookingsPage() {
     setCancelling(true);
     try {
       await bookingService.cancel(cancelId);
-      addToast('success', 'Booking cancelled');
+      addToast('success', 'Interview cancelled');
       setCancelId(null);
       fetchBookings();
     } catch {
-      addToast('error', 'Failed to cancel booking');
+      addToast('error', 'Failed to cancel interview');
     } finally {
       setCancelling(false);
     }
   };
 
   const getPersonName = (booking: Booking): string => {
-    if (isTrainer) {
+    if (isRecruiter) {
       return booking.client
         ? `${booking.client.firstName} ${booking.client.lastName}`
-        : 'Client';
+        : 'Candidate';
     }
     const t = (booking.trainer?.user || booking.trainer) as any;
-    return t?.firstName ? `${t.firstName} ${t.lastName || ''}`.trim() : 'Trainer';
+    return t?.firstName ? `${t.firstName} ${t.lastName || ''}`.trim() : 'Recruiter';
   };
 
   const getPersonAvatar = (booking: Booking): { src?: string; firstName: string; lastName: string } => {
-    if (isTrainer) {
+    if (isRecruiter) {
       return {
         src: booking.client?.avatarUrl || booking.client?.avatar,
         firstName: booking.client?.firstName || '?',
@@ -130,11 +129,9 @@ export default function BookingsPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {isTrainer ? 'My Sessions' : 'My Bookings'}
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Interviews</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            {isTrainer ? 'Manage your training sessions' : 'View and manage your bookings'}
+            {isRecruiter ? 'Manage your interview schedule' : 'View and manage your upcoming interviews'}
           </p>
         </div>
         <button
@@ -144,7 +141,7 @@ export default function BookingsPage() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
-          New Booking
+          Schedule Interview
         </button>
       </div>
 
@@ -235,8 +232,8 @@ export default function BookingsPage() {
                       </span>
                     </div>
                     {/* Org/firm info */}
-                    {!isTrainer && (booking.trainer as any)?.trainerProfile?.firmName && (
-                      <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-0.5">🏢 {(booking.trainer as any).trainerProfile.firmName}</p>
+                    {!isRecruiter && (booking.trainer as any)?.organization && (
+                      <p className="text-[10px] text-gray-400 dark:text-gray-500 mb-0.5">🏢 {(booking.trainer as any).organization}</p>
                     )}
                     <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                       <span>
@@ -271,7 +268,7 @@ export default function BookingsPage() {
           title={EMPTY_STATES[activeTab]?.title || 'No bookings found'}
           description={EMPTY_STATES[activeTab]?.description || 'No bookings to show.'}
           action={{
-            label: 'Create Booking',
+            label: 'Schedule Interview',
             onClick: () => setShowWizard(true),
           }}
         />
@@ -282,8 +279,8 @@ export default function BookingsPage() {
         isOpen={!!cancelId}
         onClose={() => setCancelId(null)}
         onConfirm={handleCancel}
-        title="Cancel Booking"
-        message="Are you sure you want to cancel this booking? This action cannot be undone."
+        title="Cancel Interview"
+        message="Are you sure you want to cancel this interview? This action cannot be undone."
         confirmText="Yes, Cancel"
         variant="danger"
         isLoading={cancelling}
