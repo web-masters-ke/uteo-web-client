@@ -363,7 +363,9 @@ function Breadcrumb({ navItems }: { navItems: NavItem[] }) {
 function ShellInner({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { theme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const darkBg = theme === "dark" ? "#111111" : undefined;
 
   const handleLogout = () => {
     logout();
@@ -458,9 +460,9 @@ function ShellInner({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-[#111111]">
+    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-[#111111]" style={{ backgroundColor: darkBg }}>
       {/* Desktop sidebar — scrolls independently via inner nav's overflow-y-auto */}
-      <aside className="hidden w-60 shrink-0 border-r border-zinc-200 bg-white dark:border-white/6 dark:bg-[#111111] md:flex md:flex-col">
+      <aside className="hidden w-60 shrink-0 border-r border-zinc-200 bg-white dark:border-white/6 md:flex md:flex-col" style={{ backgroundColor: darkBg ?? undefined }}>
         {sidebar}
       </aside>
 
@@ -471,7 +473,7 @@ function ShellInner({ children }: { children: ReactNode }) {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-64 overflow-y-auto bg-white shadow-2xl dark:bg-[#111111]">
+          <aside className="absolute left-0 top-0 h-full w-64 overflow-y-auto bg-white shadow-2xl" style={{ backgroundColor: darkBg ?? undefined }}>
             {sidebar}
           </aside>
         </div>
@@ -480,7 +482,7 @@ function ShellInner({ children }: { children: ReactNode }) {
       {/* Main content area — flex col so header is fixed, main scrolls */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar — shrink-0 keeps it pinned at top without sticky */}
-        <header className="relative shrink-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-zinc-200 bg-white/90 px-4 backdrop-blur-md dark:border-white/6 dark:bg-[#111111]/95">
+        <header className="relative shrink-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-zinc-200 bg-white/90 px-4 backdrop-blur-md dark:border-white/6" style={{ backgroundColor: darkBg ? `${darkBg}f2` : undefined }}>
           <div className="flex items-center gap-2">
             {/* Mobile hamburger */}
             <button
