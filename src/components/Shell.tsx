@@ -218,7 +218,7 @@ function NotificationBell() {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-10 z-20 w-80 rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-white/8 dark:bg-[#0f1522]">
+        <div className="absolute right-0 top-10 z-20 w-80 rounded-xl border border-zinc-200 bg-white shadow-2xl dark:border-white/8 dark:bg-[#222222]">
           <div className="flex items-center justify-between border-b border-zinc-100 px-3 py-2.5 dark:border-zinc-800">
             <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Notifications</span>
             <button onClick={markAllRead} className="text-[11px] text-[#F77B0F] hover:underline">Mark all read</button>
@@ -285,7 +285,7 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-10 z-50 w-56 rounded-xl border border-zinc-200 bg-white py-1 shadow-2xl dark:border-white/8 dark:bg-[#0f1522]">
+        <div className="absolute right-0 top-10 z-50 w-56 rounded-xl border border-zinc-200 bg-white py-1 shadow-2xl dark:border-white/8 dark:bg-[#222222]">
           {user && (
             <div className="border-b border-zinc-100 px-3 py-2.5 dark:border-zinc-800">
               <div className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
@@ -458,9 +458,9 @@ function ShellInner({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-[#0b0f1c]">
+    <div className="flex h-screen overflow-hidden bg-zinc-50 dark:bg-[#111111]">
       {/* Desktop sidebar — scrolls independently via inner nav's overflow-y-auto */}
-      <aside className="hidden w-60 shrink-0 border-r border-zinc-200 bg-white dark:border-white/5 dark:bg-[#0b0f1c] md:flex md:flex-col">
+      <aside className="hidden w-60 shrink-0 border-r border-zinc-200 bg-white dark:border-white/6 dark:bg-[#1a1a1a] md:flex md:flex-col">
         {sidebar}
       </aside>
 
@@ -471,7 +471,7 @@ function ShellInner({ children }: { children: ReactNode }) {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm"
             onClick={() => setSidebarOpen(false)}
           />
-          <aside className="absolute left-0 top-0 h-full w-64 overflow-y-auto bg-white shadow-2xl dark:bg-[#0b0f1c]">
+          <aside className="absolute left-0 top-0 h-full w-64 overflow-y-auto bg-white shadow-2xl dark:bg-[#1a1a1a]">
             {sidebar}
           </aside>
         </div>
@@ -480,7 +480,7 @@ function ShellInner({ children }: { children: ReactNode }) {
       {/* Main content area — flex col so header is fixed, main scrolls */}
       <div className="flex min-w-0 flex-1 flex-col">
         {/* Top bar — shrink-0 keeps it pinned at top without sticky */}
-        <header className="relative shrink-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-zinc-200 bg-white/90 px-4 backdrop-blur-md dark:border-white/5 dark:bg-[#0b0f1c]/95">
+        <header className="relative shrink-0 z-30 flex h-14 items-center justify-between gap-3 border-b border-zinc-200 bg-white/90 px-4 backdrop-blur-md dark:border-white/6 dark:bg-[#1a1a1a]/95">
           <div className="flex items-center gap-2">
             {/* Mobile hamburger */}
             <button

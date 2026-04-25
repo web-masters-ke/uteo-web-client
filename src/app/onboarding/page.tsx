@@ -46,7 +46,7 @@ interface EducationEntry {
 const EMPTY_EXP: ExperienceEntry = { company: "", title: "", startDate: "", endDate: "", isCurrent: false, description: "" };
 const EMPTY_EDU: EducationEntry = { institution: "", degree: "", fieldOfStudy: "", startYear: "", endYear: "", isCurrent: false };
 
-const inputCls = "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-[#F77B0F] focus:ring-2 focus:ring-[#F77B0F]/20 outline-none transition-all";
+const inputCls = "w-full rounded-xl border border-gray-200 dark:border-white/8 bg-white dark:bg-[#181818] px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-[#F77B0F] focus:ring-2 focus:ring-[#F77B0F]/20 outline-none transition-all";
 
 function StepBar({ current, total }: { current: number; total: number }) {
   return (
@@ -225,7 +225,7 @@ function OnboardingInner() {
 
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[#0a0f1a]">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[#111111]">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#F77B0F] border-t-transparent" />
       </div>
     );
@@ -236,7 +236,7 @@ function OnboardingInner() {
   const stepLabel = steps[step - 1];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1a] py-10 px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#111111] py-10 px-4">
       <div className="mx-auto max-w-2xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -249,7 +249,7 @@ function OnboardingInner() {
           </button>
         </div>
 
-        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 md:p-8 shadow-sm">
+        <div className="rounded-2xl border border-gray-200 dark:border-white/8 bg-white dark:bg-[#1e1e1e] p-6 md:p-8 shadow-sm">
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
               <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#F77B0F]">Step {step} of {totalSteps}</p>
@@ -343,12 +343,12 @@ function OnboardingInner() {
                 <div className="space-y-2 mb-4">
                   <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Added Skills</p>
                   {selectedSkills.map((s) => (
-                    <div key={s.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
+                    <div key={s.id} className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-[#181818] border border-gray-200 dark:border-white/8">
                       <span className="flex-1 text-sm font-medium text-gray-900 dark:text-white">{s.name}</span>
                       <select
                         value={s.proficiency}
                         onChange={(e) => updateSkillProficiency(s.id, e.target.value as ProficiencyLevel)}
-                        className="text-xs border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg px-2 py-1 text-gray-700 dark:text-gray-300 outline-none"
+                        className="text-xs border border-gray-200 dark:border-white/8 bg-white dark:bg-[#1e1e1e] rounded-lg px-2 py-1 text-gray-700 dark:text-gray-300 outline-none"
                       >
                         {SKILL_PROFICIENCY_LEVELS.map((l) => <option key={l} value={l}>{l.charAt(0) + l.slice(1).toLowerCase()}</option>)}
                       </select>
@@ -364,7 +364,7 @@ function OnboardingInner() {
                 <input className={inputCls} value={skillSearch} onChange={(e) => setSkillSearch(e.target.value)} placeholder="Search skills (React, Python, Marketing...)" />
               </div>
               {skillSearch && (
-                <div className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
+                <div className="border border-gray-200 dark:border-white/8 rounded-xl overflow-hidden max-h-48 overflow-y-auto">
                   {filteredSkills.length === 0 ? (
                     <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">No skills found for "{skillSearch}"</div>
                   ) : (
@@ -373,7 +373,7 @@ function OnboardingInner() {
                         key={s.id}
                         type="button"
                         onClick={() => { addSkill(s); setSkillSearch(""); }}
-                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 flex items-center justify-between"
+                        className="w-full text-left px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-white/8 last:border-b-0 flex items-center justify-between"
                       >
                         {s.name}
                         <span className="text-[#F77B0F] font-bold text-lg">+</span>
@@ -392,7 +392,7 @@ function OnboardingInner() {
           {!isRecruiter && step === 3 && (
             <div className="space-y-4">
               {experiences.map((exp, i) => (
-                <div key={i} className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-3">
+                <div key={i} className="p-4 rounded-xl border border-gray-200 dark:border-white/8 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-gray-500">Position {i + 1}</span>
                     {experiences.length > 1 && (
@@ -424,7 +424,7 @@ function OnboardingInner() {
                   </Field>
                 </div>
               ))}
-              <button type="button" onClick={() => setExperiences((prev) => [...prev, { ...EMPTY_EXP }])} className="w-full py-2.5 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-500 hover:border-[#F77B0F] hover:text-[#F77B0F] transition-colors">
+              <button type="button" onClick={() => setExperiences((prev) => [...prev, { ...EMPTY_EXP }])} className="w-full py-2.5 rounded-xl border-2 border-dashed border-gray-200 dark:border-white/8 text-sm font-medium text-gray-500 hover:border-[#F77B0F] hover:text-[#F77B0F] transition-colors">
                 + Add Another Position
               </button>
             </div>
@@ -434,7 +434,7 @@ function OnboardingInner() {
           {!isRecruiter && step === 4 && (
             <div className="space-y-4">
               {educations.map((edu, i) => (
-                <div key={i} className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-3">
+                <div key={i} className="p-4 rounded-xl border border-gray-200 dark:border-white/8 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-gray-500">Education {i + 1}</span>
                     {educations.length > 1 && (
@@ -466,7 +466,7 @@ function OnboardingInner() {
                   </label>
                 </div>
               ))}
-              <button type="button" onClick={() => setEducations((prev) => [...prev, { ...EMPTY_EDU }])} className="w-full py-2.5 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-500 hover:border-[#F77B0F] hover:text-[#F77B0F] transition-colors">
+              <button type="button" onClick={() => setEducations((prev) => [...prev, { ...EMPTY_EDU }])} className="w-full py-2.5 rounded-xl border-2 border-dashed border-gray-200 dark:border-white/8 text-sm font-medium text-gray-500 hover:border-[#F77B0F] hover:text-[#F77B0F] transition-colors">
                 + Add Another Education
               </button>
             </div>
@@ -504,7 +504,7 @@ function OnboardingInner() {
                       className={`px-4 py-2 rounded-full text-xs font-semibold border-2 transition-all ${
                         jobTypes.includes(jt)
                           ? "border-[#F77B0F] text-[#F77B0F]"
-                          : "border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300"
+                          : "border-gray-200 dark:border-white/8 text-gray-600 dark:text-gray-400 hover:border-gray-300"
                       }`}
                     >
                       {jt.replace(/_/g, " ")}
@@ -543,7 +543,7 @@ function OnboardingInner() {
                   type="button"
                   onClick={() => setStep((s) => (s - 1) as Step)}
                   disabled={saving}
-                  className="rounded-xl border border-gray-200 dark:border-gray-700 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-60"
+                  className="rounded-xl border border-gray-200 dark:border-white/8 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-60"
                 >
                   Back
                 </button>
