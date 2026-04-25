@@ -242,7 +242,7 @@ export default function CourseDetailPage() {
       {/* Back */}
       <Link
         href="/courses"
-        className="inline-flex items-center gap-1.5 text-sm text-[#192C67] dark:text-[#5b8bc7] hover:underline font-medium mb-6 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[#192C67] dark:text-white/70 hover:underline font-medium mb-6 transition-colors"
       >
         <svg
           className="w-4 h-4"
@@ -280,7 +280,7 @@ export default function CourseDetailPage() {
 
             <div className="flex flex-wrap gap-2 mb-3">
               {course.level && (
-                <span className="rounded-full bg-[#192C67]/10 px-3 py-1 text-xs font-bold uppercase text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7]">
+                <span className="rounded-full bg-[#192C67]/10 px-3 py-1 text-xs font-bold uppercase text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70">
                   {course.level}
                 </span>
               )}
@@ -329,7 +329,7 @@ export default function CourseDetailPage() {
                     onClick={() => setActiveTab(t.key)}
                     className={`shrink-0 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
                       activeTab === t.key
-                        ? "border-[#F77B0F] text-[#192C67] dark:text-[#5b8bc7]"
+                        ? "border-[#F77B0F] text-[#192C67] dark:text-white/70"
                         : "border-transparent text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
                     }`}
                   >
@@ -363,7 +363,7 @@ export default function CourseDetailPage() {
                       className="h-14 w-14 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#192C67]/10 text-sm font-bold text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7]">
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#192C67]/10 text-sm font-bold text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70">
                       {instructorInitials}
                     </div>
                   )}
@@ -439,7 +439,7 @@ export default function CourseDetailPage() {
                               {lesson.contentType || "CONTENT"}
                             </span>
                             {lesson.milestoneId && (
-                              <span className="rounded-full bg-[#192C67]/10 text-[#192C67] dark:text-[#5b8bc7] px-2 py-0.5 text-[10px] font-medium">
+                              <span className="rounded-full bg-[#192C67]/10 text-[#192C67] dark:text-white/70 px-2 py-0.5 text-[10px] font-medium">
                                 MILESTONE
                               </span>
                             )}
@@ -611,7 +611,7 @@ export default function CourseDetailPage() {
 
             {isInstructor ? (
               <div className="space-y-4">
-                <div className="rounded-lg bg-[#192C67]/5 dark:bg-[#192C67]/20 px-4 py-3 text-center text-xs text-[#192C67] dark:text-[#5b8bc7] font-medium">
+                <div className="rounded-lg bg-[#192C67]/5 dark:bg-[#192C67]/20 px-4 py-3 text-center text-xs text-[#192C67] dark:text-white/70 font-medium">
                   INSTRUCTOR VIEW — use the Grading tab for milestones and the Grading Inbox for submissions.
                 </div>
 

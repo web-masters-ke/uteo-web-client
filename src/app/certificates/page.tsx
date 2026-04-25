@@ -76,7 +76,7 @@ export default function MyCertificatesPage() {
           </p>
           <h1 className="text-4xl lg:text-6xl font-black text-white">My Certificates</h1>
           <p className="mt-3 text-base lg:text-lg text-white/80 max-w-2xl">
-            All certificates you&apos;ve earned by completing courses on SkillSasa. Share them with employers or save a print copy.
+            All certificates you&apos;ve earned by completing courses on Uteo. Share them with employers or save a print copy.
           </p>
           <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -120,7 +120,7 @@ export default function MyCertificatesPage() {
             No certificates yet
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 max-w-md mx-auto">
-            Complete a course to earn a SkillSasa certificate. It&apos;s shareable, verifiable, and yours to keep.
+            Complete a course to earn a Uteo certificate. It&apos;s shareable, verifiable, and yours to keep.
           </p>
           <Link
             href="/courses"
@@ -213,7 +213,7 @@ export default function MyCertificatesPage() {
                   <div className="mt-4 flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700">
                     <span className="text-[11px] text-gray-400">View certificate</span>
                     <svg
-                      className="w-4 h-4 text-[#192C67] dark:text-[#5b8bc7] group-hover:translate-x-1 transition-transform"
+                      className="w-4 h-4 text-[#192C67] dark:text-white/70 group-hover:translate-x-1 transition-transform"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"

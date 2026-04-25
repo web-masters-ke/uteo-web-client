@@ -60,12 +60,12 @@ export default function CertificateDetailPage() {
   async function handleShare() {
     if (!cert) return;
     const origin =
-      typeof window !== "undefined" ? window.location.origin : "https://skillsasa.co.ke";
+      typeof window !== "undefined" ? window.location.origin : "https://uteo.co.ke";
     const url = `${origin}/verify/${cert.verificationCode}`;
     try {
       if (navigator.share) {
         await navigator.share({
-          title: `${cert.course?.title} — SkillSasa Certificate`,
+          title: `${cert.course?.title} — Uteo Certificate`,
           text: `Verify my certificate: ${cert.certificateNumber}`,
           url,
         });
@@ -119,7 +119,7 @@ export default function CertificateDetailPage() {
     : "Instructor";
   const studentName = user ? `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim() : "Student";
   const isRevoked = cert.status === "REVOKED" || !!cert.revokedAt;
-  const verifyUrl = `skillsasa.co.ke/verify/${cert.verificationCode}`;
+  const verifyUrl = `uteo.co.ke/verify/${cert.verificationCode}`;
   const letter = deriveLetter(cert.finalGrade, cert.letterGrade);
 
   return (
@@ -247,10 +247,10 @@ export default function CertificateDetailPage() {
                 </div>
                 <div className="text-left">
                   <p className="text-[11px] font-bold uppercase tracking-[0.3em] text-[#192C67]">
-                    SkillSasa
+                    Uteo
                   </p>
                   <p className="text-[10px] uppercase tracking-wider text-gray-500">
-                    Professional Trainers Association of Kenya
+                    Uteo
                   </p>
                 </div>
               </div>
@@ -327,7 +327,7 @@ export default function CertificateDetailPage() {
                 </p>
               </div>
               <div className="text-center">
-                <div className="italic font-serif text-xl text-gray-800">SkillSasa</div>
+                <div className="italic font-serif text-xl text-gray-800">Uteo</div>
                 <div className="mt-1 h-px bg-gray-300" />
                 <p className="mt-2 text-[11px] uppercase tracking-widest text-gray-500">
                   Platform Authority
@@ -401,7 +401,7 @@ export default function CertificateDetailPage() {
           </dl>
           <p className="mt-6 text-xs text-gray-500 dark:text-gray-400">
             Employers and verifiers can visit{" "}
-            <span className="font-mono text-[#192C67] dark:text-[#5b8bc7]">{verifyUrl}</span>{" "}
+            <span className="font-mono text-[#192C67] dark:text-white/70">{verifyUrl}</span>{" "}
             to confirm this certificate&apos;s authenticity.
           </p>
         </div>

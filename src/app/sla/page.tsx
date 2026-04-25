@@ -226,7 +226,7 @@ function StatChip({ label, value, color, onClick, active }: {
       className={cn(
         'flex flex-col items-center justify-center rounded-xl border p-4 transition-all min-w-[90px] flex-1',
         active
-          ? 'border-[#192C67] bg-[#192C67]/5 dark:border-[#5b8bc7] dark:bg-[#192C67]/20'
+          ? 'border-[#192C67] bg-[#192C67]/5 dark:border-[#F77B0F]/50 dark:bg-[#192C67]/20'
           : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-300 dark:hover:border-gray-600',
       )}
     >

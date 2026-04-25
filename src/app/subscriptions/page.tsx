@@ -303,7 +303,7 @@ export default function SubscriptionsPage() {
           </div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">For Trainers Only</h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            Subscription plans are designed for trainers who list their services on SkillSasa.
+            Subscription plans are designed for trainers who list their services on Uteo.
             As a learner, your sessions are managed through your bookings.
           </p>
           <a
@@ -568,9 +568,9 @@ export default function SubscriptionsPage() {
                 <tr className="bg-gray-50 dark:bg-gray-700/50">
                   <th className="px-5 py-4 text-left font-semibold text-gray-700 dark:text-gray-300 w-48">Feature</th>
                   {globalPlans.map((plan) => (
-                    <th key={plan.id} className={cn('px-5 py-4 text-center font-semibold', isCurrentPlan(plan) ? 'text-[#192C67] dark:text-[#5b8bc7]' : 'text-gray-700 dark:text-gray-300')}>
+                    <th key={plan.id} className={cn('px-5 py-4 text-center font-semibold', isCurrentPlan(plan) ? 'text-[#192C67] dark:text-white/70' : 'text-gray-700 dark:text-gray-300')}>
                       <div>{plan.name}</div>
-                      <div className={cn('text-base font-bold mt-1', isCurrentPlan(plan) ? 'text-[#192C67] dark:text-[#5b8bc7]' : 'text-gray-900 dark:text-white')}>
+                      <div className={cn('text-base font-bold mt-1', isCurrentPlan(plan) ? 'text-[#192C67] dark:text-white/70' : 'text-gray-900 dark:text-white')}>
                         {plan.price === 0 ? 'Free' : `${plan.currency || 'KES'} ${plan.price.toLocaleString('en-KE')}`}
                         {plan.price > 0 && <span className="text-xs font-normal text-gray-500">{getBillingLabel(plan)}</span>}
                       </div>
@@ -723,7 +723,7 @@ export default function SubscriptionsPage() {
             <div>
               <h4 className="text-sm font-medium text-gray-900 dark:text-white">How do I pay?</h4>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Payments are processed via M-Pesa or your SkillSasa wallet balance. You will receive a confirmation upon successful payment.
+                Payments are processed via M-Pesa or your Uteo wallet balance. You will receive a confirmation upon successful payment.
               </p>
             </div>
             <div>

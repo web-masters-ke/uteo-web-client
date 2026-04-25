@@ -516,7 +516,7 @@ export default function DisputesPage() {
                   <p className="text-[10px] uppercase tracking-widest text-gray-400 mb-1 font-bold">{label}</p>
                   <p className="text-sm font-semibold text-gray-900 dark:text-white">
                     {person ? `${person.firstName} ${person.lastName}` : '—'}
-                    {isMe && <span className="ml-1.5 text-[10px] text-[#192C67] dark:text-[#5b8bc7] font-medium">(You)</span>}
+                    {isMe && <span className="ml-1.5 text-[10px] text-[#192C67] dark:text-white/70 font-medium">(You)</span>}
                   </p>
                 </div>
               ))}
@@ -734,7 +734,7 @@ export default function DisputesPage() {
               </div>
               {detailDispute.assignedTo ? (
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/20 flex items-center justify-center text-sm font-bold text-[#192C67] dark:text-[#5b8bc7] shrink-0 overflow-hidden">
+                  <div className="w-10 h-10 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/20 flex items-center justify-center text-sm font-bold text-[#192C67] dark:text-white/70 shrink-0 overflow-hidden">
                     {detailDispute.assignedTo.avatar
                       ? <img src={detailDispute.assignedTo.avatar} className="w-full h-full object-cover" alt="" />
                       : `${detailDispute.assignedTo.firstName?.[0] || ''}${detailDispute.assignedTo.lastName?.[0] || ''}`.toUpperCase()}
@@ -757,7 +757,7 @@ export default function DisputesPage() {
                     <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-60 overflow-y-auto">
                       {assignableTeam.map((m: any) => (
                         <button key={m.id} onClick={() => handleAssign(m.id)} className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-left transition-colors">
-                          <div className="w-8 h-8 rounded-full bg-[#192C67]/10 flex items-center justify-center text-xs font-bold text-[#192C67] dark:text-[#5b8bc7] shrink-0 overflow-hidden">
+                          <div className="w-8 h-8 rounded-full bg-[#192C67]/10 flex items-center justify-center text-xs font-bold text-[#192C67] dark:text-white/70 shrink-0 overflow-hidden">
                             {m.avatar ? <img src={m.avatar} className="w-full h-full object-cover" alt="" /> : `${m.firstName?.[0] || ''}${m.lastName?.[0] || ''}`.toUpperCase()}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -789,7 +789,7 @@ export default function DisputesPage() {
                         : 'bg-gray-50 dark:bg-gray-800/60',
                     )}>
                       <div className="flex items-center gap-2 mb-2">
-                        <div className="w-7 h-7 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/20 flex items-center justify-center text-[10px] font-bold text-[#192C67] dark:text-[#5b8bc7] shrink-0 overflow-hidden">
+                        <div className="w-7 h-7 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/20 flex items-center justify-center text-[10px] font-bold text-[#192C67] dark:text-white/70 shrink-0 overflow-hidden">
                           {c.author?.avatar ? <img src={c.author.avatar} className="w-full h-full object-cover" alt="" /> : `${c.author?.firstName?.[0] || ''}${c.author?.lastName?.[0] || ''}`.toUpperCase()}
                         </div>
                         <div className="flex-1">

@@ -27,7 +27,7 @@ function FirmHero() {
       </div>
       <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full">
         <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">
-          SkillSasa Firm
+          Uteo Firm
         </p>
         <h1 className="text-4xl lg:text-6xl font-black text-white">Firm Financials</h1>
         <p className="mt-4 text-lg text-white/80 max-w-xl">

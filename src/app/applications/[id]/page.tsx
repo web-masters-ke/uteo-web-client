@@ -182,7 +182,7 @@ export default function ApplicationDetailPage() {
   if (error || !application) return (
     <div className="max-w-3xl mx-auto px-4 py-20 text-center">
       <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{error || 'Application not found'}</h1>
-      <Link href="/applications" className="text-[#192C67] dark:text-[#5b8bc7] font-medium hover:underline">
+      <Link href="/applications" className="text-[#192C67] dark:text-white/70 font-medium hover:underline">
         Back to Applications
       </Link>
     </div>
@@ -264,7 +264,7 @@ export default function ApplicationDetailPage() {
               ? 'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20'
               : application.status === 'REJECTED'
               ? 'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20'
-              : 'border-[#192C67]/20 dark:border-[#5b8bc7]/20 bg-[#192C67]/5 dark:bg-[#192C67]/10'
+              : 'border-[#192C67]/20 dark:border-[#F77B0F]/50/20 bg-[#192C67]/5 dark:bg-[#192C67]/10'
           }`}>
             <div className="flex items-center gap-3">
               {application.status === 'HIRED' && (
@@ -301,7 +301,7 @@ export default function ApplicationDetailPage() {
                 href={application.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-[#192C67] dark:text-[#5b8bc7] font-medium hover:underline"
+                className="inline-flex items-center gap-2 text-sm text-[#192C67] dark:text-white/70 font-medium hover:underline"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />

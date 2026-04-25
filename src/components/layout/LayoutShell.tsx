@@ -32,7 +32,6 @@ const PUBLIC_PAGES = [
  * Uses prefix matching so sub-routes (e.g., /jobs/abc-123) are included.
  */
 const APP_PREFIXES = [
-  // Uteo core app pages
   '/feed',
   '/jobs',
   '/applications',
@@ -40,40 +39,12 @@ const APP_PREFIXES = [
   '/post-job',
   '/recruiter',
   '/companies',
-  // Shared
   '/messages',
   '/notifications',
   '/profile',
   '/settings',
   '/help',
-  // Legacy SkillSasa app pages (kept for backward compat)
-  '/dashboard',
-  '/bookings',
-  '/wallet',
-  '/reviews',
-  '/subscriptions',
-  '/sessions',
-  '/book',
-  '/trainers',
-  '/availability',
-  '/team',
-  '/departments',
-  '/courses',
-  '/my-courses',
-  '/clients',
-  '/favorites',
-  '/earnings',
-  '/payments',
-  '/firm-financials',
-  '/my-learning',
-  '/recommendations',
-  '/performance',
-  '/invoices',
-  '/disputes',
-  '/sla',
-  '/credentials',
-  '/certificates',
-  '/transcript',
+  '/onboarding',
 ];
 
 function isStandalone(pathname: string): boolean {

@@ -46,6 +46,9 @@ function formatDate(dateStr: string) {
 
 // ─── Apply Modal ───────────────────────────────────────────────────────────────
 
+const inputCls = "w-full rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F77B0F]/30 focus:border-[#F77B0F] placeholder:text-gray-400 dark:placeholder:text-white/30 transition-all";
+const labelCls = "block text-xs font-semibold text-gray-500 dark:text-white/50 uppercase tracking-wider mb-1.5";
+
 function ApplyModal({
   job,
   onClose,
@@ -55,18 +58,54 @@ function ApplyModal({
   onClose: () => void;
   onSuccess: () => void;
 }) {
-  const [coverLetter, setCoverLetter] = useState('');
+  const { user } = useAuth();
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+
+  // Step 1 — Personal & Work Details
+  const [fullName, setFullName] = useState((user as any)?.name ?? '');
+  const [email, setEmail] = useState((user as any)?.email ?? '');
+  const [phone, setPhone] = useState('');
+  const [currentTitle, setCurrentTitle] = useState('');
+  const [yearsExp, setYearsExp] = useState('');
+  const [education, setEducation] = useState('');
+  const [fieldOfStudy, setFieldOfStudy] = useState('');
+  const [languages, setLanguages] = useState('');
+
+  // Step 2 — Documents & Logistics
   const [resumeUrl, setResumeUrl] = useState('');
+  const [linkedIn, setLinkedIn] = useState('');
+  const [portfolio, setPortfolio] = useState('');
+  const [noticePeriod, setNoticePeriod] = useState('');
+  const [currentSalary, setCurrentSalary] = useState('');
+  const [salaryExpectation, setSalaryExpectation] = useState('');
+  const [availability, setAvailability] = useState('');
+  const [workAuth, setWorkAuth] = useState('');
+  const [relocation, setRelocation] = useState('');
+
+  // Step 3 — Your Pitch
+  const [whyRole, setWhyRole] = useState('');
+  const [keyAchievement, setKeyAchievement] = useState('');
+  const [coverLetter, setCoverLetter] = useState('');
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const salary = job.salaryMin && job.salaryMax
+    ? `${job.currency ?? 'KES'} ${(job.salaryMin / 1000).toFixed(0)}k – ${(job.salaryMax / 1000).toFixed(0)}k`
+    : null;
 
   const handleSubmit = async () => {
     setSubmitting(true);
     setError('');
+    const combinedCover = [
+      whyRole ? `WHY I'M THE RIGHT FIT:\n${whyRole}` : '',
+      keyAchievement ? `KEY ACHIEVEMENT:\n${keyAchievement}` : '',
+      coverLetter ? `COVER LETTER:\n${coverLetter}` : '',
+    ].filter(Boolean).join('\n\n') || undefined;
     try {
       await applicationsService.apply({
         jobId: job.id,
-        coverLetter: coverLetter || undefined,
+        coverLetter: combinedCover,
         resumeUrl: resumeUrl || undefined,
       });
       onSuccess();
@@ -77,67 +116,261 @@ function ApplyModal({
     }
   };
 
+  const steps = ['Personal Details', 'Documents & Logistics', 'Your Pitch'];
+
   return (
-    <Modal isOpen onClose={onClose} title={`Apply — ${job.title}`} size="lg">
-      <div className="space-y-5">
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-700/40">
+    <Modal isOpen onClose={onClose} title="" size="lg">
+      <div className="flex flex-col" style={{ maxHeight: '88vh' }}>
+        {/* Job summary header */}
+        <div className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/6 mb-5">
           {job.company.logoUrl ? (
-            <img src={job.company.logoUrl} alt={job.company.name} className="w-10 h-10 rounded-lg object-cover" />
+            <img src={job.company.logoUrl} alt={job.company.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
           ) : (
-            <div className="w-10 h-10 rounded-lg bg-[#192C67] text-white text-xs font-black flex items-center justify-center">
+            <div className="w-12 h-12 rounded-xl bg-[#192C67]/10 dark:bg-white/8 text-[#192C67] dark:text-white text-sm font-black flex items-center justify-center shrink-0">
               {job.company.name.slice(0, 2).toUpperCase()}
             </div>
           )}
-          <div>
-            <p className="font-semibold text-sm text-gray-900 dark:text-white">{job.title}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">{job.company.name}</p>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-gray-900 dark:text-white text-sm truncate">{job.title}</p>
+            <p className="text-xs text-gray-500 dark:text-white/50 truncate">
+              {job.company.name}{job.location ? ` · ${job.location}` : ''}
+            </p>
           </div>
+          {salary && <span className="text-xs font-semibold text-[#F77B0F] shrink-0">{salary}</span>}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-            Cover Letter <span className="text-gray-400 font-normal">(optional)</span>
-          </label>
-          <textarea
-            value={coverLetter}
-            onChange={(e) => setCoverLetter(e.target.value)}
-            rows={6}
-            placeholder="Tell the employer why you're a great fit for this role..."
-            className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#192C67] resize-none"
-          />
+        {/* Step indicator */}
+        <div className="flex items-center gap-1 mb-5">
+          {steps.map((label, idx) => {
+            const s = (idx + 1) as 1 | 2 | 3;
+            return (
+              <div key={s} className="flex items-center gap-1 flex-1">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 transition-all ${step >= s ? 'bg-[#F77B0F] text-white' : 'bg-gray-100 dark:bg-white/8 text-gray-400 dark:text-white/40'}`}>{s}</div>
+                  <span className={`text-[11px] font-medium hidden sm:block truncate ${step >= s ? 'text-gray-700 dark:text-white/70' : 'text-gray-400 dark:text-white/30'}`}>{label}</span>
+                </div>
+                {s < 3 && <div className="flex-1 h-px bg-gray-200 dark:bg-white/10 mx-2" />}
+              </div>
+            );
+          })}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
-            Resume URL <span className="text-gray-400 font-normal">(optional)</span>
-          </label>
-          <input
-            type="url"
-            value={resumeUrl}
-            onChange={(e) => setResumeUrl(e.target.value)}
-            placeholder="https://drive.google.com/... or LinkedIn profile URL"
-            className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#192C67]"
-          />
+        {/* Scrollable form body */}
+        <div className="overflow-y-auto flex-1 space-y-4 pr-1">
+
+          {/* ── Step 1: Personal & Work Details ── */}
+          {step === 1 && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Full Name</label>
+                  <input className={inputCls} value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Your full name" />
+                </div>
+                <div>
+                  <label className={labelCls}>Email Address</label>
+                  <input type="email" className={inputCls} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Phone Number</label>
+                  <input className={inputCls} value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+254 7XX XXX XXX" />
+                </div>
+                <div>
+                  <label className={labelCls}>Current / Last Job Title</label>
+                  <input className={inputCls} value={currentTitle} onChange={(e) => setCurrentTitle(e.target.value)} placeholder="e.g. Junior Financial Analyst" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Years of Experience</label>
+                  <select className={inputCls} value={yearsExp} onChange={(e) => setYearsExp(e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="0">No experience (fresher)</option>
+                    <option value="1">Less than 1 year</option>
+                    <option value="2">1 – 2 years</option>
+                    <option value="3">3 – 5 years</option>
+                    <option value="6">6 – 10 years</option>
+                    <option value="11">10+ years</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>Highest Education Level</label>
+                  <select className={inputCls} value={education} onChange={(e) => setEducation(e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="high_school">High School / A-Level</option>
+                    <option value="diploma">Diploma / Certificate</option>
+                    <option value="bachelors">Bachelor's Degree</option>
+                    <option value="masters">Master's Degree</option>
+                    <option value="phd">PhD / Doctorate</option>
+                    <option value="professional">Professional Qualification (CPA, ACCA, etc.)</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Field of Study / Major</label>
+                  <input className={inputCls} value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)} placeholder="e.g. Finance, Computer Science" />
+                </div>
+                <div>
+                  <label className={labelCls}>Languages Spoken</label>
+                  <input className={inputCls} value={languages} onChange={(e) => setLanguages(e.target.value)} placeholder="e.g. English, Swahili, French" />
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── Step 2: Documents & Logistics ── */}
+          {step === 2 && (
+            <>
+              <div>
+                <label className={labelCls}>Resume / CV URL</label>
+                <input type="url" className={inputCls} value={resumeUrl} onChange={(e) => setResumeUrl(e.target.value)} placeholder="Google Drive, Dropbox, or any public link" />
+                <p className="text-[11px] text-gray-400 dark:text-white/30 mt-1">Ensure the link is publicly accessible. PDF format preferred.</p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>LinkedIn Profile <span className="normal-case font-normal">(optional)</span></label>
+                  <input type="url" className={inputCls} value={linkedIn} onChange={(e) => setLinkedIn(e.target.value)} placeholder="https://linkedin.com/in/yourname" />
+                </div>
+                <div>
+                  <label className={labelCls}>Portfolio / GitHub <span className="normal-case font-normal">(optional)</span></label>
+                  <input type="url" className={inputCls} value={portfolio} onChange={(e) => setPortfolio(e.target.value)} placeholder="https://github.com/yourhandle" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Current Salary <span className="normal-case font-normal">(optional)</span></label>
+                  <input className={inputCls} value={currentSalary} onChange={(e) => setCurrentSalary(e.target.value)} placeholder="e.g. KES 80,000/mo" />
+                </div>
+                <div>
+                  <label className={labelCls}>Salary Expectation</label>
+                  <input className={inputCls} value={salaryExpectation} onChange={(e) => setSalaryExpectation(e.target.value)} placeholder="e.g. KES 120,000/mo" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Notice Period</label>
+                  <select className={inputCls} value={noticePeriod} onChange={(e) => setNoticePeriod(e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="immediately">Available immediately</option>
+                    <option value="1week">1 week</option>
+                    <option value="2weeks">2 weeks</option>
+                    <option value="1month">1 month</option>
+                    <option value="2months">2 months</option>
+                    <option value="3months">3 months</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>Start Date Availability</label>
+                  <input type="date" className={inputCls} value={availability} onChange={(e) => setAvailability(e.target.value)} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Work Authorization</label>
+                  <select className={inputCls} value={workAuth} onChange={(e) => setWorkAuth(e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="citizen">Citizen / Permanent Resident</option>
+                    <option value="work_permit">Valid Work Permit</option>
+                    <option value="sponsorship">Require Sponsorship</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>Open to Relocation?</label>
+                  <select className={inputCls} value={relocation} onChange={(e) => setRelocation(e.target.value)}>
+                    <option value="">Select</option>
+                    <option value="yes">Yes, fully open to relocation</option>
+                    <option value="within_country">Within the country only</option>
+                    <option value="no">No, prefer current location</option>
+                    <option value="remote_only">Remote only</option>
+                  </select>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ── Step 3: Your Pitch ── */}
+          {step === 3 && (
+            <>
+              <div>
+                <label className={labelCls}>Why are you the right fit for this role? *</label>
+                <textarea
+                  value={whyRole}
+                  onChange={(e) => setWhyRole(e.target.value)}
+                  rows={5}
+                  placeholder={`What specifically makes you a strong candidate for ${job.title} at ${job.company.name}? Mention relevant experience, skills, and what excites you about this role.`}
+                  className={`${inputCls} resize-none`}
+                />
+                <p className="text-[11px] text-gray-400 dark:text-white/30 mt-1">{whyRole.length} chars · Be specific — generic answers are filtered out</p>
+              </div>
+              <div>
+                <label className={labelCls}>Key Achievement Relevant to This Role <span className="normal-case font-normal">(optional)</span></label>
+                <textarea
+                  value={keyAchievement}
+                  onChange={(e) => setKeyAchievement(e.target.value)}
+                  rows={3}
+                  placeholder="Describe one quantifiable achievement: 'Reduced reporting time by 40% by automating financial models using Excel macros...'"
+                  className={`${inputCls} resize-none`}
+                />
+              </div>
+              <div>
+                <label className={labelCls}>Cover Letter <span className="normal-case font-normal">(optional)</span></label>
+                <textarea
+                  value={coverLetter}
+                  onChange={(e) => setCoverLetter(e.target.value)}
+                  rows={7}
+                  placeholder={`Dear Hiring Manager at ${job.company.name},\n\nIntroduce yourself, walk through your background, and explain why you'd thrive in this team...`}
+                  className={`${inputCls} resize-none`}
+                />
+                <p className="text-[11px] text-gray-400 dark:text-white/30 mt-1">{coverLetter.length} characters · Aim for 200–500 words</p>
+              </div>
+              {error && (
+                <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-xl border border-red-200 dark:border-red-800">{error}</p>
+              )}
+            </>
+          )}
         </div>
 
-        {error && (
-          <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-lg">{error}</p>
-        )}
-
-        <div className="flex items-center justify-end gap-3 pt-1">
-          <button
-            onClick={onClose}
-            className="px-5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="px-5 py-2.5 rounded-xl bg-[#192C67] text-white text-sm font-semibold hover:bg-[#14234f] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {submitting ? 'Submitting...' : 'Submit Application'}
-          </button>
+        {/* Footer actions */}
+        <div className="flex items-center justify-between gap-3 mt-5 pt-4 border-t border-gray-100 dark:border-white/6">
+          {step === 1 ? (
+            <>
+              <button onClick={onClose} className="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                Cancel
+              </button>
+              <button onClick={() => setStep(2)} className="px-6 py-2.5 rounded-xl border-2 border-[#F77B0F] text-[#F77B0F] text-sm font-semibold hover:bg-[#F77B0F]/5 transition-colors">
+                Next — Documents →
+              </button>
+            </>
+          ) : step === 2 ? (
+            <>
+              <button onClick={() => setStep(1)} className="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                ← Back
+              </button>
+              <button onClick={() => setStep(3)} className="px-6 py-2.5 rounded-xl border-2 border-[#F77B0F] text-[#F77B0F] text-sm font-semibold hover:bg-[#F77B0F]/5 transition-colors">
+                Next — Your Pitch →
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => setStep(2)} className="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                ← Back
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={submitting || !whyRole.trim()}
+                className="px-6 py-2.5 rounded-xl border-2 border-[#192C67] dark:border-white/20 text-[#192C67] dark:text-white text-sm font-semibold hover:bg-[#192C67]/5 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {submitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                    Submitting...
+                  </span>
+                ) : 'Submit Application'}
+              </button>
+            </>
+          )}
         </div>
       </div>
     </Modal>
@@ -215,7 +448,7 @@ export default function JobDetailPage() {
   if (error || !job) return (
     <div className="max-w-3xl mx-auto px-4 py-20 text-center">
       <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{error || 'Job not found'}</h1>
-      <Link href="/jobs" className="text-[#192C67] dark:text-[#5b8bc7] font-medium hover:underline">
+      <Link href="/jobs" className="text-[#192C67] dark:text-white/70 font-medium hover:underline">
         Browse all jobs
       </Link>
     </div>
@@ -327,7 +560,7 @@ export default function JobDetailPage() {
                 {skills.map((skill) => (
                   <span
                     key={skill.id}
-                    className="px-3 py-1.5 rounded-full text-sm font-semibold bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7]"
+                    className="px-3 py-1.5 rounded-full text-sm font-semibold bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70"
                   >
                     {skill.name}
                   </span>
@@ -386,7 +619,7 @@ export default function JobDetailPage() {
                   <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">You've applied to this role. Track it in your applications.</p>
                   <Link
                     href="/applications"
-                    className="block w-full py-2.5 border border-[#192C67] text-[#192C67] dark:text-[#5b8bc7] dark:border-[#5b8bc7] font-semibold rounded-xl hover:bg-[#192C67]/5 transition-colors text-center text-sm"
+                    className="block w-full py-2.5 border border-[#192C67] text-[#192C67] dark:text-white/70 dark:border-[#F77B0F]/50 font-semibold rounded-xl hover:bg-[#192C67]/5 transition-colors text-center text-sm"
                   >
                     View My Applications
                   </Link>
@@ -458,7 +691,7 @@ export default function JobDetailPage() {
                     <svg className="w-3.5 h-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                     </svg>
-                    <a href={job.company.website} target="_blank" rel="noopener noreferrer" className="text-[#192C67] dark:text-[#5b8bc7] hover:underline">
+                    <a href={job.company.website} target="_blank" rel="noopener noreferrer" className="text-[#192C67] dark:text-white/70 hover:underline">
                       {job.company.website.replace(/^https?:\/\//, '')}
                     </a>
                   </div>

@@ -121,7 +121,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── TRUST BAR ── */}
-      <div className="bg-[#0a1120] border-y border-white/5">
+      <div className="bg-[#0d0d0d] border-y border-white/5">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-5">
           <div className="flex flex-wrap items-center justify-center lg:justify-between gap-6">
             <span className="text-xs font-medium text-white/30 uppercase tracking-wider">Trusted by thousands</span>
@@ -185,10 +185,10 @@ export default function LandingPage() {
       </section>
 
       {/* ── FEATURES ── */}
-      <section className="py-20 lg:py-32 bg-gray-50 dark:bg-[#0a1120]">
+      <section className="py-20 lg:py-32 bg-gray-50 dark:bg-[#0d0d0d]">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <div className="max-w-2xl mb-14">
-            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7] text-xs font-bold uppercase tracking-wider mb-4">Features</span>
+            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-white/70 text-xs font-bold uppercase tracking-wider mb-4">Features</span>
             <h2 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white leading-[1.1]">Everything you need.<br />Nothing you don&apos;t.</h2>
           </div>
 
@@ -225,7 +225,7 @@ export default function LandingPage() {
                 />
               </div>
               <div className="lg:w-[45%] flex flex-col justify-center">
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#192C67] dark:text-[#5b8bc7] mb-4">02</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#192C67] dark:text-white/70 mb-4">02</span>
                 <div className="w-11 h-11 rounded-2xl bg-[#192C67] flex items-center justify-center mb-5">
                   <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 </div>
@@ -267,7 +267,7 @@ export default function LandingPage() {
                 />
               </div>
               <div className="lg:w-[45%] flex flex-col justify-center">
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#192C67] dark:text-[#5b8bc7] mb-4">04</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#192C67] dark:text-white/70 mb-4">04</span>
                 <div className="w-11 h-11 rounded-2xl bg-[#192C67] flex items-center justify-center mb-5">
                   <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                 </div>
@@ -355,7 +355,7 @@ export default function LandingPage() {
       <section className="py-20 lg:py-32 bg-white dark:bg-[#060d1f]">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
           <div className="text-center mb-14">
-            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7] text-xs font-bold uppercase tracking-wider mb-4">Success Stories</span>
+            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-white/70 text-xs font-bold uppercase tracking-wider mb-4">Success Stories</span>
             <h2 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white">Real people. Real hires.</h2>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
@@ -380,10 +380,10 @@ export default function LandingPage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section className="py-20 lg:py-32 bg-gray-50 dark:bg-[#0a1120]">
+      <section className="py-20 lg:py-32 bg-gray-50 dark:bg-[#0d0d0d]">
         <div className="mx-auto max-w-3xl px-6 lg:px-10">
           <div className="text-center mb-14">
-            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7] text-xs font-bold uppercase tracking-wider mb-4">FAQ</span>
+            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-white/70 text-xs font-bold uppercase tracking-wider mb-4">FAQ</span>
             <h2 className="text-4xl lg:text-5xl font-black text-gray-900 dark:text-white">Common questions.</h2>
           </div>
           <div className="space-y-2">
@@ -397,7 +397,7 @@ export default function LandingPage() {
             ].map((faq, i) => (
               <div key={i} className="rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden bg-white dark:bg-white/[0.02]">
                 <button onClick={() => setActiveQ(activeQ === i ? null : i)} className="w-full flex items-center justify-between p-6 text-left group">
-                  <span className="font-bold text-gray-900 dark:text-white pr-6 text-sm group-hover:text-[#192C67] dark:group-hover:text-[#5b8bc7] transition-colors">{faq.q}</span>
+                  <span className="font-bold text-gray-900 dark:text-white pr-6 text-sm group-hover:text-[#192C67] dark:group-hover:text-[#F77B0F] transition-colors">{faq.q}</span>
                   <span className={`shrink-0 w-6 h-6 rounded-full border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 transition-all duration-300 ${activeQ === i ? 'rotate-45 bg-[#F77B0F] border-[#F77B0F] text-white' : ''}`}>
                     <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
                   </span>

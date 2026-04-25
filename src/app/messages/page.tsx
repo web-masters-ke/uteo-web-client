@@ -35,7 +35,7 @@ function AvatarCircle({ name, size = 'sm' }: { name: string | null | undefined; 
   const letters = (name || '?').trim().split(' ').slice(0, 2).map((p) => p?.[0] || '').join('').toUpperCase() || '?';
   const sz = size === 'sm' ? 'h-8 w-8 text-xs' : 'h-10 w-10 text-sm';
   return (
-    <div className={`inline-flex flex-shrink-0 items-center justify-center rounded-full bg-primary-500 font-medium text-white ${sz}`}>
+    <div className={`inline-flex flex-shrink-0 items-center justify-center rounded-full bg-[#F77B0F] font-medium text-white ${sz}`}>
       {letters || '?'}
     </div>
   );
@@ -71,7 +71,7 @@ function EmojiPicker({ onSelect, onClose }: { onSelect: (e: string) => void; onC
             onClick={() => setTab(i)}
             className={cn(
               'px-3 py-1.5 text-xs font-medium transition-colors',
-              tab === i ? 'border-b-2 border-primary-500 text-primary-600' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300',
+              tab === i ? 'border-b-2 border-[#F77B0F] text-[#F77B0F]' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300',
             )}
           >
             {g.label}
@@ -107,7 +107,7 @@ function MessageBody({ text, isMe }: { text: string; isMe: boolean }) {
             href={part}
             target="_blank"
             rel="noopener noreferrer"
-            className={isMe ? 'underline text-white/90 hover:text-white' : 'underline text-primary-600 hover:text-primary-700 dark:text-primary-400'}
+            className={isMe ? 'underline text-white/90 hover:text-white' : 'underline text-[#F77B0F] hover:text-[#F77B0F] dark:text-[#F77B0F]/80'}
           >
             {part}
           </a>
@@ -211,12 +211,12 @@ function NewConversationModal({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoFocus
-            className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+            className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none"
           />
         </div>
 
         {selected && (
-          <div className="flex items-center gap-2 bg-primary-50 dark:bg-primary-900/20 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 bg-[#F77B0F]/10 dark:bg-[#192C67]/20 rounded-lg px-3 py-2">
             <AvatarCircle name={`${selected.firstName} ${selected.lastName}`} size="sm" />
             <span className="text-sm font-medium text-gray-900 dark:text-white">{selected.firstName} {selected.lastName}</span>
             <button onClick={() => setSelected(null)} className="ml-auto text-gray-400 hover:text-red-500 text-sm">x</button>
@@ -241,7 +241,7 @@ function NewConversationModal({
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="font-medium text-gray-900 dark:text-white">{r.firstName} {r.lastName}</p>
-                  {r.role && <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${r.role === 'TRAINER' ? 'bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'}`}>{r.role === 'TRAINER' ? 'Recruiter' : 'Job Seeker'}</span>}
+                  {r.role && <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${r.role === 'TRAINER' ? 'bg-[#F77B0F]/15 text-[#F77B0F] dark:bg-[#192C67]/30 dark:text-[#F77B0F]/80' : 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400'}`}>{r.role === 'TRAINER' ? 'Recruiter' : 'Job Seeker'}</span>}
                 </div>
                 {(r as any).specialization && <p className="text-[10px] text-gray-400 truncate">{(r as any).specialization}</p>}
               </div>
@@ -256,7 +256,7 @@ function NewConversationModal({
           <button
             onClick={create}
             disabled={!selected || creating}
-            className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-lg hover:bg-primary-600 disabled:opacity-40"
+            className="px-4 py-2 text-sm font-medium text-white bg-[#F77B0F] rounded-lg hover:bg-[#e06a0d] disabled:opacity-40"
           >
             {creating ? 'Creating...' : 'Start Conversation'}
           </button>
@@ -280,7 +280,7 @@ function VoicePlayer({ url }: { url: string }) {
   };
 
   return (
-    <div className="flex items-center gap-2 rounded-xl bg-primary-50 px-3 py-2 dark:bg-primary-900/30">
+    <div className="flex items-center gap-2 rounded-xl bg-[#F77B0F]/10 px-3 py-2 dark:bg-[#192C67]/30">
       <audio
         ref={audioRef}
         src={url}
@@ -288,7 +288,7 @@ function VoicePlayer({ url }: { url: string }) {
         onTimeUpdate={() => setProgress(audioRef.current ? (audioRef.current.currentTime / (audioRef.current.duration || 1)) * 100 : 0)}
         onEnded={() => { setPlaying(false); setProgress(0); }}
       />
-      <button onClick={toggle} className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-500 text-white">
+      <button onClick={toggle} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F77B0F] text-white">
         {playing ? (
           <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" /><rect x="14" y="4" width="4" height="16" /></svg>
         ) : (
@@ -296,10 +296,10 @@ function VoicePlayer({ url }: { url: string }) {
         )}
       </button>
       <div className="flex-1">
-        <div className="h-1 w-full rounded-full bg-primary-200 dark:bg-primary-800">
-          <div className="h-1 rounded-full bg-primary-500 transition-all" style={{ width: `${progress}%` }} />
+        <div className="h-1 w-full rounded-full bg-[#F77B0F]/20 dark:bg-[#192C67]">
+          <div className="h-1 rounded-full bg-[#F77B0F] transition-all" style={{ width: `${progress}%` }} />
         </div>
-        <p className="mt-0.5 text-[10px] text-primary-500">
+        <p className="mt-0.5 text-[10px] text-[#F77B0F]">
           {duration > 0 && isFinite(duration) ? fmtTimer(Math.ceil(duration)) : 'Voice note'}
         </p>
       </div>
@@ -818,7 +818,7 @@ export default function MessagesPage() {
         onClick={() => selectConversation(c.id)}
         className={cn(
           'w-full border-b border-gray-50 px-3 py-2.5 text-left transition hover:bg-gray-50 dark:border-gray-800/60 dark:hover:bg-gray-800/60',
-          activeId === c.id && 'bg-primary-50/60 dark:bg-primary-900/20',
+          activeId === c.id && 'bg-[#F77B0F]/60 dark:bg-[#192C67]/20',
         )}
       >
         <div className="flex items-center gap-2.5">
@@ -846,7 +846,7 @@ export default function MessagesPage() {
               <p className="truncate text-sm font-medium text-gray-900 dark:text-white">{displayName}</p>
               <div className="flex flex-shrink-0 items-center gap-1">
                 {(c.unread ?? 0) > 0 && (
-                  <span className="flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-primary-500 px-1 text-[10px] font-bold text-white">
+                  <span className="flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-[#F77B0F] px-1 text-[10px] font-bold text-white">
                     {c.unread}
                   </span>
                 )}
@@ -857,7 +857,7 @@ export default function MessagesPage() {
               <p className="truncate text-[10px] text-secondary-600 dark:text-secondary-400 font-medium">{getConvFirmName(c)}</p>
             )}
             {activeId === c.id && remoteTyping ? (
-              <p className="mt-0.5 truncate text-xs text-primary-500 italic">typing...</p>
+              <p className="mt-0.5 truncate text-xs text-[#F77B0F] italic">typing...</p>
             ) : (
               <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">
                 {typeof c.lastMessage === 'string'
@@ -877,14 +877,14 @@ export default function MessagesPage() {
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Messages</h1>
           {conversations.reduce((sum, c) => sum + (c.unread ?? 0), 0) > 0 && (
-            <span className="flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-primary-500 px-1.5 text-xs font-bold text-white">
+            <span className="flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-[#F77B0F] px-1.5 text-xs font-bold text-white">
               {conversations.reduce((sum, c) => sum + (c.unread ?? 0), 0)}
             </span>
           )}
         </div>
         <button
           onClick={() => setShowNewModal(true)}
-          className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-lg hover:bg-primary-600 transition-colors"
+          className="px-4 py-2 text-sm font-medium text-white bg-[#F77B0F] rounded-lg hover:bg-[#e06a0d] transition-colors"
         >
           New Message
         </button>
@@ -911,12 +911,12 @@ export default function MessagesPage() {
                 placeholder="Search conversations..."
                 value={q}
                 onChange={(e) => setQ(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-[#F77B0F] outline-none"
               />
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowNewModal(true)}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-200 py-1.5 text-xs font-medium text-gray-600 hover:border-primary-400 hover:bg-primary-50 hover:text-primary-600 dark:border-gray-700 dark:text-gray-400 dark:hover:border-primary-500 dark:hover:text-primary-400"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-gray-200 py-1.5 text-xs font-medium text-gray-600 hover:border-[#F77B0F]/50 hover:bg-[#F77B0F]/10 hover:text-[#F77B0F] dark:border-gray-700 dark:text-gray-400 dark:hover:border-[#F77B0F] dark:hover:text-[#F77B0F]/80"
                 >
                   <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
@@ -1009,7 +1009,7 @@ export default function MessagesPage() {
                   {active.bookingId && (
                     <button
                       onClick={() => router.push(`/bookings/${active.bookingId}`)}
-                      className="text-xs text-primary-500 hover:text-primary-600 font-medium"
+                      className="text-xs text-[#F77B0F] hover:text-[#F77B0F] font-medium"
                     >
                       View Interview
                     </button>
@@ -1035,7 +1035,7 @@ export default function MessagesPage() {
                   )}
                   {messagesLoading && (
                     <div className="flex items-center justify-center py-10">
-                      <div className="w-6 h-6 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+                      <div className="w-6 h-6 border-2 border-[#F77B0F] border-t-transparent rounded-full animate-spin" />
                     </div>
                   )}
                   {!messagesLoading && messages.length === 0 && (
@@ -1056,7 +1056,7 @@ export default function MessagesPage() {
                               <span className="mr-1 px-1.5 py-0.5 rounded bg-secondary-100 dark:bg-secondary-900/30 text-secondary-700 dark:text-secondary-400 text-[9px] font-bold">{(m as any).senderFirm}</span>
                             )}
                             {isMe && getMyFirmName() && (
-                              <span className="mr-1 px-1.5 py-0.5 rounded bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 text-[9px] font-bold">{getMyFirmName()}</span>
+                              <span className="mr-1 px-1.5 py-0.5 rounded bg-[#F77B0F]/15 dark:bg-[#192C67]/30 text-[#F77B0F] dark:text-[#F77B0F]/80 text-[9px] font-bold">{getMyFirmName()}</span>
                             )}
                             {formatRelative(m.createdAt)}
                           </p>
@@ -1093,7 +1093,7 @@ export default function MessagesPage() {
                               rel="noopener noreferrer"
                               className={cn(
                                 'flex items-center gap-2 rounded-2xl px-3.5 py-2 text-sm',
-                                isMe ? 'bg-primary-500 text-white' : 'bg-white text-gray-800 shadow-sm dark:bg-gray-800 dark:text-gray-200',
+                                isMe ? 'bg-[#F77B0F] text-white' : 'bg-white text-gray-800 shadow-sm dark:bg-gray-800 dark:text-gray-200',
                               )}
                             >
                               <svg className="h-4 w-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1105,7 +1105,7 @@ export default function MessagesPage() {
                             <div className={cn(
                               'rounded-2xl px-3.5 py-2 text-sm leading-relaxed',
                               isMe
-                                ? 'rounded-br-sm bg-primary-500 text-white'
+                                ? 'rounded-br-sm bg-[#F77B0F] text-white'
                                 : 'rounded-bl-sm bg-white text-gray-800 shadow-sm dark:bg-gray-800 dark:text-gray-200',
                             )}>
                               <MessageBody text={m.body ?? m.content ?? ''} isMe={isMe} />
@@ -1156,7 +1156,7 @@ export default function MessagesPage() {
                   />
 
                   {voiceState === 'idle' && (
-                    <div className="flex items-end gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-2 py-1.5 focus-within:border-primary-400 focus-within:ring-2 focus-within:ring-primary-100 dark:border-gray-600 dark:bg-gray-700 dark:focus-within:border-primary-500">
+                    <div className="flex items-end gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-2 py-1.5 focus-within:border-[#F77B0F] focus-within:ring-2 focus-within:ring-[#F77B0F]/10 dark:border-gray-600 dark:bg-gray-700 dark:focus-within:border-[#F77B0F]">
                       {/* attach button */}
                       <button
                         type="button"
@@ -1166,7 +1166,7 @@ export default function MessagesPage() {
                         className="mb-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl text-gray-400 hover:bg-white hover:text-gray-600 disabled:opacity-40 dark:hover:bg-gray-600 dark:hover:text-gray-300"
                       >
                         {fileUploading ? (
-                          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-primary-500" />
+                          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-gray-300 border-t-[#F77B0F]" />
                         ) : (
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -1206,7 +1206,7 @@ export default function MessagesPage() {
                           title="Emoji"
                           className={cn(
                             'flex h-8 w-8 items-center justify-center rounded-xl text-gray-400 hover:bg-white hover:text-gray-600 dark:hover:bg-gray-600 dark:hover:text-gray-300',
-                            showEmoji && 'bg-white text-primary-600 dark:bg-gray-600',
+                            showEmoji && 'bg-white text-[#F77B0F] dark:bg-gray-600',
                           )}
                         >
                           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -1217,7 +1217,7 @@ export default function MessagesPage() {
                           type="button"
                           onClick={send}
                           disabled={!draft.trim() || sending}
-                          className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary-500 text-white transition hover:bg-primary-600 disabled:opacity-30"
+                          className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#F77B0F] text-white transition hover:bg-[#e06a0d] disabled:opacity-30"
                           title="Send (Enter)"
                         >
                           {sending ? (
@@ -1249,7 +1249,7 @@ export default function MessagesPage() {
                           {Array.from({ length: 20 }).map((_, i) => (
                             <div
                               key={i}
-                              className="w-1 rounded-full bg-primary-400 opacity-60"
+                              className="w-1 rounded-full bg-[#F77B0F] opacity-60"
                               style={{ height: `${8 + Math.sin(Date.now() / 200 + i) * 6}px`, transition: 'height 0.1s' }}
                             />
                           ))}
@@ -1278,7 +1278,7 @@ export default function MessagesPage() {
                       </div>
                       <button
                         onClick={sendVoiceNote}
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-500 text-white hover:bg-primary-600"
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F77B0F] text-white hover:bg-[#e06a0d]"
                       >
                         <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
@@ -1296,7 +1296,7 @@ export default function MessagesPage() {
                 <p className="text-sm text-gray-400">Select a conversation to start messaging</p>
                 <button
                   onClick={() => setShowNewModal(true)}
-                  className="px-4 py-2 text-sm font-medium text-primary-600 border border-primary-300 rounded-lg hover:bg-primary-50 dark:text-primary-400 dark:border-primary-700 dark:hover:bg-primary-900/20"
+                  className="px-4 py-2 text-sm font-medium text-[#F77B0F] border border-[#F77B0F]/30 rounded-lg hover:bg-[#F77B0F]/10 dark:text-[#F77B0F]/80 dark:border-[#F77B0F] dark:hover:bg-[#192C67]/20"
                 >
                   New Conversation
                 </button>

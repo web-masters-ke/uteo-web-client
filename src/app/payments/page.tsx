@@ -333,7 +333,7 @@ export default function PaymentsPage() {
               className={cn(
                 'py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 activeTab === tab.key
-                  ? 'border-[#192C67] text-[#192C67] dark:border-[#5b8bc7] dark:text-[#5b8bc7]'
+                  ? 'border-[#192C67] text-[#192C67] dark:border-[#F77B0F]/50 dark:text-white/70'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300'
               )}
             >

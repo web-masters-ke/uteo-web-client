@@ -19,7 +19,7 @@ function TrainerHero({ isTrainer }: { isTrainer: boolean }) {
         <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(10,15,30,0.90) 0%, rgba(10,15,30,0.50) 50%, rgba(10,15,30,0.20) 100%)' }} />
       </div>
       <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full">
-        <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">SkillSasa Directory</p>
+        <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">Uteo Directory</p>
         <h1 className="text-4xl lg:text-6xl font-black text-white">
           {isTrainer ? "Trainer Directory" : "Find Your Trainer"}
         </h1>
@@ -148,14 +148,14 @@ function TrainersPageInner() {
 
       {/* Trainer-role top bar: Preview Your Profile */}
       {isTrainerRole && ownProfileId && (
-        <div className="mb-6 flex items-center gap-4 p-4 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl">
+        <div className="mb-6 flex items-center gap-4 p-4 bg-[#F77B0F]/10 dark:bg-[#192C67]/20 border border-[#F77B0F]/20 dark:border-[#192C67] rounded-xl">
           <div className="flex-1">
-            <p className="text-sm font-semibold text-primary-700 dark:text-primary-300">See how clients view your profile</p>
-            <p className="text-xs text-primary-500 dark:text-primary-400 mt-0.5">Preview your public trainer profile and make sure it looks great.</p>
+            <p className="text-sm font-semibold text-[#F77B0F] dark:text-[#F77B0F]/60">See how clients view your profile</p>
+            <p className="text-xs text-[#F77B0F] dark:text-[#F77B0F]/80 mt-0.5">Preview your public trainer profile and make sure it looks great.</p>
           </div>
           <Link
             href={`/trainers/${ownProfileId}`}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-500 text-white text-sm font-semibold rounded-lg hover:bg-primary-600 transition-colors whitespace-nowrap"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#F77B0F] text-white text-sm font-semibold rounded-lg hover:bg-[#e06a0d] transition-colors whitespace-nowrap"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -172,7 +172,7 @@ function TrainersPageInner() {
           <button
             onClick={() => { setSelectedType(''); setShowOrgsOnly(false); }}
             className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all border-2 ${
-              selectedType === '' && !showOrgsOnly ? 'border-[#192C67] dark:border-[#5b8bc7] text-[#192C67] dark:text-[#5b8bc7] bg-[#192C67]/5' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300'
+              selectedType === '' && !showOrgsOnly ? 'border-[#192C67] dark:border-[#F77B0F]/50 text-[#192C67] dark:text-white/70 bg-[#192C67]/5' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300'
             }`}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -183,13 +183,13 @@ function TrainersPageInner() {
           <button
             onClick={() => { setSelectedType('PROFESSIONAL'); setShowOrgsOnly(false); }}
             className={`flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold transition-all border-2 ${
-              selectedType === 'PROFESSIONAL' && !showOrgsOnly ? 'border-[#192C67] dark:border-[#5b8bc7] text-[#192C67] dark:text-[#5b8bc7] bg-[#192C67]/5' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300'
+              selectedType === 'PROFESSIONAL' && !showOrgsOnly ? 'border-[#192C67] dark:border-[#F77B0F]/50 text-[#192C67] dark:text-white/70 bg-[#192C67]/5' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-gray-300'
             }`}
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
-            Professional Trainers
+            Professionals
           </button>
           <button
             onClick={() => { setSelectedType('VOCATIONAL'); setShowOrgsOnly(false); }}
@@ -239,7 +239,7 @@ function TrainersPageInner() {
           <select
             value={selectedCategoryId}
             onChange={(e) => setSelectedCategoryId(e.target.value)}
-            className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+            className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-[#F77B0F] outline-none"
           >
             <option value="">All Categories</option>
             {categories.map((c) => (
@@ -252,7 +252,7 @@ function TrainersPageInner() {
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <SearchBar placeholder="Search by name, skill, or keyword..." onSearch={(q) => uf("keyword", q)} defaultValue={filters.keyword} className="flex-1" />
         <div className="flex gap-2">
-          <select value={filters.sortBy || "rating"} onChange={(e) => uf("sortBy", e.target.value as any)} className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+          <select value={filters.sortBy || "rating"} onChange={(e) => uf("sortBy", e.target.value as any)} className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-[#F77B0F] outline-none">
             <option value="rating">Top Rated</option><option value="price_asc">Price: Low to High</option><option value="price_desc">Price: High to Low</option><option value="reviews">Most Reviews</option><option value="followers">Most Followed</option><option value="newest">Newest</option>
           </select>
           <button onClick={() => setFiltersOpen(!filtersOpen)} className="lg:hidden px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium flex items-center gap-2 text-gray-700 dark:text-gray-300">
@@ -267,8 +267,8 @@ function TrainersPageInner() {
             <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label><select value={filters.category || ""} onChange={(e) => uf("category", e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white"><option value="">All</option>{categories.map((c) => <option key={c.id} value={c.name}>{c.name}</option>)}</select></div>
             <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">County</label><select value={filters.location || ""} onChange={(e) => uf("location", e.target.value)} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-900 dark:text-white"><option value="">All</option>{counties.map((c) => <option key={c} value={c}>{c}</option>)}</select></div>
             <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Min Rating</label><div className="flex gap-1">{[1,2,3,4,5].map((r) => <button key={r} onClick={() => uf("minRating", filters.minRating === r ? undefined : r)} className={`w-10 h-10 rounded-lg text-sm font-medium flex items-center justify-center ${filters.minRating && filters.minRating <= r ? "bg-secondary-100 dark:bg-secondary-900/30 text-secondary-600" : "bg-gray-100 dark:bg-gray-700 text-gray-500"}`}>{r}+</button>)}</div></div>
-            <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Session Type</label><div className="flex flex-wrap gap-2">{["Virtual","Physical","Hybrid"].map((t) => <button key={t} onClick={() => uf("sessionType", filters.sessionType === t.toUpperCase() ? "" : t.toUpperCase())} className={`px-3 py-1.5 rounded-full text-xs font-medium ${filters.sessionType === t.toUpperCase() ? "bg-primary-500 text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}>{t}</button>)}</div></div>
-            <div className="flex items-center justify-between"><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Verified Only</label><button onClick={() => uf("isVerified", filters.isVerified ? undefined : true)} className={`w-11 h-6 rounded-full ${filters.isVerified ? "bg-primary-500" : "bg-gray-300 dark:bg-gray-600"}`}><div className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${filters.isVerified ? "translate-x-5" : "translate-x-0.5"}`} /></button></div>
+            <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Session Type</label><div className="flex flex-wrap gap-2">{["Virtual","Physical","Hybrid"].map((t) => <button key={t} onClick={() => uf("sessionType", filters.sessionType === t.toUpperCase() ? "" : t.toUpperCase())} className={`px-3 py-1.5 rounded-full text-xs font-medium ${filters.sessionType === t.toUpperCase() ? "bg-[#F77B0F] text-white" : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"}`}>{t}</button>)}</div></div>
+            <div className="flex items-center justify-between"><label className="text-sm font-medium text-gray-700 dark:text-gray-300">Verified Only</label><button onClick={() => uf("isVerified", filters.isVerified ? undefined : true)} className={`w-11 h-6 rounded-full ${filters.isVerified ? "bg-[#F77B0F]" : "bg-gray-300 dark:bg-gray-600"}`}><div className={`w-5 h-5 rounded-full bg-white shadow transition-transform ${filters.isVerified ? "translate-x-5" : "translate-x-0.5"}`} /></button></div>
             <button onClick={clearAll} className="w-full py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900">Clear All</button>
           </div>
         </aside>

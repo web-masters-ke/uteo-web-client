@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 
 type Theme = "light" | "dark";
-const KEY = "skillsasa-theme";
+const KEY = "uteo-theme";
 
 interface ThemeCtx {
   theme: Theme;

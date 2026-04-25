@@ -7,7 +7,7 @@ export default function TermsPage() {
       <div className="prose dark:prose-invert max-w-none space-y-6 text-gray-600 dark:text-gray-300">
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">1. Acceptance of Terms</h2>
-          <p>By accessing or using the SkillSasa platform, you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
+          <p>By accessing or using the Uteo platform, you agree to be bound by these Terms of Service. If you do not agree, please do not use the platform.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">2. Account Registration</h2>
@@ -15,7 +15,7 @@ export default function TermsPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">3. Trainer Verification</h2>
-          <p>Trainers may undergo a verification process. SkillSasa does not guarantee the qualifications or performance of any trainer. Clients should exercise their own judgment when selecting trainers.</p>
+          <p>Trainers may undergo a verification process. Uteo does not guarantee the qualifications or performance of any trainer. Clients should exercise their own judgment when selecting trainers.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">4. Bookings and Payments</h2>
@@ -31,11 +31,11 @@ export default function TermsPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">7. Intellectual Property</h2>
-          <p>All content on the SkillSasa platform, including logos, text, and design, is the property of SkillSasa unless otherwise stated. Users retain ownership of content they upload.</p>
+          <p>All content on the Uteo platform, including logos, text, and design, is the property of Uteo unless otherwise stated. Users retain ownership of content they upload.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">8. Limitation of Liability</h2>
-          <p>SkillSasa acts as a marketplace connecting clients and trainers. We are not liable for the quality of training services provided. Our liability is limited to the fees paid to the platform.</p>
+          <p>Uteo acts as a marketplace connecting clients and trainers. We are not liable for the quality of training services provided. Our liability is limited to the fees paid to the platform.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">9. Modifications</h2>
@@ -43,7 +43,7 @@ export default function TermsPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">10. Contact</h2>
-          <p>For questions about these terms, please contact us at legal@skillsasa.co.ke.</p>
+          <p>For questions about these terms, please contact us at legal@uteo.co.ke.</p>
         </section>
       </div>
     </div>

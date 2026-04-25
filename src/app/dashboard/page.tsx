@@ -211,7 +211,7 @@ export default function DashboardPage() {
             <>
               <MetricCard label="Upcoming" value={trainerStats.upcomingSessions} sub="sessions scheduled"
                 splashHex="#192C67"
-                icon={<svg className="w-5 h-5 text-[#192C67] dark:text-[#5b8bc7]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>} />
+                icon={<svg className="w-5 h-5 text-[#192C67] dark:text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>} />
               <MetricCard label="Completed" value={trainerStats.completedSessions} sub="all time"
                 splashHex="#10B981"
                 icon={<svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
@@ -229,7 +229,7 @@ export default function DashboardPage() {
             <>
               <MetricCard label="Upcoming" value={clientStats.upcomingBookings} sub="bookings scheduled"
                 splashHex="#192C67"
-                icon={<svg className="w-5 h-5 text-[#192C67] dark:text-[#5b8bc7]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>} />
+                icon={<svg className="w-5 h-5 text-[#192C67] dark:text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>} />
               <MetricCard label="Completed" value={clientStats.completedSessions} sub="sessions done"
                 splashHex="#10B981"
                 icon={<svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>} />
@@ -290,7 +290,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
           {isTrainer ? (
             <>
-              <Link href="/availability" className="flex flex-col items-center gap-1.5 py-4 px-3 rounded-2xl border border-[#192C67] dark:border-[#5b8bc7] text-[#192C67] dark:text-[#5b8bc7] hover:bg-[#192C67]/5 transition-colors text-center">
+              <Link href="/availability" className="flex flex-col items-center gap-1.5 py-4 px-3 rounded-2xl border border-[#192C67] dark:border-[#F77B0F]/50 text-[#192C67] dark:text-white/70 hover:bg-[#192C67]/5 transition-colors text-center">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <span className="text-xs font-semibold">Availability</span>
               </Link>
@@ -309,7 +309,7 @@ export default function DashboardPage() {
             </>
           ) : (
             <>
-              <Link href="/trainers" className="flex flex-col items-center gap-1.5 py-4 px-3 rounded-2xl border border-[#192C67] dark:border-[#5b8bc7] text-[#192C67] dark:text-[#5b8bc7] hover:bg-[#192C67]/5 transition-colors text-center">
+              <Link href="/trainers" className="flex flex-col items-center gap-1.5 py-4 px-3 rounded-2xl border border-[#192C67] dark:border-[#F77B0F]/50 text-[#192C67] dark:text-white/70 hover:bg-[#192C67]/5 transition-colors text-center">
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 <span className="text-xs font-semibold">Find Trainer</span>
               </Link>

@@ -10,7 +10,7 @@ export const reviewService = {
     // Backend: GET /reviews?reviewerId=<current user> — no /reviews/mine endpoint
     // Fetch all and filter client-side, or pass reviewerId param
     try {
-      const userId = JSON.parse(localStorage.getItem("skillsasa-user") ?? "{}").id;
+      const userId = JSON.parse(localStorage.getItem("uteo-user") ?? "{}").id;
       const res = await apiGet<Review[] | { items: Review[] }>(`/reviews${userId ? `?reviewerId=${userId}` : ""}`);
       const items = Array.isArray(res) ? res : extractItems<Review>(res);
       return items;
@@ -22,7 +22,7 @@ export const reviewService = {
   async listReviewsOfMe(): Promise<Review[]> {
     // Backend: GET /reviews?trainerId=<current user> — no /reviews/of-me endpoint
     try {
-      const userId = JSON.parse(localStorage.getItem("skillsasa-user") ?? "{}").id;
+      const userId = JSON.parse(localStorage.getItem("uteo-user") ?? "{}").id;
       const res = await apiGet<Review[] | { items: Review[] }>(`/reviews${userId ? `?trainerId=${userId}` : ""}`);
       const items = Array.isArray(res) ? res : extractItems<Review>(res);
       return items;

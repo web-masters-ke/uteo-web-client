@@ -503,7 +503,7 @@ export default function AvailabilityPage() {
               message: 'This will replace ALL existing slots with a standard Mon-Fri schedule (8:00-12:00 + 13:00-17:00 with lunch break). Continue?',
               onConfirm: () => { setConfirmAction(null); setStandardWorkWeek(); },
             })}
-            className="px-3 py-2 text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors"
+            className="px-3 py-2 text-xs font-medium text-[#F77B0F] dark:text-[#F77B0F]/80 bg-[#F77B0F]/10 dark:bg-[#192C67]/20 border border-[#F77B0F]/20 dark:border-[#192C67] rounded-lg hover:bg-[#F77B0F]/15 dark:hover:bg-[#192C67]/40 transition-colors"
           >
             Standard Work Week
           </button>
@@ -522,7 +522,7 @@ export default function AvailabilityPage() {
           </button>
           <button
             onClick={() => openAdd()}
-            className="px-4 py-2 text-sm font-medium text-white bg-primary-500 rounded-lg hover:bg-primary-600 transition-colors shadow-sm"
+            className="px-4 py-2 text-sm font-medium text-white bg-[#F77B0F] rounded-lg hover:bg-[#e06a0d] transition-colors shadow-sm"
           >
             + Add Slot
           </button>
@@ -534,7 +534,7 @@ export default function AvailabilityPage() {
         {[
           { label: 'Total Slots', value: stats.totalSlots, color: 'text-gray-900 dark:text-white' },
           { label: 'Active Slots', value: stats.activeSlots, color: 'text-green-600 dark:text-green-400' },
-          { label: 'Days Covered', value: `${stats.daysCovered}/7`, color: 'text-primary-600 dark:text-primary-400' },
+          { label: 'Days Covered', value: `${stats.daysCovered}/7`, color: 'text-[#F77B0F] dark:text-[#F77B0F]/80' },
           { label: 'Weekly Hours', value: stats.weeklyLabel, color: 'text-secondary-500 dark:text-secondary-400' },
         ].map((stat) => (
           <div key={stat.label} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
@@ -629,7 +629,7 @@ export default function AvailabilityPage() {
                           className={cn(
                             'absolute top-1 bottom-1 rounded-md cursor-pointer transition-all border',
                             slot.isActive
-                              ? 'bg-primary-400/80 dark:bg-primary-500/60 border-primary-500 dark:border-primary-400 hover:bg-primary-500 dark:hover:bg-primary-500/80'
+                              ? 'bg-[#F77B0F]/80 dark:bg-[#F77B0F]/60 border-[#F77B0F] dark:border-[#F77B0F]/80 hover:bg-[#F77B0F] dark:hover:bg-[#F77B0F]/80'
                               : 'bg-gray-300/60 dark:bg-gray-600/40 border-gray-400 dark:border-gray-500 hover:bg-gray-400/60',
                             isHovered && 'ring-2 ring-primary-300 dark:ring-primary-600 z-10',
                           )}
@@ -682,7 +682,7 @@ export default function AvailabilityPage() {
                       <>
                         <button
                           onClick={() => openCopyDay(dayIdx)}
-                          className="p-1 rounded text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                          className="p-1 rounded text-gray-400 hover:text-[#F77B0F] hover:bg-[#F77B0F]/10 dark:hover:bg-[#192C67]/20 transition-colors"
                           title="Copy day"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -691,7 +691,7 @@ export default function AvailabilityPage() {
                         </button>
                         <button
                           onClick={() => openAdd(dayIdx)}
-                          className="p-1 rounded text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                          className="p-1 rounded text-gray-400 hover:text-[#F77B0F] hover:bg-[#F77B0F]/10 dark:hover:bg-[#192C67]/20 transition-colors"
                           title="Add slot"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -737,7 +737,7 @@ export default function AvailabilityPage() {
                   <div className={cn(
                     'w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold',
                     daySlots.length > 0
-                      ? 'bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400'
+                      ? 'bg-[#F77B0F]/15 text-[#F77B0F] dark:bg-[#192C67]/30 dark:text-[#F77B0F]/80'
                       : 'bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500',
                   )}>
                     {SHORT_DAYS[gridPos]}
@@ -753,7 +753,7 @@ export default function AvailabilityPage() {
                 </div>
                 <button
                   onClick={() => openAdd(dayIdx)}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-[#F77B0F] hover:bg-[#F77B0F]/10 dark:hover:bg-[#192C67]/20 transition-colors"
                   title={`Add slot to ${DAYS_OF_WEEK[dayIdx]}`}
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -767,7 +767,7 @@ export default function AvailabilityPage() {
                 {daySlots.length === 0 ? (
                   <button
                     onClick={() => openAdd(dayIdx)}
-                    className="w-full py-6 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-600 text-gray-300 dark:text-gray-600 hover:border-primary-300 hover:text-primary-400 dark:hover:border-primary-700 dark:hover:text-primary-600 transition-colors"
+                    className="w-full py-6 flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 dark:border-gray-600 text-gray-300 dark:text-gray-600 hover:border-[#F77B0F]/30 hover:text-[#F77B0F]/80 dark:hover:border-primary-700 dark:hover:text-[#F77B0F] transition-colors"
                   >
                     <svg className="w-5 h-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -782,7 +782,7 @@ export default function AvailabilityPage() {
                         className={cn(
                           'group relative flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors cursor-pointer',
                           slot.isActive
-                            ? 'bg-primary-50 dark:bg-primary-900/20 hover:bg-primary-100 dark:hover:bg-primary-900/30'
+                            ? 'bg-[#F77B0F]/10 dark:bg-[#192C67]/20 hover:bg-[#F77B0F]/15 dark:hover:bg-[#192C67]/30'
                             : 'bg-gray-50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-700/50',
                         )}
                         onClick={() => openEdit(slot)}
@@ -790,7 +790,7 @@ export default function AvailabilityPage() {
                         <div className="flex items-center gap-2.5">
                           <div className={cn(
                             'w-1.5 h-8 rounded-full',
-                            slot.isActive ? 'bg-primary-500 dark:bg-primary-400' : 'bg-gray-300 dark:bg-gray-600',
+                            slot.isActive ? 'bg-[#F77B0F] dark:bg-[#F77B0F]' : 'bg-gray-300 dark:bg-gray-600',
                           )} />
                           <div className="min-w-0">
                             <p className={cn(
@@ -804,12 +804,12 @@ export default function AvailabilityPage() {
                                 {calcDurationLabel(slot.startTime, slot.endTime)}
                               </p>
                               {slot.consultant ? (
-                                <span className="inline-flex items-center gap-1 text-[10px] text-primary-600 dark:text-primary-400">
+                                <span className="inline-flex items-center gap-1 text-[10px] text-[#F77B0F] dark:text-[#F77B0F]/80">
                                   <span className="text-gray-300 dark:text-gray-600">·</span>
                                   {slot.consultant.avatar ? (
                                     <img src={slot.consultant.avatar} alt="" className="w-3.5 h-3.5 rounded-full" />
                                   ) : (
-                                    <span className="w-3.5 h-3.5 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center text-[7px] font-bold text-primary-600 dark:text-primary-400">
+                                    <span className="w-3.5 h-3.5 rounded-full bg-[#F77B0F]/15 dark:bg-[#192C67]/40 flex items-center justify-center text-[7px] font-bold text-[#F77B0F] dark:text-[#F77B0F]/80">
                                       {(slot.consultant.firstName?.[0] ?? '').toUpperCase()}
                                     </span>
                                   )}
@@ -827,7 +827,7 @@ export default function AvailabilityPage() {
                             onClick={(e) => { e.stopPropagation(); toggleActive(slot); }}
                             className={cn(
                               'relative w-9 h-5 rounded-full transition-colors',
-                              slot.isActive ? 'bg-primary-500' : 'bg-gray-300 dark:bg-gray-600',
+                              slot.isActive ? 'bg-[#F77B0F]' : 'bg-gray-300 dark:bg-gray-600',
                             )}
                           >
                             <div className={cn(
@@ -857,7 +857,7 @@ export default function AvailabilityPage() {
                 <div className="px-3 py-2 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
                   <button
                     onClick={() => openCopyDay(dayIdx)}
-                    className="text-[10px] text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 font-medium flex items-center gap-1 transition-colors"
+                    className="text-[10px] text-[#F77B0F] hover:text-[#F77B0F] dark:text-[#F77B0F]/80 dark:hover:text-[#F77B0F]/60 font-medium flex items-center gap-1 transition-colors"
                   >
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -909,8 +909,8 @@ export default function AvailabilityPage() {
                   className={cn(
                     'px-3 py-2 text-xs font-medium rounded-lg border transition-all',
                     formDay === dayIdx
-                      ? 'bg-primary-500 text-white border-primary-500 shadow-sm'
-                      : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-600',
+                      ? 'bg-[#F77B0F] text-white border-[#F77B0F] shadow-sm'
+                      : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:border-[#F77B0F]/30 dark:hover:border-[#F77B0F]/50',
                   )}
                 >
                   {SHORT_DAYS[gridPos]}
@@ -931,8 +931,8 @@ export default function AvailabilityPage() {
                     className={cn(
                       'flex flex-col items-center gap-1 px-3 py-3 rounded-lg border text-xs transition-all',
                       selectedPreset === preset.key
-                        ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-400 dark:border-primary-600 text-primary-700 dark:text-primary-300 shadow-sm ring-1 ring-primary-200 dark:ring-primary-700'
-                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-primary-200 dark:hover:border-primary-700',
+                        ? 'bg-[#F77B0F]/10 dark:bg-[#192C67]/20 border-[#F77B0F]/80 dark:border-[#F77B0F]/50 text-[#F77B0F] dark:text-[#F77B0F]/60 shadow-sm ring-1 ring-primary-200 dark:ring-primary-700'
+                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-[#F77B0F]/20 dark:hover:border-primary-700',
                     )}
                   >
                     <span className="text-base">{preset.icon}</span>
@@ -971,13 +971,13 @@ export default function AvailabilityPage() {
           {/* Preview: lunch break split */}
           {lunchBreak && (selectedPreset === 'fullday' || (formStart <= '08:00' && formEnd >= '17:00')) && (
             <div className="flex items-center gap-2 text-xs px-3">
-              <div className="flex-1 py-2 rounded bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-center font-medium">
+              <div className="flex-1 py-2 rounded bg-[#F77B0F]/15 dark:bg-[#192C67]/30 text-[#F77B0F] dark:text-[#F77B0F]/60 text-center font-medium">
                 {formatTime(formStart)} - 12:00 PM
               </div>
               <div className="px-2 py-2 text-gray-400 dark:text-gray-500 text-[10px]">
                 LUNCH
               </div>
-              <div className="flex-1 py-2 rounded bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-center font-medium">
+              <div className="flex-1 py-2 rounded bg-[#F77B0F]/15 dark:bg-[#192C67]/30 text-[#F77B0F] dark:text-[#F77B0F]/60 text-center font-medium">
                 1:00 PM - {formatTime(formEnd)}
               </div>
             </div>
@@ -1000,7 +1000,7 @@ export default function AvailabilityPage() {
                     setFormStart(e.target.value);
                     setSelectedPreset('custom');
                   }}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none text-sm"
                 >
                   {TIME_OPTIONS.map((t) => (
                     <option key={t} value={t}>{formatTime(t)}</option>
@@ -1015,7 +1015,7 @@ export default function AvailabilityPage() {
                     setFormEnd(e.target.value);
                     setSelectedPreset('custom');
                   }}
-                  className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none text-sm"
+                  className="w-full px-3 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none text-sm"
                 >
                   {TIME_OPTIONS.filter((t) => t > formStart).map((t) => (
                     <option key={t} value={t}>{formatTime(t)}</option>
@@ -1037,8 +1037,8 @@ export default function AvailabilityPage() {
                   className={cn(
                     'flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-all',
                     formConsultantId === null
-                      ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-400 dark:border-primary-600 ring-1 ring-primary-200 dark:ring-primary-700'
-                      : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-primary-200 dark:hover:border-primary-700',
+                      ? 'bg-[#F77B0F]/10 dark:bg-[#192C67]/20 border-[#F77B0F]/80 dark:border-[#F77B0F]/50 ring-1 ring-primary-200 dark:ring-primary-700'
+                      : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-[#F77B0F]/20 dark:hover:border-primary-700',
                   )}
                 >
                   <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center shrink-0">
@@ -1051,7 +1051,7 @@ export default function AvailabilityPage() {
                     <p className="text-[10px] text-gray-400 dark:text-gray-500">Any available consultant</p>
                   </div>
                   {formConsultantId === null && (
-                    <svg className="w-4 h-4 ml-auto text-primary-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 ml-auto text-[#F77B0F] shrink-0" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   )}
@@ -1066,15 +1066,15 @@ export default function AvailabilityPage() {
                     className={cn(
                       'flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-all',
                       formConsultantId === member.user.id
-                        ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-400 dark:border-primary-600 ring-1 ring-primary-200 dark:ring-primary-700'
-                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-primary-200 dark:hover:border-primary-700',
+                        ? 'bg-[#F77B0F]/10 dark:bg-[#192C67]/20 border-[#F77B0F]/80 dark:border-[#F77B0F]/50 ring-1 ring-primary-200 dark:ring-primary-700'
+                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-[#F77B0F]/20 dark:hover:border-primary-700',
                     )}
                   >
                     {member.user.avatar ? (
                       <img src={member.user.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0">
-                        <span className="text-xs font-bold text-primary-600 dark:text-primary-400">
+                      <div className="w-8 h-8 rounded-full bg-[#F77B0F]/15 dark:bg-[#192C67]/40 flex items-center justify-center shrink-0">
+                        <span className="text-xs font-bold text-[#F77B0F] dark:text-[#F77B0F]/80">
                           {(member.user.firstName?.[0] ?? member.user.email[0]).toUpperCase()}
                         </span>
                       </div>
@@ -1088,7 +1088,7 @@ export default function AvailabilityPage() {
                       </p>
                     </div>
                     {formConsultantId === member.user.id && (
-                      <svg className="w-4 h-4 ml-auto text-primary-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-4 h-4 ml-auto text-[#F77B0F] shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     )}
@@ -1139,12 +1139,12 @@ export default function AvailabilityPage() {
                     className={cn(
                       'flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-all',
                       formDepartmentId === dept.id
-                        ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-400 dark:border-primary-600 ring-1 ring-primary-200 dark:ring-primary-700'
-                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-primary-200 dark:hover:border-primary-700',
+                        ? 'bg-[#F77B0F]/10 dark:bg-[#192C67]/20 border-[#F77B0F]/80 dark:border-[#F77B0F]/50 ring-1 ring-primary-200 dark:ring-primary-700'
+                        : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-[#F77B0F]/20 dark:hover:border-primary-700',
                     )}
                   >
-                    <div className="w-8 h-8 rounded-lg bg-primary-100 dark:bg-primary-900/40 flex items-center justify-center shrink-0">
-                      <svg className="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <div className="w-8 h-8 rounded-lg bg-[#F77B0F]/15 dark:bg-[#192C67]/40 flex items-center justify-center shrink-0">
+                      <svg className="w-4 h-4 text-[#F77B0F] dark:text-[#F77B0F]/80" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2 20h20M5 20V8l7-5 7 5v12M9 20v-4h6v4" />
                       </svg>
                     </div>
@@ -1153,7 +1153,7 @@ export default function AvailabilityPage() {
                       <p className="text-[10px] text-gray-400 dark:text-gray-500">{dept._count?.members ?? 0} members</p>
                     </div>
                     {formDepartmentId === dept.id && (
-                      <svg className="w-4 h-4 ml-auto text-primary-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg className="w-4 h-4 ml-auto text-[#F77B0F] shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
                     )}
@@ -1188,7 +1188,7 @@ export default function AvailabilityPage() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 transition-colors text-sm shadow-sm"
+              className="flex-1 py-3 bg-[#F77B0F] text-white font-semibold rounded-lg hover:bg-[#e06a0d] disabled:opacity-50 transition-colors text-sm shadow-sm"
             >
               {saving ? (
                 <span className="flex items-center justify-center gap-2">
@@ -1223,7 +1223,7 @@ export default function AvailabilityPage() {
             <button
               onClick={() => copyDayTo(WEEKDAY_INDICES.filter((d) => d !== copySourceDay))}
               disabled={saving}
-              className="w-full px-4 py-3 text-sm font-medium text-left rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:border-primary-300 dark:hover:border-primary-700 transition-colors text-gray-700 dark:text-gray-300 disabled:opacity-50"
+              className="w-full px-4 py-3 text-sm font-medium text-left rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-[#F77B0F]/10 dark:hover:bg-[#192C67]/20 hover:border-[#F77B0F]/30 dark:hover:border-primary-700 transition-colors text-gray-700 dark:text-gray-300 disabled:opacity-50"
             >
               <span className="font-semibold">Copy to Weekdays</span>
               <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">Mon - Fri (excluding {SHORT_DAYS[GRID_DAY_MAP.indexOf(copySourceDay)]})</span>
@@ -1232,7 +1232,7 @@ export default function AvailabilityPage() {
             <button
               onClick={() => copyDayTo(GRID_DAY_MAP.filter((d) => d !== copySourceDay))}
               disabled={saving}
-              className="w-full px-4 py-3 text-sm font-medium text-left rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:border-primary-300 dark:hover:border-primary-700 transition-colors text-gray-700 dark:text-gray-300 disabled:opacity-50"
+              className="w-full px-4 py-3 text-sm font-medium text-left rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-[#F77B0F]/10 dark:hover:bg-[#192C67]/20 hover:border-[#F77B0F]/30 dark:hover:border-primary-700 transition-colors text-gray-700 dark:text-gray-300 disabled:opacity-50"
             >
               <span className="font-semibold">Copy to All Days</span>
               <span className="text-xs text-gray-400 dark:text-gray-500 ml-2">Every day of the week</span>
@@ -1251,7 +1251,7 @@ export default function AvailabilityPage() {
                     key={dayIdx}
                     onClick={() => copyDayTo([dayIdx])}
                     disabled={saving}
-                    className="px-3 py-2.5 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:border-primary-300 dark:hover:border-primary-700 transition-colors disabled:opacity-50"
+                    className="px-3 py-2.5 text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-[#F77B0F]/10 dark:hover:bg-[#192C67]/20 hover:border-[#F77B0F]/30 dark:hover:border-primary-700 transition-colors disabled:opacity-50"
                   >
                     {SHORT_DAYS[originalGridPos]}
                   </button>

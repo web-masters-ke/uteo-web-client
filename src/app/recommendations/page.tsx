@@ -48,7 +48,7 @@ function ReasonsBlock({ reasons }: { reasons: string[] }) {
       <button
         type="button"
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen((v) => !v); }}
-        className="inline-flex items-center gap-1 text-xs font-semibold text-[#192C67] dark:text-[#5b8bc7] hover:underline"
+        className="inline-flex items-center gap-1 text-xs font-semibold text-[#192C67] dark:text-white/70 hover:underline"
       >
         <svg className={`w-3 h-3 transition-transform ${open ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -115,7 +115,7 @@ function TrainerRecommendationCard({ rec }: { rec: RecommendedTrainer }) {
         <span className="text-sm font-bold text-[#192C67] dark:text-[#F77B0F]">
           {hourlyRate ? `${formatCurrency(hourlyRate)}/hr` : "Contact"}
         </span>
-        <span className="text-xs font-semibold text-[#192C67] dark:text-[#5b8bc7] group-hover:underline">View profile →</span>
+        <span className="text-xs font-semibold text-[#192C67] dark:text-white/70 group-hover:underline">View profile →</span>
       </div>
 
       <ReasonsBlock reasons={rec.reasons || []} />
@@ -173,7 +173,7 @@ function CourseRecommendationCard({ rec }: { rec: RecommendedCourse }) {
           <span className="text-sm font-bold text-[#192C67] dark:text-[#F77B0F]">
             {price > 0 ? formatCurrency(price) : "Free"}
           </span>
-          <span className="text-xs font-semibold text-[#192C67] dark:text-[#5b8bc7] group-hover:underline">Enrol →</span>
+          <span className="text-xs font-semibold text-[#192C67] dark:text-white/70 group-hover:underline">Enrol →</span>
         </div>
         <ReasonsBlock reasons={rec.reasons || []} />
       </div>
@@ -284,7 +284,7 @@ export default function RecommendationsPage() {
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">Top trainer matches</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Our strongest matches for your goals and budget.</p>
             </div>
-            <Link href="/trainers" className="text-xs font-semibold text-[#192C67] dark:text-[#5b8bc7] hover:underline shrink-0">
+            <Link href="/trainers" className="text-xs font-semibold text-[#192C67] dark:text-white/70 hover:underline shrink-0">
               See all →
             </Link>
           </div>
@@ -310,7 +310,7 @@ export default function RecommendationsPage() {
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">Recommended courses</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Self-paced learning aligned to your goals.</p>
             </div>
-            <Link href="/courses" className="text-xs font-semibold text-[#192C67] dark:text-[#5b8bc7] hover:underline shrink-0">
+            <Link href="/courses" className="text-xs font-semibold text-[#192C67] dark:text-white/70 hover:underline shrink-0">
               Browse all →
             </Link>
           </div>

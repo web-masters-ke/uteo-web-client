@@ -744,7 +744,7 @@ export default function WalletPage() {
               className={cn(
                 'py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 activeTab === tab.key
-                  ? 'border-[#192C67] text-[#192C67] dark:border-[#5b8bc7] dark:text-[#5b8bc7]'
+                  ? 'border-[#192C67] text-[#192C67] dark:border-[#F77B0F]/50 dark:text-white/70'
                   : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300'
               )}
             >
@@ -893,7 +893,7 @@ export default function WalletPage() {
                 <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                      <svg className="w-5 h-5 text-[#192C67] dark:text-[#5b8bc7]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <svg className="w-5 h-5 text-[#192C67] dark:text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                       </svg>
                     </div>
@@ -1056,7 +1056,7 @@ export default function WalletPage() {
                   const countdown = e.hoursUntilRelease != null ? (e.hoursUntilRelease > 24 ? `${Math.floor(e.hoursUntilRelease / 24)}d ${e.hoursUntilRelease % 24}h` : `${e.hoursUntilRelease}h`) : 'Pending session';
                   return (
                     <div key={e.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700">
-                      <div className="w-8 h-8 rounded-full bg-[#192C67]/10 flex items-center justify-center text-[10px] font-bold text-[#192C67] dark:text-[#5b8bc7] overflow-hidden shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-[#192C67]/10 flex items-center justify-center text-[10px] font-bold text-[#192C67] dark:text-white/70 overflow-hidden shrink-0">
                         {other?.avatar ? <img src={other.avatar} alt="" className="w-full h-full object-cover" /> : `${(other?.firstName?.[0] || '')}${(other?.lastName?.[0] || '')}`.toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -1298,8 +1298,8 @@ export default function WalletPage() {
                   className={cn(
                     'px-3 py-1.5 rounded-full text-xs font-medium transition-colors border',
                     filterType === opt.value
-                      ? 'bg-primary-500 text-white border-primary-500'
-                      : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary-400 hover:text-primary-600 dark:hover:text-primary-400'
+                      ? 'bg-[#F77B0F] text-white border-[#F77B0F]'
+                      : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-[#F77B0F]/80 hover:text-[#F77B0F] dark:hover:text-[#F77B0F]/80'
                   )}
                 >
                   {opt.label}
@@ -1469,7 +1469,7 @@ export default function WalletPage() {
                 onChange={(e) => setDepositAmount(e.target.value)}
                 placeholder="0"
                 min="1"
-                className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-lg font-semibold focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-lg font-semibold focus:ring-2 focus:ring-[#F77B0F] focus:border-[#F77B0F] outline-none"
               />
             </div>
           </div>
@@ -1484,8 +1484,8 @@ export default function WalletPage() {
                   className={cn(
                     'px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors',
                     Number(depositAmount) === amt
-                      ? 'bg-primary-500 text-white border-primary-500'
-                      : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary-400'
+                      ? 'bg-[#F77B0F] text-white border-[#F77B0F]'
+                      : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-[#F77B0F]/80'
                   )}
                 >
                   {amt.toLocaleString()}
@@ -1513,7 +1513,7 @@ export default function WalletPage() {
                   value={depositPhone}
                   onChange={(e) => setDepositPhone(e.target.value)}
                   placeholder="254712345678"
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] focus:border-[#F77B0F] outline-none"
                 />
                 <p className="text-xs text-gray-400 mt-1">Leave blank to use your registered phone number.</p>
               </div>
@@ -1534,16 +1534,16 @@ export default function WalletPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Card Number</label>
-                <input type="text" value={depositCardNumber} onChange={(e) => setDepositCardNumber(e.target.value)} placeholder="4242 4242 4242 4242" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none font-mono" maxLength={19} />
+                <input type="text" value={depositCardNumber} onChange={(e) => setDepositCardNumber(e.target.value)} placeholder="4242 4242 4242 4242" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none font-mono" maxLength={19} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Expiry (MM/YY)</label>
-                  <input type="text" value={depositCardExpiry} onChange={(e) => setDepositCardExpiry(e.target.value)} placeholder="12/26" maxLength={5} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none font-mono" />
+                  <input type="text" value={depositCardExpiry} onChange={(e) => setDepositCardExpiry(e.target.value)} placeholder="12/26" maxLength={5} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none font-mono" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">CVC</label>
-                  <input type="text" value={depositCardCvc} onChange={(e) => setDepositCardCvc(e.target.value)} placeholder="123" maxLength={4} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none font-mono" />
+                  <input type="text" value={depositCardCvc} onChange={(e) => setDepositCardCvc(e.target.value)} placeholder="123" maxLength={4} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none font-mono" />
                 </div>
               </div>
               <p className="text-[11px] text-amber-600 dark:text-amber-400">🔒 Card processing is handled by our PCI-compliant gateway. Card details are never stored on our servers.</p>
@@ -1557,7 +1557,7 @@ export default function WalletPage() {
                 <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Transfer to this account:</p>
                 <div className="space-y-1 text-sm">
                   <div className="flex justify-between"><span className="text-gray-500">Bank</span><span className="font-medium">KCB Bank Kenya</span></div>
-                  <div className="flex justify-between"><span className="text-gray-500">Account Name</span><span className="font-medium">SkillSasa</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Account Name</span><span className="font-medium">Uteo</span></div>
                   <div className="flex justify-between"><span className="text-gray-500">Account Number</span><span className="font-mono font-medium">1234567890</span></div>
                   <div className="flex justify-between"><span className="text-gray-500">Branch</span><span className="font-medium">Westlands 01106</span></div>
                   <div className="flex justify-between"><span className="text-gray-500">Reference</span><span className="font-mono font-medium">{user?.id?.slice(0, 8).toUpperCase() || 'YOUR ID'}</span></div>
@@ -1565,7 +1565,7 @@ export default function WalletPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Your bank account (for reference)</label>
-                <input type="text" value={depositBankAccount} onChange={(e) => setDepositBankAccount(e.target.value)} placeholder="Your bank account number" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none" />
+                <input type="text" value={depositBankAccount} onChange={(e) => setDepositBankAccount(e.target.value)} placeholder="Your bank account number" className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none" />
               </div>
               <p className="text-[11px] text-amber-600 dark:text-amber-400">⏱ Bank transfers are typically credited within 2–24 hours after we receive the funds.</p>
             </>
@@ -1574,7 +1574,7 @@ export default function WalletPage() {
           <button
             onClick={handleDeposit}
             disabled={depositLoading || !depositAmount || Number(depositAmount) <= 0 || (depositProvider === 'MPESA' && !depositPhone.trim())}
-            className="w-full py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#F77B0F] text-white font-semibold rounded-lg hover:bg-[#e06a0d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             {depositLoading ? (
               <>
@@ -1605,7 +1605,7 @@ export default function WalletPage() {
               <button
                 onClick={handleWithdrawAll}
                 disabled={balance <= 0}
-                className="text-xs font-medium text-primary-500 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-xs font-medium text-[#F77B0F] hover:text-[#F77B0F] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Withdraw All
               </button>
@@ -1620,10 +1620,10 @@ export default function WalletPage() {
                 min="1"
                 max={balance}
                 className={cn(
-                  'w-full pl-12 pr-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-lg font-semibold focus:ring-2 focus:ring-primary-500 outline-none',
+                  'w-full pl-12 pr-4 py-3 rounded-lg border bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-lg font-semibold focus:ring-2 focus:ring-[#F77B0F] outline-none',
                   Number(withdrawAmount) > balance
                     ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 dark:border-gray-600 focus:border-primary-500'
+                    : 'border-gray-300 dark:border-gray-600 focus:border-[#F77B0F]'
                 )}
               />
             </div>
@@ -1647,8 +1647,8 @@ export default function WalletPage() {
                   className={cn(
                     'px-3 py-1.5 rounded-lg text-sm font-medium border transition-colors',
                     Number(withdrawAmount) === amt
-                      ? 'bg-primary-500 text-white border-primary-500'
-                      : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-primary-400'
+                      ? 'bg-[#F77B0F] text-white border-[#F77B0F]'
+                      : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:border-[#F77B0F]/80'
                   )}
                 >
                   {amt.toLocaleString()}
@@ -1674,7 +1674,7 @@ export default function WalletPage() {
               value={withdrawPhone}
               onChange={(e) => setWithdrawPhone(e.target.value)}
               placeholder="254712345678"
-              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] focus:border-[#F77B0F] outline-none"
             />
           </div>
 
@@ -1687,7 +1687,7 @@ export default function WalletPage() {
               Number(withdrawAmount) > balance ||
               !withdrawPhone
             }
-            className="w-full py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#F77B0F] text-white font-semibold rounded-lg hover:bg-[#e06a0d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
           >
             {withdrawLoading ? (
               <>
@@ -1707,14 +1707,14 @@ export default function WalletPage() {
       {/* ═══════════════ P2P TRANSFER MODAL ═══════════════ */}
       <Modal isOpen={showTransfer} onClose={() => { setShowTransfer(false); setTransferRecipient(null); setTransferAmount(''); setTransferRecipientQuery(''); }} title="Send Money" size="sm">
         <div className="space-y-4">
-          <p className="text-sm text-gray-500 dark:text-gray-400">Send money to another SkillSasa user instantly — no fees.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Send money to another Uteo user instantly — no fees.</p>
 
           {/* Recipient search */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Recipient</label>
             {transferRecipient ? (
               <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
-                <div className="w-10 h-10 rounded-full bg-primary-500/10 flex items-center justify-center text-sm font-bold text-primary-600 shrink-0 overflow-hidden">
+                <div className="w-10 h-10 rounded-full bg-[#F77B0F]/10 flex items-center justify-center text-sm font-bold text-[#F77B0F] shrink-0 overflow-hidden">
                   {transferRecipient.avatar ? <img src={transferRecipient.avatar} className="w-full h-full object-cover" alt="" /> : `${(transferRecipient.firstName?.[0] || '')}${(transferRecipient.lastName?.[0] || '')}`.toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -1730,13 +1730,13 @@ export default function WalletPage() {
                   value={transferRecipientQuery}
                   onChange={(e) => setTransferRecipientQuery(e.target.value)}
                   placeholder="Search by name or email..."
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none"
                 />
                 {transferRecipients.length > 0 && (
                   <div className="absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                     {transferRecipients.map((u: any) => (
                       <button key={u.id} onClick={() => { setTransferRecipient(u); setTransferRecipientQuery(''); setTransferRecipients([]); }} className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 text-left">
-                        <div className="w-8 h-8 rounded-full bg-primary-500/10 flex items-center justify-center text-xs font-bold text-primary-600 shrink-0 overflow-hidden">
+                        <div className="w-8 h-8 rounded-full bg-[#F77B0F]/10 flex items-center justify-center text-xs font-bold text-[#F77B0F] shrink-0 overflow-hidden">
                           {u.avatar ? <img src={u.avatar} className="w-full h-full object-cover" alt="" /> : `${(u.firstName?.[0] || '')}${(u.lastName?.[0] || '')}`.toUpperCase()}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -1759,7 +1759,7 @@ export default function WalletPage() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Amount (KES)</label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">KES</span>
-              <input type="number" value={transferAmount} onChange={(e) => setTransferAmount(e.target.value)} placeholder="0" min="1" max={balance} className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-lg font-semibold focus:ring-2 focus:ring-primary-500 outline-none" />
+              <input type="number" value={transferAmount} onChange={(e) => setTransferAmount(e.target.value)} placeholder="0" min="1" max={balance} className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-lg font-semibold focus:ring-2 focus:ring-[#F77B0F] outline-none" />
             </div>
             <p className="text-xs text-gray-500 mt-1">Your balance: {currency} {balance.toLocaleString()}</p>
           </div>
@@ -1767,10 +1767,10 @@ export default function WalletPage() {
           {/* Note */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Note (optional)</label>
-            <input type="text" value={transferNote} onChange={(e) => setTransferNote(e.target.value)} placeholder="What's this for?" maxLength={100} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none" />
+            <input type="text" value={transferNote} onChange={(e) => setTransferNote(e.target.value)} placeholder="What's this for?" maxLength={100} className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none" />
           </div>
 
-          <button onClick={handleTransfer} disabled={transferLoading || !transferRecipient || !transferAmount || Number(transferAmount) <= 0 || Number(transferAmount) > balance} className="w-full py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+          <button onClick={handleTransfer} disabled={transferLoading || !transferRecipient || !transferAmount || Number(transferAmount) <= 0 || Number(transferAmount) > balance} className="w-full py-3 bg-[#F77B0F] text-white font-semibold rounded-lg hover:bg-[#e06a0d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
             {transferLoading ? 'Sending...' : transferRecipient && transferAmount ? `Send KES ${Number(transferAmount).toLocaleString()} to ${transferRecipient.firstName}` : 'Send'}
           </button>
         </div>

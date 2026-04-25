@@ -324,7 +324,7 @@ export default function TrainerProfilePage() {
   }, [tab, trainer, id]);
 
   if (loading) return <PageSkeleton />;
-  if (error || !trainer) return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{error || "Not found"}</h1><Link href="/trainers" className="text-primary-500 font-medium">Browse Trainers</Link></div>;
+  if (error || !trainer) return <div className="max-w-7xl mx-auto px-4 py-20 text-center"><h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{error || "Not found"}</h1><Link href="/trainers" className="text-[#F77B0F] font-medium">Browse Trainers</Link></div>;
 
   const totalRatings = ratingDist ? Object.values(ratingDist).reduce((a, b) => a + b, 0) : 0;
   const trainerUserId = (trainer as any).userId || (trainer as any).user?.id || "";
@@ -370,7 +370,7 @@ export default function TrainerProfilePage() {
                 <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
                   {trainer.location && <span className="flex items-center gap-1"><svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /></svg>{trainer.location}</span>}
                   {trainer.experience && <span>{trainer.experience} years exp</span>}
-                  {trainer.hourlyRate && <span className="font-semibold text-primary-600 dark:text-primary-400">{formatCurrency(trainer.hourlyRate)}/hr</span>}
+                  {trainer.hourlyRate && <span className="font-semibold text-[#F77B0F] dark:text-[#F77B0F]/80">{formatCurrency(trainer.hourlyRate)}/hr</span>}
                 </div>
               </div>
             </div>
@@ -407,7 +407,7 @@ export default function TrainerProfilePage() {
                   onClick={() => setTab(t.key)}
                   className={`px-5 py-4 text-sm font-semibold whitespace-nowrap transition-colors ${
                     tab === t.key
-                      ? "text-[#192C67] dark:text-[#5b8bc7] border-b-2 border-[#192C67] dark:border-[#5b8bc7] bg-[#192C67]/5"
+                      ? "text-[#192C67] dark:text-white/70 border-b-2 border-[#192C67] dark:border-[#F77B0F]/50 bg-[#192C67]/5"
                       : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                   }`}
                 >
@@ -575,7 +575,7 @@ export default function TrainerProfilePage() {
                               <img src={url} alt={item.title || `Portfolio ${i + 1}`} className="w-full h-full object-cover" />
                             ) : isVideo ? (
                               <div className="flex flex-col items-center gap-2 text-gray-500 dark:text-gray-400">
-                                <svg className="w-10 h-10 text-[#192C67] dark:text-[#5b8bc7]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" /></svg>
+                                <svg className="w-10 h-10 text-[#192C67] dark:text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" /></svg>
                                 <span className="text-xs font-medium">{item.title || 'Video'}</span>
                               </div>
                             ) : isPdf ? (
@@ -647,7 +647,7 @@ export default function TrainerProfilePage() {
                         >
                           <p className="font-semibold text-gray-900 dark:text-white mb-1 line-clamp-2">{c.title}</p>
                           <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2">{c.description}</p>
-                          <p className="mt-2 text-sm font-bold text-[#192C67] dark:text-[#5b8bc7]">
+                          <p className="mt-2 text-sm font-bold text-[#192C67] dark:text-white/70">
                             {c.price ? formatCurrency(c.price) : "Free"}
                           </p>
                         </Link>
@@ -696,7 +696,7 @@ export default function TrainerProfilePage() {
                           {/* Trainer reply */}
                           {(r as any).trainerResponse && (
                             <div className="mt-3 ml-6 pl-4 border-l-2 border-[#192C67]/20 dark:border-[#192C67]/40">
-                              <p className="text-[10px] font-semibold text-[#192C67] dark:text-[#5b8bc7] mb-1">Trainer replied:</p>
+                              <p className="text-[10px] font-semibold text-[#192C67] dark:text-white/70 mb-1">Trainer replied:</p>
                               <p className="text-sm text-gray-600 dark:text-gray-400 italic">{(r as any).trainerResponse}</p>
                             </div>
                           )}
@@ -872,7 +872,7 @@ export default function TrainerProfilePage() {
           <div className="sticky top-24 space-y-6">
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6 text-center">
               <p className="text-sm text-gray-500">Starting from</p>
-              <p className="text-3xl font-bold text-primary-600 dark:text-primary-400">{trainer.hourlyRate ? formatCurrency(trainer.hourlyRate) : "Contact"}</p>
+              <p className="text-3xl font-bold text-[#F77B0F] dark:text-[#F77B0F]/80">{trainer.hourlyRate ? formatCurrency(trainer.hourlyRate) : "Contact"}</p>
               <p className="text-sm text-gray-500 mb-4">per hour</p>
               <Link href={`/book/${trainer.id}`} className="block w-full py-3 bg-[#192C67] text-white font-semibold rounded-xl hover:bg-[#14234f] transition-colors text-center mb-2">Book This Trainer</Link>
               <Link href={`/messages?userId=${trainerUserId || id}&name=${encodeURIComponent(`${firstName} ${lastName}`.trim())}`} className="block w-full py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center mb-2">Send Message</Link>

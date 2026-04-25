@@ -47,7 +47,7 @@ function OfficialSeal({ size = 96 }: { size?: number }) {
   const r = size / 2;
   const innerR = r * 0.72;
   const textR = r * 0.84;
-  const label = "SKILLSASA · OFFICIAL · VERIFIED ·";
+  const label = "UTEO · OFFICIAL · VERIFIED ·";
   const chars = label.split("");
   const angleStep = 360 / chars.length;
 
@@ -210,14 +210,14 @@ export default function TranscriptPage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-xl font-black text-[#192C67] dark:text-white tracking-tight">SkillSasa</p>
+                    <p className="text-xl font-black text-[#192C67] dark:text-white tracking-tight">Uteo</p>
                     <p className="text-[11px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest">Professional Training Platform</p>
-                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Nairobi, Kenya · skillsasa.co.ke</p>
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Nairobi, Kenya · uteo.co.ke</p>
                   </div>
                 </div>
 
                 <div className="text-right shrink-0">
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-[#192C67] dark:text-[#5b8bc7]">Official Academic Transcript</p>
+                  <p className="text-xs font-black uppercase tracking-[0.2em] text-[#192C67] dark:text-white/70">Official Academic Transcript</p>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">Date Issued: {today}</p>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Record ID: TRN-{data.user.id?.slice(0, 8).toUpperCase()}</p>
                 </div>
@@ -227,7 +227,7 @@ export default function TranscriptPage() {
             {/* ── Student identity block ── */}
             <div className="px-8 sm:px-12 py-7 border-b border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-start gap-6">
               {/* Avatar */}
-              <div className="w-20 h-20 rounded-xl bg-[#192C67]/10 dark:bg-[#192C67]/30 flex items-center justify-center text-[#192C67] dark:text-[#5b8bc7] font-black text-2xl shrink-0 overflow-hidden border-2 border-[#192C67]/20">
+              <div className="w-20 h-20 rounded-xl bg-[#192C67]/10 dark:bg-[#192C67]/30 flex items-center justify-center text-[#192C67] dark:text-white/70 font-black text-2xl shrink-0 overflow-hidden border-2 border-[#192C67]/20">
                 {data.user.avatarUrl
                   ? <img src={data.user.avatarUrl} alt="" className="h-full w-full object-cover" />
                   : getInitials(data.user.firstName, data.user.lastName)
@@ -377,15 +377,15 @@ export default function TranscriptPage() {
             <div className="px-8 sm:px-12 py-6 border-t border-gray-200 dark:border-gray-700 bg-[#192C67]/3 dark:bg-[#192C67]/10">
               <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
                 <div className="max-w-lg">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-[#192C67] dark:text-[#5b8bc7] mb-1.5">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-[#192C67] dark:text-white/70 mb-1.5">
                     Verification Statement
                   </p>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed">
-                    This transcript is an official academic record issued by SkillSasa, a professional training
+                    This transcript is an official academic record issued by Uteo, a professional training
                     platform registered in Kenya. All certificates referenced herein are independently verifiable.
                     Employers and institutions may verify individual certificates at{" "}
-                    <span className="font-mono font-semibold text-[#192C67] dark:text-[#5b8bc7]">
-                      skillsasa.co.ke/verify/&lt;code&gt;
+                    <span className="font-mono font-semibold text-[#192C67] dark:text-white/70">
+                      uteo.co.ke/verify/&lt;code&gt;
                     </span>
                   </p>
                   <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2">
@@ -396,8 +396,8 @@ export default function TranscriptPage() {
                 {/* Signature area */}
                 <div className="shrink-0 text-center">
                   <div className="w-40 border-b-2 border-[#192C67]/40 dark:border-[#192C67]/60 mb-1 pb-1">
-                    <p className="font-black text-[#192C67] dark:text-[#5b8bc7] text-sm italic" style={{ fontFamily: "Georgia, serif" }}>
-                      SkillSasa Platform
+                    <p className="font-black text-[#192C67] dark:text-white/70 text-sm italic" style={{ fontFamily: "Georgia, serif" }}>
+                      Uteo Platform
                     </p>
                   </div>
                   <p className="text-[10px] text-gray-400 uppercase tracking-widest">Authorised Issuer</p>
@@ -413,7 +413,7 @@ export default function TranscriptPage() {
           {/* ── Actions below doc (screen only) ── */}
           <div className="no-print mt-6 flex flex-wrap items-center justify-between gap-3">
             <Link href="/certificates"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#192C67] dark:text-[#5b8bc7] hover:underline">
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#192C67] dark:text-white/70 hover:underline">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
               </svg>

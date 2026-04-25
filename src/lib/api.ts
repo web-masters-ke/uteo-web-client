@@ -95,7 +95,7 @@ export function setAuthToken(token: string) {
 export function clearAuth() {
   if (typeof window !== "undefined") {
     localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem("skillsasa-user");
+    localStorage.removeItem("uteo-user");
   }
 }
 

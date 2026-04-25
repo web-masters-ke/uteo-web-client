@@ -9,7 +9,7 @@ export const userService = {
     let userId = payload.id;
     if (!userId) {
       try {
-        const u = JSON.parse(localStorage.getItem("skillsasa-user") ?? "{}");
+        const u = JSON.parse(localStorage.getItem("uteo-user") ?? "{}");
         userId = u?.id;
       } catch { /* noop */ }
     }
@@ -47,7 +47,7 @@ export const userService = {
   deleteAccount: async (): Promise<void> => {
     let userId: string | undefined;
     try {
-      const u = JSON.parse(localStorage.getItem("skillsasa-user") ?? "{}");
+      const u = JSON.parse(localStorage.getItem("uteo-user") ?? "{}");
       userId = u?.id;
     } catch { /* noop */ }
     if (userId) {

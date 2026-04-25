@@ -500,7 +500,7 @@ export default function CourseBuilder({ onSuccess }: { onSuccess: () => void }) 
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Cert Number Prefix</label>
-                <input value={cert.certNumberPrefix} onChange={e => setCert(c => ({ ...c, certNumberPrefix: e.target.value }))} className={ic} placeholder="e.g. CERT, SkillSasa" />
+                <input value={cert.certNumberPrefix} onChange={e => setCert(c => ({ ...c, certNumberPrefix: e.target.value }))} className={ic} placeholder="e.g. CERT, Uteo" />
               </div>
               <div className="flex items-end">
                 <div className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-xs text-gray-400">

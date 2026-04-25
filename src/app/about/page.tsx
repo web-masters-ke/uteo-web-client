@@ -10,15 +10,15 @@ export default function AboutPage() {
           <div className="absolute inset-0 bg-[#192C67]/75" />
         </div>
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full">
-          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">SkillSasa</p>
-          <h1 className="text-4xl lg:text-6xl font-black text-white">About SkillSasa</h1>
-          <p className="mt-4 text-lg text-white/80 max-w-xl">Professional Trainers Association of Kenya</p>
+          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">Uteo</p>
+          <h1 className="text-4xl lg:text-6xl font-black text-white">About Uteo</h1>
+          <p className="mt-4 text-lg text-white/80 max-w-xl">Uteo</p>
         </div>
       </section>
 
       <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-20 lg:py-28">
         <p className="text-lg text-gray-600 dark:text-gray-300 mb-12 max-w-3xl">
-          The Professional Trainers Association of Kenya (SkillSasa) is Kenya&apos;s premier marketplace connecting clients with verified, professional trainers across every discipline.
+          The Uteo — AI-Powered Job Matching is Kenya&apos;s premier marketplace connecting clients with verified, professional trainers across every discipline.
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20">
@@ -60,12 +60,12 @@ export default function AboutPage() {
           <li><strong>Community</strong> - We foster a vibrant community of learners and educators.</li>
         </ul>
 
-        <div className="bg-primary-50 dark:bg-primary-900/20 rounded-xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-primary-900 dark:text-primary-200 mb-4">Join Our Community</h2>
-          <p className="text-primary-700 dark:text-primary-300 mb-6">Whether you are looking to learn or teach, SkillSasa has a place for you.</p>
+        <div className="bg-[#F77B0F]/10 dark:bg-[#192C67]/20 rounded-xl p-8 text-center">
+          <h2 className="text-2xl font-bold text-[#192C67] dark:text-[#F77B0F]/50 mb-4">Join Our Community</h2>
+          <p className="text-[#F77B0F] dark:text-[#F77B0F]/60 mb-6">Whether you are looking to learn or teach, Uteo has a place for you.</p>
           <div className="flex justify-center gap-4">
-            <Link href="/register" className="px-6 py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors">Get Started</Link>
-            <Link href="/contact" className="px-6 py-3 border border-primary-500 text-primary-600 dark:text-primary-400 font-semibold rounded-lg hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-colors">Contact Us</Link>
+            <Link href="/register" className="px-6 py-3 bg-[#F77B0F] text-white font-semibold rounded-lg hover:bg-[#e06a0d] transition-colors">Get Started</Link>
+            <Link href="/contact" className="px-6 py-3 border border-[#F77B0F] text-[#F77B0F] dark:text-[#F77B0F]/80 font-semibold rounded-lg hover:bg-[#F77B0F]/10 dark:hover:bg-[#192C67]/30 transition-colors">Contact Us</Link>
           </div>
         </div>
       </div>

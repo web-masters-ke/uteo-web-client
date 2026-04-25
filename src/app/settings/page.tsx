@@ -52,7 +52,7 @@ const LANGUAGES = [
   { value: 'ar', label: 'Arabic' },
 ];
 
-const INPUT = 'w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:border-[#192C67] dark:focus:border-primary-500 focus:ring-2 focus:ring-[#192C67]/10 transition-all placeholder:text-zinc-300 dark:placeholder:text-zinc-600';
+const INPUT = 'w-full px-4 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-sm text-zinc-900 dark:text-zinc-100 outline-none focus:border-[#192C67] dark:focus:border-[#F77B0F] focus:ring-2 focus:ring-[#192C67]/10 transition-all placeholder:text-zinc-300 dark:placeholder:text-zinc-600';
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-4">{children}</p>;
@@ -111,7 +111,7 @@ export default function SettingsPage() {
   useEffect(() => {
     userService.getNotificationPreferences().then(setPrefs).catch(() => {});
     try {
-      const s = JSON.parse(localStorage.getItem('skillsasa-settings') ?? '{}');
+      const s = JSON.parse(localStorage.getItem('uteo-settings') ?? '{}');
       if (s.timezone) setTimezone(s.timezone);
       if (s.language) setLanguage(s.language);
       if (s.profileVisibility) setProfileVisibility(s.profileVisibility);
@@ -122,8 +122,8 @@ export default function SettingsPage() {
 
   const saveLocal = (updates: Record<string, any>) => {
     try {
-      const stored = JSON.parse(localStorage.getItem('skillsasa-settings') ?? '{}');
-      localStorage.setItem('skillsasa-settings', JSON.stringify({ ...stored, ...updates }));
+      const stored = JSON.parse(localStorage.getItem('uteo-settings') ?? '{}');
+      localStorage.setItem('uteo-settings', JSON.stringify({ ...stored, ...updates }));
     } catch { /* ignore */ }
   };
 
@@ -240,7 +240,7 @@ export default function SettingsPage() {
                       <div key={label}>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">{label}</p>
                         {badge ? (
-                          <span className="inline-flex items-center rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-primary-900/30 dark:text-primary-300 px-2.5 py-0.5 text-xs font-semibold capitalize">
+                          <span className="inline-flex items-center rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/30 dark:text-[#F77B0F]/60 px-2.5 py-0.5 text-xs font-semibold capitalize">
                             {value.toLowerCase()}
                           </span>
                         ) : (
@@ -310,7 +310,7 @@ export default function SettingsPage() {
               <Card>
                 <div className="flex items-start justify-between mb-1">
                   <SectionTitle>Notification Preferences</SectionTitle>
-                  <Link href="/settings/notifications" className="text-[10px] font-bold uppercase tracking-widest text-[#192C67] dark:text-primary-400 hover:underline flex items-center gap-1">
+                  <Link href="/settings/notifications" className="text-[10px] font-bold uppercase tracking-widest text-[#192C67] dark:text-[#F77B0F]/80 hover:underline flex items-center gap-1">
                     Advanced
                     <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
                   </Link>

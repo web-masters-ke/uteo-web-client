@@ -74,7 +74,7 @@ export default function LoginPage() {
       </div>
 
       {/* Right — Form */}
-      <div className="w-full lg:w-1/2 flex flex-col bg-gray-50 dark:bg-[#0a0f1a] overflow-y-auto">
+      <div className="w-full lg:w-1/2 flex flex-col bg-gray-50 dark:bg-[#0d0d0d] overflow-y-auto">
         {/* Form centred in remaining space */}
         <div className="flex-1 flex items-center justify-center px-6 py-10">
           <div className="w-full max-w-sm">
@@ -102,12 +102,12 @@ export default function LoginPage() {
                 {errors.password && <p className="text-xs text-red-500 mt-1.5">{errors.password.message}</p>}
               </div>
               <div className="flex items-center justify-end">
-                <Link href="/forgot-password" className="text-sm font-semibold text-[#192C67] dark:text-[#5b8bc7] hover:underline">Forgot password?</Link>
+                <Link href="/forgot-password" className="text-sm font-semibold text-[#192C67] dark:text-white/70 hover:underline">Forgot password?</Link>
               </div>
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 border-2 border-[#192C67] dark:border-[#5b8bc7] text-[#192C67] dark:text-[#5b8bc7] font-bold rounded-xl hover:bg-[#192C67]/5 dark:hover:bg-[#5b8bc7]/10 disabled:opacity-40 transition-colors text-sm uppercase tracking-wider"
+                className="w-full py-3.5 border-2 border-[#192C67] dark:border-[#F77B0F]/50 text-[#192C67] dark:text-white/70 font-bold rounded-xl hover:bg-[#192C67]/5 dark:hover:bg-[#5b8bc7]/10 disabled:opacity-40 transition-colors text-sm uppercase tracking-wider"
               >
                 {submitting ? "Signing in..." : "Sign In"}
               </button>
@@ -115,7 +115,7 @@ export default function LoginPage() {
 
             <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
               Don&apos;t have an account?{" "}
-              <Link href="/register" className="font-bold text-[#192C67] dark:text-[#5b8bc7] hover:underline">Create Account</Link>
+              <Link href="/register" className="font-bold text-[#192C67] dark:text-white/70 hover:underline">Create Account</Link>
             </p>
           </div>
         </div>

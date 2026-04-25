@@ -22,9 +22,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const token = localStorage.getItem('skillsasa-client-token');
-    const storedUser = localStorage.getItem('skillsasa-user');
+    const storedUser = localStorage.getItem('uteo-user');
     if (token && storedUser) {
-      try { setUser(JSON.parse(storedUser)); } catch { localStorage.removeItem('skillsasa-client-token'); localStorage.removeItem('skillsasa-user'); }
+      try { setUser(JSON.parse(storedUser)); } catch { localStorage.removeItem('skillsasa-client-token'); localStorage.removeItem('uteo-user'); }
     }
     setIsLoading(false);
   }, []);
@@ -32,22 +32,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (payload: LoginPayload) => {
     const data = await authService.login(payload.email, payload.password);
     localStorage.setItem('skillsasa-client-token', data.accessToken);
-    localStorage.setItem('skillsasa-user', JSON.stringify(data.user));
+    localStorage.setItem('uteo-user', JSON.stringify(data.user));
     setUser(data.user);
   }, []);
 
   const register = useCallback(async (payload: RegisterPayload) => {
     const data = await authService.register(payload);
     localStorage.setItem('skillsasa-client-token', data.accessToken);
-    localStorage.setItem('skillsasa-user', JSON.stringify(data.user));
+    localStorage.setItem('uteo-user', JSON.stringify(data.user));
     setUser(data.user);
   }, []);
 
   const logout = useCallback(() => {
     try {
       localStorage.removeItem('skillsasa-client-token');
-      localStorage.removeItem('skillsasa-user');
-      localStorage.removeItem('skillsasa-refresh-token');
+      localStorage.removeItem('uteo-user');
+      localStorage.removeItem('uteo-refresh-token');
       sessionStorage.clear();
     } catch { /* noop */ }
     setUser(null);
@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateUser = useCallback((updated: User) => {
-    localStorage.setItem('skillsasa-user', JSON.stringify(updated));
+    localStorage.setItem('uteo-user', JSON.stringify(updated));
     setUser(updated);
   }, []);
 

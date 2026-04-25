@@ -30,7 +30,7 @@ export const authService = {
     const token = res.accessToken;
     setAuthToken(token);
     if (res.user && typeof window !== "undefined") {
-      localStorage.setItem("skillsasa-user", JSON.stringify(res.user));
+      localStorage.setItem("uteo-user", JSON.stringify(res.user));
     }
     return res;
   },
@@ -39,7 +39,7 @@ export const authService = {
     const res = await apiPost<LoginResponse>("/auth/register", payload);
     setAuthToken(res.accessToken);
     if (res.user && typeof window !== "undefined") {
-      localStorage.setItem("skillsasa-user", JSON.stringify(res.user));
+      localStorage.setItem("uteo-user", JSON.stringify(res.user));
     }
     return res;
   },
@@ -60,14 +60,14 @@ export const authService = {
   logout() {
     if (typeof window !== "undefined") {
       localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem("skillsasa-user");
+      localStorage.removeItem("uteo-user");
     }
   },
 
   getUser(): User | null {
     if (typeof window === "undefined") return null;
     try {
-      return JSON.parse(localStorage.getItem("skillsasa-user") ?? "null");
+      return JSON.parse(localStorage.getItem("uteo-user") ?? "null");
     } catch {
       return null;
     }

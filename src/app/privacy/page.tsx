@@ -27,7 +27,7 @@ export default function PrivacyPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">6. Your Rights</h2>
-          <p>You have the right to access, update, or delete your personal data. You can update your profile at any time or delete your account through the Settings page. For data requests, contact privacy@skillsasa.co.ke.</p>
+          <p>You have the right to access, update, or delete your personal data. You can update your profile at any time or delete your account through the Settings page. For data requests, contact privacy@uteo.co.ke.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">7. Data Retention</h2>
@@ -35,7 +35,7 @@ export default function PrivacyPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">8. Children</h2>
-          <p>SkillSasa is not intended for use by persons under 18 years of age. We do not knowingly collect data from minors.</p>
+          <p>Uteo is not intended for use by persons under 18 years of age. We do not knowingly collect data from minors.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">9. Changes to This Policy</h2>
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">10. Contact</h2>
-          <p>For privacy-related questions, contact us at privacy@skillsasa.co.ke.</p>
+          <p>For privacy-related questions, contact us at privacy@uteo.co.ke.</p>
         </section>
       </div>
     </div>

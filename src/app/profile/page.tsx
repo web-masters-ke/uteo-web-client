@@ -62,7 +62,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function Spinner() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[#0a0f1a]">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-[#0d0d0d]">
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#F77B0F] border-t-transparent" />
     </div>
   );
@@ -307,9 +307,9 @@ export default function ProfilePage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0a0f1a]">
+    <div className="min-h-screen bg-gray-50 dark:bg-[#0d0d0d]">
       {/* Header / Hero */}
-      <div className="bg-gradient-to-br from-[#192C67] to-[#0a1120] pb-0">
+      <div className="bg-gradient-to-br from-[#192C67] to-[#0d0d0d] pb-0">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
             {/* Avatar */}

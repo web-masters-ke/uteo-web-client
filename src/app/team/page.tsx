@@ -48,7 +48,7 @@ type Tab = 'members' | 'invites';
 // ─── Role config ─────────────────────────────────────────────────────────────
 
 const ROLE_BADGE: Record<string, { label: string; bg: string; text: string }> = {
-  OWNER:      { label: 'Owner',      bg: 'bg-[#192C67]/10 dark:bg-[#192C67]/30', text: 'text-[#192C67] dark:text-[#5b8bc7]' },
+  OWNER:      { label: 'Owner',      bg: 'bg-[#192C67]/10 dark:bg-[#192C67]/30', text: 'text-[#192C67] dark:text-white/70' },
   ADMIN:      { label: 'Admin',      bg: 'bg-purple-50 dark:bg-purple-900/20',    text: 'text-purple-700 dark:text-purple-300' },
   CONSULTANT: { label: 'Consultant', bg: 'bg-[#F77B0F]/10 dark:bg-[#F77B0F]/30', text: 'text-[#B08930] dark:text-[#E8C96E]' },
   ASSOCIATE:  { label: 'Associate',  bg: 'bg-zinc-100 dark:bg-zinc-800',          text: 'text-zinc-600 dark:text-zinc-300' },
@@ -111,7 +111,7 @@ function StatsRow({ members, invites }: { members: TeamMember[]; invites: TeamIn
   const consultants = members.filter((m) => m.role === 'CONSULTANT').length;
 
   const stats = [
-    { label: 'Total Members',  value: total,       icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', color: 'text-[#192C67] dark:text-[#5b8bc7]' },
+    { label: 'Total Members',  value: total,       icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', color: 'text-[#192C67] dark:text-white/70' },
     { label: 'Active',         value: active,       icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', color: 'text-emerald-600 dark:text-emerald-400' },
     { label: 'Pending Invites', value: pending,     icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', color: 'text-amber-600 dark:text-amber-400' },
     { label: 'Consultants',    value: consultants,  icon: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', color: 'text-[#F77B0F] dark:text-[#E8C96E]' },
@@ -361,14 +361,14 @@ function InviteModal({
               <input value={skillInput} onChange={e => setSkillInput(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); if (skillInput.trim() && !skills.includes(skillInput.trim())) { setSkills([...skills, skillInput.trim()]); setSkillInput(''); } } }} placeholder="Type skill, press Enter" className="flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 focus:border-[#192C67] focus:outline-none focus:ring-2 focus:ring-[#192C67]/20" />
               <button type="button" onClick={() => { if (skillInput.trim() && !skills.includes(skillInput.trim())) { setSkills([...skills, skillInput.trim()]); setSkillInput(''); } }} className="px-3 py-2 rounded-lg bg-[#192C67] text-white text-xs font-medium">Add</button>
             </div>
-            {skills.length > 0 && <div className="flex flex-wrap gap-1.5">{skills.map((s, i) => (<span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#192C67]/10 text-xs font-medium text-[#192C67] dark:text-[#5b8bc7]">{s}<button type="button" onClick={() => setSkills(skills.filter((_, j) => j !== i))} className="hover:text-red-500">×</button></span>))}</div>}
+            {skills.length > 0 && <div className="flex flex-wrap gap-1.5">{skills.map((s, i) => (<span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#192C67]/10 text-xs font-medium text-[#192C67] dark:text-white/70">{s}<button type="button" onClick={() => setSkills(skills.filter((_, j) => j !== i))} className="hover:text-red-500">×</button></span>))}</div>}
           </div>
 
           {/* Credentials */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Credentials</label>
-              <button type="button" onClick={() => setCredentials([...credentials, { type: 'CERTIFICATE', name: '', issuer: '', year: '', documentUrl: '', uploading: false }])} className="text-xs font-medium text-[#192C67] dark:text-[#5b8bc7]">+ Add</button>
+              <button type="button" onClick={() => setCredentials([...credentials, { type: 'CERTIFICATE', name: '', issuer: '', year: '', documentUrl: '', uploading: false }])} className="text-xs font-medium text-[#192C67] dark:text-white/70">+ Add</button>
             </div>
             {credentials.map((cred, idx) => (
               <div key={idx} className="mb-2 p-3 rounded-xl border border-zinc-200 dark:border-zinc-700 space-y-2">
@@ -825,7 +825,7 @@ function MemberCard({
           </p>
           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-400 dark:text-zinc-500">
             {member.department && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[#192C67]/10 px-2 py-0.5 text-[10px] font-medium text-[#192C67] dark:bg-[#192C67]/30 dark:text-[#5b8bc7]">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#192C67]/10 px-2 py-0.5 text-[10px] font-medium text-[#192C67] dark:bg-[#192C67]/30 dark:text-white/70">
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
                   <path d="M2 20h20M5 20V8l7-5 7 5v12M9 20v-4h6v4" />
                 </svg>
@@ -1053,7 +1053,7 @@ function AddTrainerModal({ open, onClose, onCreated, orgUserId, departments }: {
         <div className="flex items-center justify-between px-6 py-5 border-b border-zinc-200 dark:border-zinc-700 shrink-0">
           <div>
             <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Add New Trainer</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Creates a brand-new SkillSasa account and auto-attaches them to your org</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Creates a brand-new Uteo account and auto-attaches them to your org</p>
           </div>
           <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -1179,7 +1179,7 @@ function AddTrainerModal({ open, onClose, onCreated, orgUserId, departments }: {
   );
 }
 
-// ── Add Existing Trainer Modal (search SkillSasa trainers, direct-add) ─────────────
+// ── Add Existing Trainer Modal (search Uteo trainers, direct-add) ─────────────
 function AddExistingTrainerModal({ open, onClose, onAdded, departments }: {
   open: boolean;
   onClose: () => void;
@@ -1240,7 +1240,7 @@ function AddExistingTrainerModal({ open, onClose, onAdded, departments }: {
         <div className="flex items-center justify-between px-6 py-5 border-b border-zinc-200 dark:border-zinc-700">
           <div>
             <h3 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">Add Existing Trainer</h3>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Search for a trainer already on SkillSasa and bring them into your org</p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">Search for a trainer already on Uteo and bring them into your org</p>
           </div>
           <button onClick={() => { reset(); onClose(); }} className="flex h-8 w-8 items-center justify-center rounded-full text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
@@ -1267,7 +1267,7 @@ function AddExistingTrainerModal({ open, onClose, onAdded, departments }: {
                     return (
                       <button key={t.id} type="button" onClick={() => setSelected(t)}
                         className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-zinc-50 dark:hover:bg-zinc-800 border-b border-zinc-100 dark:border-zinc-800 last:border-0 transition-colors">
-                        <div className="w-9 h-9 rounded-full bg-[#192C67]/10 flex items-center justify-center text-xs font-bold text-[#192C67] dark:text-[#5b8bc7] shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-[#192C67]/10 flex items-center justify-center text-xs font-bold text-[#192C67] dark:text-white/70 shrink-0">
                           {firstName[0]}{lastName[0]}
                         </div>
                         <div className="min-w-0">
@@ -1480,7 +1480,7 @@ export default function TeamPage() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => router.push('/departments')}
-            className="inline-flex items-center gap-2 rounded-lg border border-[#192C67] px-4 py-2.5 text-sm font-medium text-[#192C67] transition-colors hover:bg-[#192C67]/5 dark:border-[#5b8bc7] dark:text-[#5b8bc7] dark:hover:bg-[#5b8bc7]/10"
+            className="inline-flex items-center gap-2 rounded-lg border border-[#192C67] px-4 py-2.5 text-sm font-medium text-[#192C67] transition-colors hover:bg-[#192C67]/5 dark:border-[#F77B0F]/50 dark:text-white/70 dark:hover:bg-[#5b8bc7]/10"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -1554,7 +1554,7 @@ export default function TeamPage() {
           <div className="rounded-2xl border border-dashed border-zinc-300 dark:border-zinc-700 p-10">
             <div className="max-w-lg mx-auto text-center">
               <div className="mx-auto h-16 w-16 rounded-2xl bg-[#192C67]/10 dark:bg-[#192C67]/20 flex items-center justify-center mb-6">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[#192C67] dark:text-[#5b8bc7]">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-[#192C67] dark:text-white/70">
                   <path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
@@ -1579,7 +1579,7 @@ export default function TeamPage() {
                 </div>
                 <div className="p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 text-left">
                   <div className="h-8 w-8 rounded-lg bg-[#192C67]/15 flex items-center justify-center mb-3">
-                    <span className="text-[#192C67] dark:text-[#5b8bc7] font-bold text-sm">3</span>
+                    <span className="text-[#192C67] dark:text-white/70 font-bold text-sm">3</span>
                   </div>
                   <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Assign & Schedule</p>
                   <p className="text-xs text-zinc-500 mt-1">Set availability and assign bookings</p>
@@ -1602,7 +1602,7 @@ export default function TeamPage() {
                 </button>
                 <button
                   onClick={() => router.push('/departments')}
-                  className="inline-flex items-center gap-2 rounded-lg border border-[#192C67] px-6 py-3 text-sm font-medium text-[#192C67] transition-colors hover:bg-[#192C67]/5 dark:border-[#5b8bc7] dark:text-[#5b8bc7]"
+                  className="inline-flex items-center gap-2 rounded-lg border border-[#192C67] px-6 py-3 text-sm font-medium text-[#192C67] transition-colors hover:bg-[#192C67]/5 dark:border-[#F77B0F]/50 dark:text-white/70"
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                   Create Departments

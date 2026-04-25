@@ -24,7 +24,7 @@ function ResetPasswordPageInner() {
     try { await authService.resetPassword(token, password); addToast("success", "Password reset!"); router.push("/login"); } catch { addToast("error", "Failed to reset password"); } finally { setSubmitting(false); }
   };
 
-  const ic = "w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none";
+  const ic = "w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none";
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4">
@@ -33,9 +33,9 @@ function ResetPasswordPageInner() {
         <form onSubmit={onSubmit} className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-8 space-y-5">
           <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">New Password</label><input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className={ic} placeholder="At least 8 characters" /></div>
           <div><label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Confirm Password</label><input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)} className={ic} /></div>
-          <button type="submit" disabled={submitting} className="w-full py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 disabled:opacity-50">{submitting ? "Resetting..." : "Reset Password"}</button>
+          <button type="submit" disabled={submitting} className="w-full py-3 bg-[#F77B0F] text-white font-semibold rounded-lg hover:bg-[#e06a0d] disabled:opacity-50">{submitting ? "Resetting..." : "Reset Password"}</button>
         </form>
-        <p className="text-center text-sm text-gray-500 mt-6"><Link href="/login" className="text-primary-500 font-medium">Back to Sign In</Link></p>
+        <p className="text-center text-sm text-gray-500 mt-6"><Link href="/login" className="text-[#F77B0F] font-medium">Back to Sign In</Link></p>
       </div>
     </div>
   );

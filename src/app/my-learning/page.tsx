@@ -220,7 +220,7 @@ export default function MyLearningPage() {
               </div>
               <Link
                 href="/courses?tab=enrolled"
-                className="text-xs font-semibold uppercase tracking-wider text-[#192C67] dark:text-[#5b8bc7] hover:underline"
+                className="text-xs font-semibold uppercase tracking-wider text-[#192C67] dark:text-white/70 hover:underline"
               >
                 View all
               </Link>
@@ -272,7 +272,7 @@ export default function MyLearningPage() {
                           <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                             Progress
                           </span>
-                          <span className="text-[11px] font-bold text-[#192C67] dark:text-[#5b8bc7]">
+                          <span className="text-[11px] font-bold text-[#192C67] dark:text-white/70">
                             {c.progress}%
                           </span>
                         </div>
@@ -310,7 +310,7 @@ export default function MyLearningPage() {
               </div>
               <Link
                 href="/certificates"
-                className="text-xs font-semibold uppercase tracking-wider text-[#192C67] dark:text-[#5b8bc7] hover:underline"
+                className="text-xs font-semibold uppercase tracking-wider text-[#192C67] dark:text-white/70 hover:underline"
               >
                 All certificates
               </Link>
@@ -414,7 +414,7 @@ export default function MyLearningPage() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-900/40 transition-colors"
                     >
-                      <div className="h-11 w-11 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 flex items-center justify-center text-[#192C67] dark:text-[#5b8bc7] shrink-0">
+                      <div className="h-11 w-11 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 flex items-center justify-center text-[#192C67] dark:text-white/70 shrink-0">
                         <svg
                           className="w-5 h-5"
                           fill="currentColor"
@@ -438,7 +438,7 @@ export default function MyLearningPage() {
                           )}
                         </p>
                       </div>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-[#192C67] dark:text-[#5b8bc7] group-hover:underline shrink-0">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-[#192C67] dark:text-white/70 group-hover:underline shrink-0">
                         Play
                       </span>
                     </a>
@@ -457,7 +457,7 @@ export default function MyLearningPage() {
                 </p>
                 <h3 className="text-2xl font-black">Full transcript, all courses, all grades</h3>
                 <p className="mt-2 text-sm text-white/70 max-w-xl">
-                  See your complete academic record on SkillSasa — grades, milestones, CGPA,
+                  See your complete academic record on Uteo — grades, milestones, CGPA,
                   and every certificate in one place. Print-ready for employers.
                 </p>
               </div>

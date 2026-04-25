@@ -6,13 +6,13 @@ import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
 
 const FAQ_TRAINERS = [
-  { q: "How do I get verified on SkillSasa?", a: "Go to Profile > Verification. Upload your ID, professional certifications (IHRM, NITA, etc.), and portfolio. Our team reviews documents within 2-3 business days. Once verified, you get a blue badge on your profile." },
+  { q: "How do I get verified on Uteo?", a: "Go to Profile > Verification. Upload your ID, professional certifications (IHRM, NITA, etc.), and portfolio. Our team reviews documents within 2-3 business days. Once verified, you get a blue badge on your profile." },
   { q: "How do I set my availability?", a: "Go to Availability from the sidebar. Set your weekly schedule with time slots for each day. Clients can only book during your available hours." },
-  { q: "How does payment work for trainers?", a: "When a client books you, their payment goes into escrow. After the session is marked complete, SkillSasa deducts the platform commission (based on your subscription tier: 10% Basic, 7% Professional, 5% Enterprise) and credits the rest to your wallet. You can withdraw to M-Pesa anytime." },
-  { q: "How do I conduct a virtual session?", a: "Go to Sessions from the sidebar. Start an instant meeting or join a scheduled one. SkillSasa uses Jitsi for HD video — no downloads required. Sessions can be recorded for playback." },
+  { q: "How does payment work for trainers?", a: "When a client books you, their payment goes into escrow. After the session is marked complete, Uteo deducts the platform commission (based on your subscription tier: 10% Basic, 7% Professional, 5% Enterprise) and credits the rest to your wallet. You can withdraw to M-Pesa anytime." },
+  { q: "How do I conduct a virtual session?", a: "Go to Sessions from the sidebar. Start an instant meeting or join a scheduled one. Uteo uses Jitsi for HD video — no downloads required. Sessions can be recorded for playback." },
   { q: "Can I have a team under my firm?", a: "Yes. Enterprise plan subscribers can add team members to their training firm. Go to Settings > Team Management to invite consultants to your organization." },
   { q: "How do I manage my subscription?", a: "Go to Subscriptions from the sidebar. You can upgrade from Basic (free) to Professional (KES 2,500/mo) or Enterprise (KES 7,500/mo) anytime. Downgrade takes effect at the end of your billing cycle." },
-  { q: "What happens if a client disputes a session?", a: "The escrowed funds are frozen during the dispute. A SkillSasa administrator reviews the case and resolves it — either releasing funds to you or refunding the client. All disputes are logged with full audit trails." },
+  { q: "What happens if a client disputes a session?", a: "The escrowed funds are frozen during the dispute. A Uteo administrator reviews the case and resolves it — either releasing funds to you or refunding the client. All disputes are logged with full audit trails." },
   { q: "How do I improve my ranking in search results?", a: "Complete your profile fully, maintain a high rating (4.5+), respond quickly to booking requests, keep your availability calendar updated, and consider upgrading to Professional or Enterprise for priority placement." },
 ];
 
@@ -20,7 +20,7 @@ const FAQ_CLIENTS = [
   { q: "How do I find the right trainer?", a: "Use Find Trainers from the sidebar. Filter by specialization (HR, Strategy, Leadership, etc.), county, price range, rating, and session type (virtual, physical, hybrid). Every trainer's profile shows their credentials, reviews, and availability." },
   { q: "How does escrow payment work?", a: "When you book a session, your payment is held securely in escrow — not in the trainer's account. The trainer only receives payment after the session is completed and you confirm it. If something goes wrong, you can raise a dispute for a full refund." },
   { q: "Can I book both online and in-person sessions?", a: "Yes. Many trainers offer virtual (video call), physical (in-person at their office or yours), and hybrid sessions. You can filter by session type when searching." },
-  { q: "How do I pay for sessions?", a: "Top up your SkillSasa wallet via M-Pesa (Deposit from the Wallet page). When you book, the amount is deducted from your wallet and held in escrow. You can also pay directly via M-Pesa STK push during booking." },
+  { q: "How do I pay for sessions?", a: "Top up your Uteo wallet via M-Pesa (Deposit from the Wallet page). When you book, the amount is deducted from your wallet and held in escrow. You can also pay directly via M-Pesa STK push during booking." },
   { q: "What if I need to cancel a booking?", a: "Go to My Bookings, find the booking, and click Cancel. Free cancellation is available up to 24 hours before the session. The escrowed amount is refunded to your wallet instantly." },
   { q: "How do I leave a review?", a: "After a completed session, go to My Bookings > the completed booking > Leave Review. Rate the trainer (1-5 stars) and write your feedback. Reviews are public and help other clients make informed choices." },
   { q: "Can I book training for my team?", a: "Yes. You can book group sessions for your organization. Specify the number of participants and any special requirements in the booking notes. Many trainers offer corporate rates for bulk bookings." },
@@ -28,9 +28,9 @@ const FAQ_CLIENTS = [
 ];
 
 const GENERAL_FAQ = [
-  { q: "Is my data safe on SkillSasa?", a: "SkillSasa complies with the Kenya Data Protection Act. All data is encrypted in transit (TLS) and at rest. Financial transactions use a double-entry ledger with full audit trails. Your personal information is never shared without consent." },
+  { q: "Is my data safe on Uteo?", a: "Uteo complies with the Kenya Data Protection Act. All data is encrypted in transit (TLS) and at rest. Financial transactions use a double-entry ledger with full audit trails. Your personal information is never shared without consent." },
   { q: "How do I reset my password?", a: "Click 'Forgot password?' on the login page. Enter your email and we'll send a reset link. You can also change your password from Settings > Change Password when logged in." },
-  { q: "Who do I contact for support?", a: "Raise a support ticket below, or email hello@skillsasa.co.ke, or call +254 700 000 000 (Mon-Fri 8am-5pm EAT)." },
+  { q: "Who do I contact for support?", a: "Raise a support ticket below, or email hello@uteo.co.ke, or call +254 700 000 000 (Mon-Fri 8am-5pm EAT)." },
 ];
 
 interface Ticket {
@@ -99,13 +99,13 @@ export default function HelpPage() {
       {/* Contact info */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         {[
-          { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Email", value: "hello@skillsasa.co.ke" },
+          { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Email", value: "hello@uteo.co.ke" },
           { icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", label: "Phone", value: "+254 700 000 000" },
           { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Hours", value: "Mon-Fri 8am-5pm EAT" },
         ].map((c) => (
           <div key={c.label} className="flex items-center gap-3 p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0f1724]">
             <div className="h-10 w-10 rounded-lg bg-[#192C67]/10 flex items-center justify-center shrink-0">
-              <svg className="h-5 w-5 text-[#192C67] dark:text-[#5b8bc7]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={c.icon} /></svg>
+              <svg className="h-5 w-5 text-[#192C67] dark:text-white/70" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d={c.icon} /></svg>
             </div>
             <div>
               <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{c.label}</p>

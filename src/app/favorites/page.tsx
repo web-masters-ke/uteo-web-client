@@ -118,7 +118,7 @@ export default function FavoritesPage() {
                         className="h-12 w-12 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#192C67]/10 text-sm font-bold text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7]">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#192C67]/10 text-sm font-bold text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70">
                         {initials}
                       </div>
                     )}

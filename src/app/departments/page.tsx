@@ -75,7 +75,7 @@ interface TeamMember {
 /* ───────── Role badge config ───────── */
 
 const ROLE_BADGE: Record<string, { label: string; bg: string; text: string }> = {
-  OWNER:      { label: 'Owner',      bg: 'bg-[#192C67]/10 dark:bg-[#192C67]/30', text: 'text-[#192C67] dark:text-[#5b8bc7]' },
+  OWNER:      { label: 'Owner',      bg: 'bg-[#192C67]/10 dark:bg-[#192C67]/30', text: 'text-[#192C67] dark:text-white/70' },
   ADMIN:      { label: 'Admin',      bg: 'bg-purple-50 dark:bg-purple-900/20',    text: 'text-purple-700 dark:text-purple-300' },
   CONSULTANT: { label: 'Consultant', bg: 'bg-[#F77B0F]/10 dark:bg-[#F77B0F]/30', text: 'text-[#B08930] dark:text-[#E8C96E]' },
   ASSOCIATE:  { label: 'Associate',  bg: 'bg-zinc-100 dark:bg-zinc-800',          text: 'text-zinc-600 dark:text-zinc-300' },
@@ -321,7 +321,7 @@ export default function DepartmentsPage() {
       {/* ─── Stats ─── */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
-          { label: 'Total Departments', value: departments.length, color: 'text-[#192C67] dark:text-[#5b8bc7]' },
+          { label: 'Total Departments', value: departments.length, color: 'text-[#192C67] dark:text-white/70' },
           { label: 'Active', value: departments.filter((d) => d.isActive).length, color: 'text-emerald-600 dark:text-emerald-400' },
           { label: 'Total Assigned', value: departments.reduce((s, d) => s + (d._count?.members ?? 0), 0), color: 'text-[#F77B0F] dark:text-[#E8C96E]' },
           { label: 'Unassigned', value: teamMembers.filter((m) => !m.departmentId).length, color: 'text-amber-600 dark:text-amber-400' },
@@ -358,7 +358,7 @@ export default function DepartmentsPage() {
                     className={cn(
                       'group cursor-pointer rounded-xl border p-5 transition-all hover:shadow-md',
                       isSelected
-                        ? 'border-[#192C67] bg-[#192C67]/5 ring-1 ring-[#192C67]/20 dark:border-[#5b8bc7] dark:bg-[#192C67]/10 dark:ring-[#5b8bc7]/20'
+                        ? 'border-[#192C67] bg-[#192C67]/5 ring-1 ring-[#192C67]/20 dark:border-[#F77B0F]/50 dark:bg-[#192C67]/10 dark:ring-[#5b8bc7]/20'
                         : 'border-zinc-200 bg-white hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-zinc-700',
                     )}
                   >
@@ -368,7 +368,7 @@ export default function DepartmentsPage() {
                         <div className={cn(
                           'flex h-10 w-10 items-center justify-center rounded-lg text-sm font-bold',
                           dept.isActive
-                            ? 'bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/30 dark:text-[#5b8bc7]'
+                            ? 'bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/30 dark:text-white/70'
                             : 'bg-zinc-100 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600',
                         )}>
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -489,7 +489,7 @@ export default function DepartmentsPage() {
                       <span className="text-xs text-zinc-600 dark:text-zinc-300">
                         {selectedDept.lead.firstName} {selectedDept.lead.lastName}
                       </span>
-                      <span className="rounded-full bg-[#192C67]/10 px-2 py-0.5 text-[9px] font-semibold text-[#192C67] dark:bg-[#192C67]/30 dark:text-[#5b8bc7]">
+                      <span className="rounded-full bg-[#192C67]/10 px-2 py-0.5 text-[9px] font-semibold text-[#192C67] dark:bg-[#192C67]/30 dark:text-white/70">
                         Lead
                       </span>
                     </div>
@@ -504,7 +504,7 @@ export default function DepartmentsPage() {
                     </span>
                     <button
                       onClick={() => openAddMember(selectedDept)}
-                      className="flex items-center gap-1 text-xs font-medium text-[#192C67] hover:text-[#2D5A8E] dark:text-[#5b8bc7] dark:hover:text-[#7da9d9] transition-colors"
+                      className="flex items-center gap-1 text-xs font-medium text-[#192C67] hover:text-[#2D5A8E] dark:text-white/70 dark:hover:text-[#7da9d9] transition-colors"
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                         <path d="M12 5v14m-7-7h14" />
@@ -521,7 +521,7 @@ export default function DepartmentsPage() {
                       <p className="mt-2 text-xs text-zinc-400 dark:text-zinc-500">No members assigned</p>
                       <button
                         onClick={() => openAddMember(selectedDept)}
-                        className="mt-2 text-xs font-medium text-[#192C67] hover:underline dark:text-[#5b8bc7]"
+                        className="mt-2 text-xs font-medium text-[#192C67] hover:underline dark:text-white/70"
                       >
                         Add team members
                       </button>

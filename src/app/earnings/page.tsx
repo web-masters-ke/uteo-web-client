@@ -223,7 +223,7 @@ function CommissionDetails({
               </p>
               <Link
                 href="/subscriptions"
-                className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-[#192C67] dark:text-[#5b8bc7] hover:underline"
+                className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-[#192C67] dark:text-white/70 hover:underline"
               >
                 Upgrade your plan to reduce your rate
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -602,11 +602,11 @@ export default function EarningsPage() {
                       <td className="px-4 py-2.5 text-right text-gray-500 dark:text-gray-400">{formatCurrency(comm)}</td>
                       <td className="px-4 py-2.5 text-right font-semibold text-gray-900 dark:text-white">
                         {bookingId ? (
-                          <Link href={`/bookings/${bookingId}`} className="text-[#192C67] dark:text-[#5b8bc7] hover:underline">
+                          <Link href={`/bookings/${bookingId}`} className="text-[#192C67] dark:text-white/70 hover:underline">
                             {formatCurrency(netAmt)}
                           </Link>
                         ) : courseId ? (
-                          <Link href={`/courses/${courseId}`} className="text-[#192C67] dark:text-[#5b8bc7] hover:underline">
+                          <Link href={`/courses/${courseId}`} className="text-[#192C67] dark:text-white/70 hover:underline">
                             {formatCurrency(netAmt)}
                           </Link>
                         ) : (
@@ -637,7 +637,7 @@ export default function EarningsPage() {
           <h3 className="text-base font-semibold text-gray-900 dark:text-white">Payout History</h3>
           <button
             onClick={() => setPayoutModal(true)}
-            className="text-sm font-medium text-[#192C67] dark:text-[#5b8bc7] hover:underline"
+            className="text-sm font-medium text-[#192C67] dark:text-white/70 hover:underline"
           >
             Request Payout
           </button>
@@ -691,7 +691,7 @@ export default function EarningsPage() {
           <h3 className="text-base font-semibold text-gray-900 dark:text-white">Invoices</h3>
           <Link
             href="/invoices"
-            className="text-sm font-medium text-[#192C67] dark:text-[#5b8bc7] hover:underline"
+            className="text-sm font-medium text-[#192C67] dark:text-white/70 hover:underline"
           >
             View All Invoices
           </Link>
@@ -752,7 +752,7 @@ export default function EarningsPage() {
                 className={cn(
                   'px-4 py-3 rounded-lg border text-sm font-medium transition-colors text-center',
                   payoutMethod === 'MPESA'
-                    ? 'border-2 border-[#192C67] dark:border-[#5b8bc7] text-[#192C67] dark:text-[#5b8bc7]'
+                    ? 'border-2 border-[#192C67] dark:border-[#F77B0F]/50 text-[#192C67] dark:text-white/70'
                     : 'border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-400'
                 )}
               >
@@ -765,7 +765,7 @@ export default function EarningsPage() {
                 className={cn(
                   'px-4 py-3 rounded-lg border text-sm font-medium transition-colors text-center',
                   payoutMethod === 'BANK_TRANSFER'
-                    ? 'border-2 border-[#192C67] dark:border-[#5b8bc7] text-[#192C67] dark:text-[#5b8bc7]'
+                    ? 'border-2 border-[#192C67] dark:border-[#F77B0F]/50 text-[#192C67] dark:text-white/70'
                     : 'border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-gray-400'
                 )}
               >
@@ -820,7 +820,7 @@ export default function EarningsPage() {
             <button
               onClick={handlePayoutRequest}
               disabled={submitting || payoutAmtNum <= 0 || payoutAmtNum > walletBalance}
-              className="px-4 py-2 text-sm font-medium rounded-lg border border-[#192C67] dark:border-[#5b8bc7] text-[#192C67] dark:text-[#5b8bc7] hover:bg-[#192C67]/5 disabled:opacity-50 transition-colors"
+              className="px-4 py-2 text-sm font-medium rounded-lg border border-[#192C67] dark:border-[#F77B0F]/50 text-[#192C67] dark:text-white/70 hover:bg-[#192C67]/5 disabled:opacity-50 transition-colors"
             >
               {submitting ? 'Submitting...' : 'Submit Request'}
             </button>

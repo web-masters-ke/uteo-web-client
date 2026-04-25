@@ -54,14 +54,14 @@ function NewReviewPageInner() {
             onChange={(e) => setComment(e.target.value)}
             rows={5}
             placeholder="Share your experience with this trainer..."
-            className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 outline-none"
+            className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#F77B0F] outline-none"
           />
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50"
+          className="w-full py-3 bg-[#F77B0F] text-white font-semibold rounded-lg hover:bg-[#e06a0d] transition-colors disabled:opacity-50"
         >
           {isSubmitting ? 'Submitting...' : 'Submit Review'}
         </button>
@@ -71,5 +71,5 @@ function NewReviewPageInner() {
 }
 
 export default function NewReviewPage() {
-  return <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin h-8 w-8 border-4 border-primary-500 border-t-transparent rounded-full" /></div>}><NewReviewPageInner /></Suspense>;
+  return <Suspense fallback={<div className="flex items-center justify-center min-h-[60vh]"><div className="animate-spin h-8 w-8 border-4 border-[#F77B0F] border-t-transparent rounded-full" /></div>}><NewReviewPageInner /></Suspense>;
 }

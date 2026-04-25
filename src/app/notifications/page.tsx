@@ -586,7 +586,7 @@ export default function NotificationsPage() {
                               {n.type?.replace(/_/g, ' ')}
                             </span>
                             {hasLink && (
-                              <span className="ml-auto text-[11px] text-[#192C67] dark:text-primary-400 font-semibold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
+                              <span className="ml-auto text-[11px] text-[#192C67] dark:text-[#F77B0F]/80 font-semibold opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
                                 View
                                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />

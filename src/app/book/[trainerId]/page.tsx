@@ -38,7 +38,7 @@ export default function BookTrainerPage() {
         <p className="text-gray-500 dark:text-gray-400 mb-6">This trainer profile may have been removed or is unavailable.</p>
         <Link
           href="/trainers"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 text-sm font-medium"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#F77B0F] text-white rounded-lg hover:bg-[#e06a0d] text-sm font-medium"
         >
           Browse Trainers
         </Link>
@@ -51,7 +51,7 @@ export default function BookTrainerPage() {
       {/* Back link */}
       <Link
         href={`/trainers/${trainerId}`}
-        className="inline-flex items-center gap-1.5 text-sm text-primary-500 hover:text-primary-600 font-medium mb-6 transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-[#F77B0F] hover:text-[#F77B0F] font-medium mb-6 transition-colors"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />

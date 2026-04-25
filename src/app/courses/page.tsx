@@ -129,7 +129,7 @@ function LessonContent({ content }: { content: string }) {
             );
           }
           // Generic link
-          return <a key={i} href={cleanUrl} target="_blank" rel="noopener noreferrer" className="text-[#192C67] dark:text-[#5b8bc7] hover:underline break-all">{cleanUrl}</a>;
+          return <a key={i} href={cleanUrl} target="_blank" rel="noopener noreferrer" className="text-[#192C67] dark:text-white/70 hover:underline break-all">{cleanUrl}</a>;
         }
         // Plain text
         if (!part.trim()) return null;
@@ -607,7 +607,7 @@ export default function CoursesPage() {
           <div className="absolute inset-0 bg-[#192C67]/75" />
         </div>
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full">
-          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">SkillSasa Academy</p>
+          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">Uteo Academy</p>
           <h1 className="text-4xl lg:text-6xl font-black text-white">Training Courses</h1>
           <p className="mt-4 text-lg text-white/80 max-w-xl">
             {isTrainer ? "Create, manage, and publish training courses for your clients." : "Master new skills with on-demand courses from Kenya's top trainers."}
@@ -727,8 +727,8 @@ export default function CoursesPage() {
                     <div className="p-3">
                       <p className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 mb-1">{course.title}</p>
                       <div className="flex items-center justify-between mt-2">
-                        <span className="text-sm font-bold text-[#192C67] dark:text-[#5b8bc7]">{(Number(course.price) || 0) === 0 ? <span className="text-[#0D9488]">Free</span> : formatCurrency(Number(course.price))}</span>
-                        <Link href={`/courses/${course.id}`} className="text-[10px] font-medium text-[#192C67] dark:text-[#5b8bc7] hover:underline">View</Link>
+                        <span className="text-sm font-bold text-[#192C67] dark:text-white/70">{(Number(course.price) || 0) === 0 ? <span className="text-[#0D9488]">Free</span> : formatCurrency(Number(course.price))}</span>
+                        <Link href={`/courses/${course.id}`} className="text-[10px] font-medium text-[#192C67] dark:text-white/70 hover:underline">View</Link>
                       </div>
                     </div>
                   </div>
@@ -777,11 +777,11 @@ export default function CoursesPage() {
 
                         {inst && (
                           <div className="flex items-center gap-2 mb-3">
-                            <div className="w-6 h-6 rounded-full bg-[#192C67]/10 flex items-center justify-center text-[10px] font-bold text-[#192C67] dark:text-[#5b8bc7] shrink-0 overflow-hidden">
+                            <div className="w-6 h-6 rounded-full bg-[#192C67]/10 flex items-center justify-center text-[10px] font-bold text-[#192C67] dark:text-white/70 shrink-0 overflow-hidden">
                               {inst.avatar ? <img src={inst.avatar} alt="" className="w-full h-full object-cover" /> : getInitials(inst.name.split(" ")[0], inst.name.split(" ")[1])}
                             </div>
                             <span className="text-xs text-gray-500 dark:text-gray-400">{inst.name}</span>
-                            {inst.firmName && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7] font-medium">{inst.firmName}</span>}
+                            {inst.firmName && <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70 font-medium">{inst.firmName}</span>}
                           </div>
                         )}
 
@@ -799,7 +799,7 @@ export default function CoursesPage() {
 
                         {/* Actions */}
                         <div className="flex flex-wrap items-center gap-2 mt-auto">
-                          <button onClick={() => openDetail(course.id)} disabled={isLoading} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7] hover:bg-[#192C67]/20 transition-colors disabled:opacity-50">View Detail</button>
+                          <button onClick={() => openDetail(course.id)} disabled={isLoading} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70 hover:bg-[#192C67]/20 transition-colors disabled:opacity-50">View Detail</button>
                           {isTrainer && course.instructor?.id === user?.id && course.status === "DRAFT" && <button onClick={() => handleStatusChange(course.id, "PUBLISHED")} disabled={isLoading} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200 disabled:opacity-50 transition-colors">Publish</button>}
                           {isTrainer && course.instructor?.id === user?.id && course.status === "PUBLISHED" && <button onClick={() => handleStatusChange(course.id, "DRAFT")} disabled={isLoading} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 hover:bg-amber-200 disabled:opacity-50 transition-colors">Unpublish</button>}
                           <Link href={`/courses/${course.id}`} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">Open</Link>
@@ -870,7 +870,7 @@ export default function CoursesPage() {
                           <span>{courseLessons.length} lesson{courseLessons.length !== 1 ? "s" : ""}</span>
                         </div>
                         <div className="flex flex-wrap gap-2 mt-auto">
-                          <button onClick={() => openDetail(course.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7] hover:bg-[#192C67]/20">View Detail</button>
+                          <button onClick={() => openDetail(course.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70 hover:bg-[#192C67]/20">View Detail</button>
                           <button onClick={() => setManagingCourseId(isManaging ? null : course.id)} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#F77B0F]/10 text-[#F77B0F] hover:bg-[#F77B0F]/20">{isManaging ? "Close Lessons" : "Manage Lessons"}</button>
                           {course.status === "DRAFT" && <button onClick={async () => { try { await coursesService.publish(course.id); addToast("success", "Published"); fetchMyCreated(); } catch { addToast("error", "Publish failed"); } }} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 hover:bg-green-200">Publish</button>}
                           {course.status === "PUBLISHED" && <button onClick={async () => { try { await coursesService.update(course.id, { status: "DRAFT" } as any); addToast("success", "Unpublished"); fetchMyCreated(); } catch { addToast("error", "Failed"); } }} className="px-3 py-1.5 text-xs font-medium rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 hover:bg-amber-200">Unpublish</button>}
@@ -895,7 +895,7 @@ export default function CoursesPage() {
                             {courseLessons.map((lesson: any, li: number) => (
                               <details key={lesson.id} className="border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 group">
                                 <summary className="flex items-center gap-3 p-3 cursor-pointer list-none">
-                                  <span className="w-7 h-7 flex items-center justify-center rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7] text-xs font-bold">{lesson.sortOrder || li + 1}</span>
+                                  <span className="w-7 h-7 flex items-center justify-center rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70 text-xs font-bold">{lesson.sortOrder || li + 1}</span>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 flex-wrap">
                                       <span className="text-sm font-medium text-gray-900 dark:text-white">{lesson.title}</span>
@@ -909,7 +909,7 @@ export default function CoursesPage() {
                                 <div className="px-3 pb-3 pt-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/20">
                                   <div className="flex items-center justify-between mb-2">
                                     {lesson.description && <p className="text-xs text-gray-500 flex-1">{lesson.description}</p>}
-                                    <button onClick={() => openEditLesson(course.id, lesson)} className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7] hover:bg-[#192C67]/20 shrink-0 ml-2">Edit Lesson</button>
+                                    <button onClick={() => openEditLesson(course.id, lesson)} className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70 hover:bg-[#192C67]/20 shrink-0 ml-2">Edit Lesson</button>
                                   </div>
                                   {lesson.videoUrl && <video controls className="w-full rounded-lg max-h-[300px] bg-black mb-2" src={lesson.videoUrl}>Your browser does not support video.</video>}
                                   {lesson.contentType === "VIDEO" && !lesson.videoUrl && <div className="mb-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg"><p className="text-xs text-yellow-700 dark:text-yellow-300">Video not uploaded yet. Click Edit Lesson.</p></div>}
@@ -961,7 +961,7 @@ export default function CoursesPage() {
                         </div>
                         <div className="h-2 w-full bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden"><div className={`h-full rounded-full ${progress >= 75 ? "bg-green-500" : progress >= 25 ? "bg-amber-500" : "bg-red-500"}`} style={{ width: `${progress}%` }} /></div>
                       </div>
-                      <div className="text-xs text-[#192C67] dark:text-[#5b8bc7] font-medium mt-3">{progress >= 100 ? "Review Course →" : progress > 0 ? "Continue Learning →" : "Start Learning →"}</div>
+                      <div className="text-xs text-[#192C67] dark:text-white/70 font-medium mt-3">{progress >= 100 ? "Review Course →" : progress > 0 ? "Continue Learning →" : "Start Learning →"}</div>
                     </div>
                   </Link>
                 );
@@ -1085,7 +1085,7 @@ export default function CoursesPage() {
                     <div className="flex items-center gap-1"><span className="text-gray-400">Rating:</span> <Stars rating={Number(detailCourse.rating || 0)} /> <span className="font-semibold">{Number(detailCourse.rating || 0).toFixed(1)}</span></div>
                     {getCourseRevenue(detailCourse) > 0 && <div><span className="text-gray-400">Revenue:</span> <span className="font-semibold text-[#22c55e]">{formatCurrency(getCourseRevenue(detailCourse))}</span></div>}
                   </div>
-                  {(() => { const inst = getInstructor(detailCourse); if (!inst) return null; return (<div className="flex items-center gap-3 mt-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg"><div className="w-10 h-10 rounded-full bg-[#192C67]/10 flex items-center justify-center text-sm font-bold text-[#192C67] dark:text-[#5b8bc7] shrink-0 overflow-hidden">{inst.avatar ? <img src={inst.avatar} alt="" className="w-full h-full object-cover" /> : getInitials(inst.name.split(" ")[0], inst.name.split(" ")[1])}</div><div><p className="text-sm font-semibold text-gray-900 dark:text-white">{inst.name}</p><p className="text-xs text-gray-500 dark:text-gray-400">{inst.email}</p></div></div>); })()}
+                  {(() => { const inst = getInstructor(detailCourse); if (!inst) return null; return (<div className="flex items-center gap-3 mt-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg"><div className="w-10 h-10 rounded-full bg-[#192C67]/10 flex items-center justify-center text-sm font-bold text-[#192C67] dark:text-white/70 shrink-0 overflow-hidden">{inst.avatar ? <img src={inst.avatar} alt="" className="w-full h-full object-cover" /> : getInitials(inst.name.split(" ")[0], inst.name.split(" ")[1])}</div><div><p className="text-sm font-semibold text-gray-900 dark:text-white">{inst.name}</p><p className="text-xs text-gray-500 dark:text-gray-400">{inst.email}</p></div></div>); })()}
                 </div>
                 {/* ── Course Content + Assessments separated ── */}
                 {(() => {
@@ -1109,7 +1109,7 @@ export default function CoursesPage() {
                     >
                       <summary className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors list-none">
                         <div className="flex items-center gap-3">
-                          <span className="w-7 h-7 flex items-center justify-center rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7] text-xs font-bold shrink-0">{idx + 1}</span>
+                          <span className="w-7 h-7 flex items-center justify-center rounded-full bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70 text-xs font-bold shrink-0">{idx + 1}</span>
                           <div><p className="text-sm font-medium text-gray-900 dark:text-white">{lesson.title}</p>{lesson.description && <p className="text-xs text-gray-400 mt-0.5 truncate max-w-[200px]">{lesson.description}</p>}</div>
                         </div>
                         <div className="flex items-center gap-2 flex-wrap justify-end">
@@ -1129,7 +1129,7 @@ export default function CoursesPage() {
                       <div className="px-3 pb-3 pt-2 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/20">
                         {isOwner && (
                           <div className="flex items-center gap-2 mb-2 justify-end">
-                            <button onClick={() => openEditLesson(detailCourse.id, lesson)} className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7] hover:bg-[#192C67]/20 transition-colors">
+                            <button onClick={() => openEditLesson(detailCourse.id, lesson)} className="px-2.5 py-1 text-[11px] font-medium rounded-lg bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70 hover:bg-[#192C67]/20 transition-colors">
                               {lesson.contentType === "QUIZ" ? "Edit Quiz & Questions" : "Edit Lesson"}
                             </button>
                             <button
@@ -1161,7 +1161,7 @@ export default function CoursesPage() {
                                     <div key={q.id} className="p-2.5 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                                       <div className="flex items-start justify-between gap-2">
                                         <p className="text-xs font-medium text-gray-900 dark:text-white flex-1">Q{qi + 1}. {q.question}</p>
-                                        <span className="shrink-0 text-[10px] font-semibold text-[#192C67] dark:text-[#5b8bc7]">{q.points ?? 10}pts</span>
+                                        <span className="shrink-0 text-[10px] font-semibold text-[#192C67] dark:text-white/70">{q.points ?? 10}pts</span>
                                       </div>
                                       <p className="text-[10px] text-gray-400 mt-0.5 mb-1">{typeLabel[q.type] || q.type}</p>
                                       {q.options && Array.isArray(q.options) && q.options.length > 0 && (
@@ -1178,7 +1178,7 @@ export default function CoursesPage() {
                                           })}
                                         </div>
                                       )}
-                                      {q.explanation && <p className="text-[10px] text-[#192C67] dark:text-[#5b8bc7] mt-1.5 italic">💡 {q.explanation}</p>}
+                                      {q.explanation && <p className="text-[10px] text-[#192C67] dark:text-white/70 mt-1.5 italic">💡 {q.explanation}</p>}
                                     </div>
                                   );
                                 })}
@@ -1197,7 +1197,7 @@ export default function CoursesPage() {
                         <div className="flex items-center justify-between mb-3">
                           <h3 className="text-sm font-bold text-gray-900 dark:text-white">Course Content <span className="font-normal text-gray-400">({contentLessons.length})</span></h3>
                           {isOwner && (
-                            <button onClick={() => openAddLesson(detailCourse.id)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#192C67] text-[#192C67] dark:border-[#5b8bc7] dark:text-[#5b8bc7] hover:bg-[#192C67]/5 transition-colors">
+                            <button onClick={() => openAddLesson(detailCourse.id)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#192C67] text-[#192C67] dark:border-[#F77B0F]/50 dark:text-white/70 hover:bg-[#192C67]/5 transition-colors">
                               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" /></svg>
                               Add Lesson
                             </button>
@@ -1321,7 +1321,7 @@ export default function CoursesPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Questions ({addLessonForm._questions.length})</span>
-                    <button type="button" onClick={() => setAddLessonForm((p) => ({ ...p, _questions: [...p._questions, emptyQuestion()] }))} className="text-xs font-medium text-[#192C67] dark:text-[#5b8bc7] hover:underline">+ Add Question</button>
+                    <button type="button" onClick={() => setAddLessonForm((p) => ({ ...p, _questions: [...p._questions, emptyQuestion()] }))} className="text-xs font-medium text-[#192C67] dark:text-white/70 hover:underline">+ Add Question</button>
                   </div>
                   {addLessonForm._questions.map((q, qi) => (
                     <div key={qi} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-2">
@@ -1457,7 +1457,7 @@ export default function CoursesPage() {
                     <>
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">Questions ({editLessonForm._questions.length})</span>
-                        <button type="button" onClick={() => setEditLessonForm((p) => ({ ...p, _questions: [...p._questions, emptyQuestion()] }))} className="text-xs font-medium text-[#192C67] dark:text-[#5b8bc7] hover:underline">+ Add Question</button>
+                        <button type="button" onClick={() => setEditLessonForm((p) => ({ ...p, _questions: [...p._questions, emptyQuestion()] }))} className="text-xs font-medium text-[#192C67] dark:text-white/70 hover:underline">+ Add Question</button>
                       </div>
                       {editLessonForm._questions.map((q, qi) => (
                         <div key={qi} className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-3 space-y-2">

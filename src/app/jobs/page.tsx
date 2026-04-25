@@ -30,12 +30,12 @@ function formatSalary(min?: number, max?: number, currency = 'KES') {
 
 function jobTypeColor(type: string): string {
   const map: Record<string, string> = {
-    FULL_TIME:   'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
-    PART_TIME:   'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
+    FULL_TIME:   'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-white/70',
+    PART_TIME:   'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-white/70',
     CONTRACT:    'bg-[#F77B0F]/10 dark:bg-[#F77B0F]/20 text-[#F77B0F]',
     INTERNSHIP:  'bg-[#F77B0F]/10 dark:bg-[#F77B0F]/20 text-[#F77B0F]',
-    REMOTE:      'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
-    HYBRID:      'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7]',
+    REMOTE:      'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-white/70',
+    HYBRID:      'bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-white/70',
   };
   return map[type] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400';
 }
@@ -81,7 +81,7 @@ function JobCard({ job }: { job: Job }) {
           <div className="flex items-center gap-1">
             <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 truncate">{job.company.name}</span>
             {job.company.isVerified && (
-              <svg className="w-3.5 h-3.5 text-[#192C67] dark:text-[#5b8bc7] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+              <svg className="w-3.5 h-3.5 text-[#192C67] dark:text-white/70 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
             )}
@@ -117,7 +117,7 @@ function JobCard({ job }: { job: Job }) {
           {skills.slice(0, 4).map((skill) => (
             <span
               key={skill.id}
-              className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#192C67]/8 dark:bg-[#192C67]/20 text-[#192C67] dark:text-[#5b8bc7]"
+              className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#192C67]/8 dark:bg-[#192C67]/20 text-[#192C67] dark:text-white/70"
               style={{ backgroundColor: 'rgba(25,44,103,0.08)' }}
             >
               {skill.name}

@@ -16,9 +16,9 @@ export default function PricingPage() {
           <div className="absolute inset-0 bg-[#192C67]/75" />
         </div>
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full">
-          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">SkillSasa</p>
+          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">Uteo</p>
           <h1 className="text-4xl lg:text-6xl font-black text-white">Simple, Transparent Pricing</h1>
-          <p className="mt-4 text-lg text-white/80 max-w-xl">Clients use SkillSasa for free. Trainers choose a plan that fits.</p>
+          <p className="mt-4 text-lg text-white/80 max-w-xl">Clients use Uteo for free. Trainers choose a plan that fits.</p>
         </div>
       </section>
 
@@ -48,7 +48,7 @@ export default function PricingPage() {
                 className={`block w-full text-center py-3 rounded-lg font-semibold text-sm transition-colors ${
                   plan.recommended
                     ? 'bg-secondary-500 text-white hover:bg-secondary-600'
-                    : 'bg-primary-500 text-white hover:bg-primary-600'
+                    : 'bg-[#F77B0F] text-white hover:bg-[#e06a0d]'
                 }`}
               >
                 {plan.cta}
@@ -61,7 +61,7 @@ export default function PricingPage() {
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h2>
           <div className="space-y-4">
             {[
-              { q: 'Is SkillSasa free for clients?', a: 'Yes! Clients can browse trainers, book sessions, and use the wallet for free. You only pay for the training sessions you book.' },
+              { q: 'Is Uteo free for clients?', a: 'Yes! Clients can browse trainers, book sessions, and use the wallet for free. You only pay for the training sessions you book.' },
               { q: 'Can I cancel my subscription?', a: 'Yes, you can cancel anytime. Your premium features will remain active until the end of your billing period.' },
               { q: 'What payment methods are accepted?', a: 'We accept M-Pesa for all payments. Wallet deposits, session payments, and subscription fees can all be paid via M-Pesa.' },
               { q: 'How does escrow work?', a: 'When you book a session, your payment is held in escrow. After the session is completed, the funds are released to the trainer. If there is a dispute, our team will review and resolve it.' },

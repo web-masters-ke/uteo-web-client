@@ -97,7 +97,7 @@ function downloadReceipt(inv: InvoiceRow) {
     <button onclick="window.print()" style="padding:10px 24px;background:#192C67;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px">Print / Save as PDF</button>
   </div>
   <div class="header">
-    <div class="logo">SkillSasa<small>SKILLS TODAY. OPPORTUNITIES TOMORROW.</small></div>
+    <div class="logo">Uteo<small>SKILLS TODAY. OPPORTUNITIES TOMORROW.</small></div>
     <div class="invoice-title">
       <h1>Invoice</h1>
       <div class="number">${inv.invoiceNumber}</div>
@@ -134,8 +134,8 @@ function downloadReceipt(inv: InvoiceRow) {
     ${inv.status === 'PAID' ? `<tr><td style="color:#166534;font-weight:700">Paid</td><td class="amount" style="color:#166534;font-weight:700">${inv.paidAt ? new Date(inv.paidAt).toLocaleDateString('en-KE') : 'Yes'}</td></tr>` : ''}
   </table></div>
   <div class="footer">
-    <p>SkillSasa &mdash; Kenya&apos;s Skills & Trainer Marketplace</p>
-    <p>support@skillsasa.co.ke &middot; www.skillsasa.co.ke</p>
+    <p>Uteo &mdash; Kenya&apos;s Skills & Trainer Marketplace</p>
+    <p>support@uteo.co.ke &middot; www.uteo.co.ke</p>
   </div>
 </body></html>`;
 
@@ -818,7 +818,7 @@ export default function InvoicesPage() {
               </div>
               <div className="p-3 rounded-lg bg-[#192C67]/5 border border-[#192C67]/20">
                 <span className="text-xs text-gray-500 dark:text-gray-400">Total</span>
-                <p className="font-bold text-lg text-[#192C67] dark:text-[#5b8bc7] mt-1">{formatCurrency(Number(selectedInvoice.total || 0))}</p>
+                <p className="font-bold text-lg text-[#192C67] dark:text-white/70 mt-1">{formatCurrency(Number(selectedInvoice.total || 0))}</p>
               </div>
             </div>
 
@@ -973,7 +973,7 @@ export default function InvoicesPage() {
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Line Items *</label>
-              <button onClick={addLineItem} className="text-xs font-medium text-[#192C67] dark:text-[#5b8bc7] hover:underline flex items-center gap-1">
+              <button onClick={addLineItem} className="text-xs font-medium text-[#192C67] dark:text-white/70 hover:underline flex items-center gap-1">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
                 Add Row
               </button>
@@ -1077,7 +1077,7 @@ export default function InvoicesPage() {
             )}
             <div className="flex justify-between text-base font-bold border-t border-gray-200 dark:border-gray-600 pt-2">
               <span className="text-gray-900 dark:text-white">Total</span>
-              <span className="text-[#192C67] dark:text-[#5b8bc7]">{formatCurrency(grandTotal)}</span>
+              <span className="text-[#192C67] dark:text-white/70">{formatCurrency(grandTotal)}</span>
             </div>
           </div>
 

@@ -136,7 +136,7 @@ export default function BookingsPage() {
         </div>
         <button
           onClick={() => setShowWizard(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 transition-colors shadow-sm text-sm"
+          className="flex items-center gap-2 px-5 py-2.5 bg-[#F77B0F] text-white font-medium rounded-xl hover:bg-[#e06a0d] transition-colors shadow-sm text-sm"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -154,7 +154,7 @@ export default function BookingsPage() {
             className={cn(
               'px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all',
               activeTab === tab.key
-                ? 'bg-primary-500 text-white shadow-sm'
+                ? 'bg-[#F77B0F] text-white shadow-sm'
                 : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
             )}
           >
@@ -171,7 +171,7 @@ export default function BookingsPage() {
             type="date"
             value={dateFrom}
             onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-[#F77B0F] outline-none"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -180,13 +180,13 @@ export default function BookingsPage() {
             type="date"
             value={dateTo}
             onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-primary-500 outline-none"
+            className="px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-[#F77B0F] outline-none"
           />
         </div>
         {(dateFrom || dateTo) && (
           <button
             onClick={() => { setDateFrom(''); setDateTo(''); setPage(1); }}
-            className="text-xs text-primary-500 hover:text-primary-600 font-medium"
+            className="text-xs text-[#F77B0F] hover:text-[#F77B0F] font-medium"
           >
             Clear
           </button>
@@ -210,7 +210,7 @@ export default function BookingsPage() {
                 <Link
                   key={booking.id}
                   href={`/bookings/${booking.id}`}
-                  className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:border-primary-300 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-primary-600 group"
+                  className="flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 transition-all hover:border-[#F77B0F]/30 hover:shadow-md dark:border-gray-800 dark:bg-gray-900 dark:hover:border-[#F77B0F]/50 group"
                 >
                   <Avatar
                     src={avatar.src}
@@ -221,7 +221,7 @@ export default function BookingsPage() {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <p className="truncate text-sm font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                      <p className="truncate text-sm font-semibold text-gray-900 dark:text-white group-hover:text-[#F77B0F] dark:group-hover:text-[#F77B0F]/80 transition-colors">
                         {person}
                       </p>
                       <span className={cn(

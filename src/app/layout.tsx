@@ -8,9 +8,9 @@ import { CallProvider } from "@/lib/call-context";
 import LayoutShell from "@/components/layout/LayoutShell";
 
 export const metadata: Metadata = {
-  title: "SkillSasa — Connecting Professionals with Expert Trainers.",
+  title: "Uteo — AI-Powered Job Matching. Your Dream Job Finds You.",
   description:
-    "Kenya's AI-powered trainer marketplace — find, book, and learn from certified professional and vocational trainers.",
+    "Uteo is an AI-powered, feed-based recruitment platform. Personalized job discovery, one-click apply, real-time application tracking.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

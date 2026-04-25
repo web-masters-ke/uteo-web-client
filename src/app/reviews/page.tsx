@@ -226,7 +226,7 @@ export default function ReviewsPage() {
           className={cn(
             'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
             tab === 'written'
-              ? 'bg-primary-500 text-white'
+              ? 'bg-[#F77B0F] text-white'
               : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800',
           )}
         >
@@ -237,7 +237,7 @@ export default function ReviewsPage() {
           className={cn(
             'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
             tab === 'received'
-              ? 'bg-primary-500 text-white'
+              ? 'bg-[#F77B0F] text-white'
               : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800',
           )}
         >
@@ -348,7 +348,7 @@ export default function ReviewsPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => openEdit(review)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#F77B0F] dark:text-[#F77B0F]/80 bg-[#F77B0F]/10 dark:bg-[#192C67]/20 rounded-lg hover:bg-[#F77B0F]/15 dark:hover:bg-[#192C67]/30 transition-colors"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
@@ -378,7 +378,7 @@ export default function ReviewsPage() {
                       <span className="text-xs text-gray-500 dark:text-gray-400">Trainer:</span>
                       <Link
                         href={`/trainers/${review.trainerId}`}
-                        className="text-xs font-medium text-primary-600 dark:text-primary-400 hover:underline"
+                        className="text-xs font-medium text-[#F77B0F] dark:text-[#F77B0F]/80 hover:underline"
                       >
                         {trainer.firstName} {trainer.lastName}
                       </Link>
@@ -461,7 +461,7 @@ export default function ReviewsPage() {
                 onChange={(e) => setEditComment(e.target.value)}
                 rows={4}
                 maxLength={2000}
-                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none resize-none text-sm"
+                className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none resize-none text-sm"
                 placeholder="Update your review..."
               />
               <p className="text-xs text-gray-400 mt-1 text-right">
@@ -480,7 +480,7 @@ export default function ReviewsPage() {
               <button
                 onClick={handleEditSave}
                 disabled={editSaving || editRating < 1}
-                className="px-5 py-2 text-sm font-medium bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-5 py-2 text-sm font-medium bg-[#F77B0F] text-white rounded-lg hover:bg-[#e06a0d] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {editSaving ? 'Saving...' : 'Save Changes'}
               </button>
@@ -541,7 +541,7 @@ export default function ReviewsPage() {
                   onChange={(e) => setCreateComment(e.target.value)}
                   rows={4}
                   maxLength={2000}
-                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none resize-none text-sm"
+                  className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#F77B0F] outline-none resize-none text-sm"
                   placeholder="Tell others about your experience..."
                 />
                 <p className="text-xs text-gray-400 mt-1 text-right">

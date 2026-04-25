@@ -90,7 +90,7 @@ function CompactJobCard({ job }: { job: Job }) {
           {skills.slice(0, 3).map((skill) => (
             <span
               key={skill.id}
-              className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#192C67]/8 text-[#192C67] dark:text-[#5b8bc7]"
+              className="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#192C67]/8 text-[#192C67] dark:text-white/70"
               style={{ backgroundColor: 'rgba(25,44,103,0.08)' }}
             >
               {skill.name}
@@ -141,7 +141,7 @@ export default function CompanyProfilePage() {
   if (error || !company) return (
     <div className="max-w-3xl mx-auto px-4 py-20 text-center">
       <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-3">{error || 'Company not found'}</h1>
-      <Link href="/jobs" className="text-[#192C67] dark:text-[#5b8bc7] font-medium hover:underline">
+      <Link href="/jobs" className="text-[#192C67] dark:text-white/70 font-medium hover:underline">
         Browse Jobs
       </Link>
     </div>
@@ -221,7 +221,7 @@ export default function CompanyProfilePage() {
                   href={company.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-[#192C67] dark:text-[#5b8bc7] hover:underline"
+                  className="flex items-center gap-1.5 text-[#192C67] dark:text-white/70 hover:underline"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
@@ -237,7 +237,7 @@ export default function CompanyProfilePage() {
               className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
                 following
                   ? 'bg-[#192C67] text-white'
-                  : 'border border-[#192C67] text-[#192C67] dark:text-[#5b8bc7] dark:border-[#5b8bc7] hover:bg-[#192C67]/5'
+                  : 'border border-[#192C67] text-[#192C67] dark:text-white/70 dark:border-[#F77B0F]/50 hover:bg-[#192C67]/5'
               }`}
             >
               {following ? (
@@ -278,7 +278,7 @@ export default function CompanyProfilePage() {
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Open Positions
                 {jobsTotal > 0 && (
-                  <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-[#5b8bc7]">
+                  <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold bg-[#192C67]/10 text-[#192C67] dark:bg-[#192C67]/20 dark:text-white/70">
                     {jobsTotal}
                   </span>
                 )}
@@ -334,7 +334,7 @@ export default function CompanyProfilePage() {
             {jobsTotal > 0 && (
               <div>
                 <p className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-0.5">Open Roles</p>
-                <p className="text-sm font-semibold text-[#192C67] dark:text-[#5b8bc7]">{jobsTotal} positions</p>
+                <p className="text-sm font-semibold text-[#192C67] dark:text-white/70">{jobsTotal} positions</p>
               </div>
             )}
 

@@ -46,9 +46,9 @@ export default function VerifyCertificatePage() {
   const isValid = !!data?.valid;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-[#0a0f1a] dark:via-[#0D1942] dark:to-[#0a0f1a]">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-[#0d0d0d] dark:via-[#111111] dark:to-[#0d0d0d]">
       {/* Minimal header */}
-      <header className="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-[#0D1942]/80 backdrop-blur">
+      <header className="border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-[#111111]/80 backdrop-blur">
         <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-[#192C67] flex items-center justify-center text-white font-black">
@@ -56,7 +56,7 @@ export default function VerifyCertificatePage() {
             </div>
             <div>
               <p className="text-sm font-bold uppercase tracking-widest text-[#192C67] dark:text-white">
-                SkillSasa
+                Uteo
               </p>
               <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">
                 Certificate Verification
@@ -67,7 +67,7 @@ export default function VerifyCertificatePage() {
             href="/"
             className="text-xs font-semibold uppercase tracking-wider text-gray-500 hover:text-[#192C67] dark:hover:text-[#5b8bc7]"
           >
-            skillsasa.co.ke
+            uteo.co.ke
           </Link>
         </div>
       </header>
@@ -159,7 +159,7 @@ export default function VerifyCertificatePage() {
                   </h1>
                   <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                     {isValid
-                      ? "Issued by SkillSasa — the Professional Trainers Association of Kenya."
+                      ? "Issued by Uteo."
                       : data?.reason ||
                         "The verification code is invalid, expired, or the certificate has been revoked."}
                   </p>
@@ -203,10 +203,10 @@ export default function VerifyCertificatePage() {
 
             <div className="bg-gray-50 dark:bg-gray-900/50 px-8 py-5 text-center">
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Looking for more SkillSasa programs?{" "}
+                Looking for more Uteo programs?{" "}
                 <Link
                   href="/courses"
-                  className="font-semibold text-[#192C67] dark:text-[#5b8bc7] hover:underline"
+                  className="font-semibold text-[#192C67] dark:text-white/70 hover:underline"
                 >
                   Browse courses
                 </Link>
@@ -217,7 +217,7 @@ export default function VerifyCertificatePage() {
       </main>
 
       <footer className="py-10 text-center text-xs text-gray-400">
-        &copy; {new Date().getFullYear()} SkillSasa. Professional Trainers Association of Kenya.
+        &copy; {new Date().getFullYear()} Uteo. Uteo.
       </footer>
     </div>
   );

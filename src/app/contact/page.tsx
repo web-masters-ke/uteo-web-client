@@ -25,7 +25,7 @@ export default function ContactPage() {
     setSubmitting(false);
   };
 
-  const inputClasses = 'w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors';
+  const inputClasses = 'w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#F77B0F] focus:border-[#F77B0F] outline-none transition-colors';
 
   return (
     <>
@@ -36,7 +36,7 @@ export default function ContactPage() {
           <div className="absolute inset-0 bg-[#192C67]/75" />
         </div>
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full">
-          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">SkillSasa</p>
+          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">Uteo</p>
           <h1 className="text-4xl lg:text-6xl font-black text-white">Get In Touch</h1>
           <p className="mt-4 text-lg text-white/80 max-w-xl">We&apos;d love to hear from you</p>
         </div>
@@ -50,12 +50,12 @@ export default function ContactPage() {
               <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Contact Information</h2>
               <div className="space-y-6">
                 {[
-                  { icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', title: 'Email', content: 'hello@skillsasa.co.ke' },
+                  { icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', title: 'Email', content: 'hello@uteo.co.ke' },
                   { icon: 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z', title: 'Phone', content: '+254 700 000 000' },
                   { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z', title: 'Address', content: 'Nairobi, Kenya' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-primary-50 dark:bg-primary-900/30 text-primary-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-lg bg-[#F77B0F]/10 dark:bg-[#192C67]/30 text-[#F77B0F] flex items-center justify-center flex-shrink-0">
                       <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d={item.icon} />
                       </svg>
@@ -100,7 +100,7 @@ export default function ContactPage() {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Message</label>
                 <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={6} className={inputClasses} placeholder="Tell us more..." />
               </div>
-              <button type="submit" disabled={submitting} className="w-full py-3 bg-primary-500 text-white font-semibold rounded-lg hover:bg-primary-600 transition-colors disabled:opacity-50">
+              <button type="submit" disabled={submitting} className="w-full py-3 bg-[#F77B0F] text-white font-semibold rounded-lg hover:bg-[#e06a0d] transition-colors disabled:opacity-50">
                 {submitting ? 'Sending...' : 'Send Message'}
               </button>
             </form>
