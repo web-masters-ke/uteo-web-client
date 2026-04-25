@@ -233,7 +233,7 @@ function JobFeedCard({
           {skills.slice(0, 5).map((skill) => (
             <span
               key={skill.id}
-              className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 dark:bg-white/6 text-gray-600 dark:text-white/55"
+              className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 dark:bg-white/10 text-gray-600 dark:text-white/70"
             >
               {skill.name}
             </span>
@@ -470,13 +470,13 @@ export default function FeedPage() {
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           {jobs.map((job) =>
             appliedIds.has(job.id) ? (
               <div key={job.id} className="relative">
                 <JobFeedCard job={job} onApply={setApplyJob} onSaveToggle={handleSaveToggle} savedIds={savedIds} />
-                <div className="absolute inset-0 bg-white/70 dark:bg-gray-900/70 rounded-2xl flex items-center justify-center">
-                  <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/30 text-[#192C67] dark:text-[#5b8bc7] text-sm font-semibold">
+                <div className="absolute inset-0 bg-white/70 dark:bg-black/60 rounded-2xl flex items-center justify-center">
+                  <span className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#192C67]/10 dark:bg-white/10 text-[#192C67] dark:text-white text-sm font-semibold">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
