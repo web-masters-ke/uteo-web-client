@@ -110,8 +110,10 @@ function ApplyModal({ job, onClose, onSuccess }: { job: Job; onClose: () => void
       const { url } = unwrap(res.data) as { url: string };
       setResumeUrl(url);
       setUploadedFileName(file.name);
-    } catch {
-      setUploadError('Upload failed — try again or paste a URL below');
+    } catch (e: any) {
+      const msg = e?.response?.data?.message || e?.response?.data?.error || e?.message || 'Unknown error';
+      setUploadError(`Upload failed: ${msg}`);
+      console.error('[upload]', e?.response?.status, e?.response?.data, e?.message);
     } finally {
       setUploading(false);
       if (fileRef.current) fileRef.current.value = '';
