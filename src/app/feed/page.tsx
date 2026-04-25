@@ -106,9 +106,7 @@ function ApplyModal({ job, onClose, onSuccess }: { job: Job; onClose: () => void
     try {
       const fd = new FormData();
       fd.append('file', file);
-      const res = await api.post<any>('/media/upload?folder=resumes', fd, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const res = await api.post<any>('/media/upload?folder=resumes', fd);
       const { url } = unwrap(res.data) as { url: string };
       setResumeUrl(url);
       setUploadedFileName(file.name);
@@ -321,7 +319,7 @@ function ApplyModal({ job, onClose, onSuccess }: { job: Job; onClose: () => void
                 </div>
                 <div>
                   <label className={labelCls}>Start Date Availability</label>
-                  <input type="date" className={inputCls} value={availability} onChange={(e) => setAvailability(e.target.value)} />
+                  <input type="date" className={`${inputCls} [color-scheme:light] dark:[color-scheme:dark]`} value={availability} onChange={(e) => setAvailability(e.target.value)} />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
