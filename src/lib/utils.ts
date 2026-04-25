@@ -1,0 +1,11 @@
+import { format, formatDistanceToNow, parseISO } from 'date-fns';
+
+export function formatDate(date: string | undefined): string { if (!date) return '—'; try { return format(parseISO(date), 'MMM d, yyyy'); } catch { return date; } }
+export function formatDateTime(date: string | undefined): string { if (!date) return '—'; try { return format(parseISO(date), 'MMM d, yyyy h:mm a'); } catch { return date; } }
+export function formatTime(time: string | undefined): string { if (!time) return '—'; try { const [h, m] = time.split(':').map(Number); const period = h >= 12 ? 'PM' : 'AM'; const hour = h % 12 || 12; return `${hour}:${m.toString().padStart(2, '0')} ${period}`; } catch { return time; } }
+export function formatRelative(date: string | undefined): string { if (!date) return '—'; try { return formatDistanceToNow(parseISO(date), { addSuffix: true }); } catch { return date; } }
+export function formatCurrency(amount: number, currency = 'KES'): string { return `${currency} ${amount.toLocaleString('en-KE', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`; }
+export function getInitials(firstName?: string | null, lastName?: string | null): string { return `${(firstName || '?').charAt(0)}${(lastName || '').charAt(0)}`.toUpperCase(); }
+export function cn(...classes: (string | boolean | undefined | null)[]): string { return classes.filter(Boolean).join(' '); }
+export function truncate(str: string, length: number): string { return str.length <= length ? str : str.slice(0, length) + '...'; }
+export const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];

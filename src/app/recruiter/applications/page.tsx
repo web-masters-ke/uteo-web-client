@@ -1,0 +1,430 @@
+'use client';
+
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import { useAuth } from '@/lib/auth';
+import { applicationsService } from '@/lib/services/applications';
+import { jobsService } from '@/lib/services/jobs';
+import type { Application, Job, ApplicationStatus } from '@/lib/uteo-types';
+
+const ALL_STATUSES: ApplicationStatus[] = [
+  'SUBMITTED', 'REVIEWED', 'SHORTLISTED', 'INTERVIEW', 'HIRED', 'REJECTED',
+];
+
+const STATUS_LABELS: Record<ApplicationStatus, string> = {
+  SUBMITTED: 'Submitted',
+  REVIEWED: 'Reviewed',
+  SHORTLISTED: 'Shortlisted',
+  INTERVIEW: 'Interview',
+  HIRED: 'Hired',
+  REJECTED: 'Rejected',
+};
+
+const STATUS_COLORS: Record<ApplicationStatus, string> = {
+  SUBMITTED: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  REVIEWED: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+  SHORTLISTED: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+  INTERVIEW: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
+  HIRED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  REJECTED: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+};
+
+const NEXT_ACTIONS: Partial<Record<ApplicationStatus, { status: ApplicationStatus; label: string; color: string }[]>> = {
+  SUBMITTED: [
+    { status: 'REVIEWED', label: 'Mark Reviewed', color: 'text-yellow-600 border-yellow-300 hover:bg-yellow-50 dark:text-yellow-400 dark:border-yellow-700 dark:hover:bg-yellow-900/20' },
+    { status: 'REJECTED', label: 'Reject', color: 'text-red-600 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900/20' },
+  ],
+  REVIEWED: [
+    { status: 'SHORTLISTED', label: 'Shortlist', color: 'text-purple-600 border-purple-300 hover:bg-purple-50 dark:text-purple-400 dark:border-purple-700 dark:hover:bg-purple-900/20' },
+    { status: 'REJECTED', label: 'Reject', color: 'text-red-600 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900/20' },
+  ],
+  SHORTLISTED: [
+    { status: 'INTERVIEW', label: 'Invite to Interview', color: 'text-indigo-600 border-indigo-300 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-700 dark:hover:bg-indigo-900/20' },
+    { status: 'REJECTED', label: 'Reject', color: 'text-red-600 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900/20' },
+  ],
+  INTERVIEW: [
+    { status: 'HIRED', label: 'Hire', color: 'text-green-600 border-green-300 hover:bg-green-50 dark:text-green-400 dark:border-green-700 dark:hover:bg-green-900/20' },
+    { status: 'REJECTED', label: 'Reject', color: 'text-red-600 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900/20' },
+  ],
+};
+
+function RecruiterApplicationsContent() {
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isRecruiter = (user as any)?.role === 'TRAINER' || (user as any)?.role === 'RECRUITER' || (user as any)?.role === 'EMPLOYER';
+
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  // Filters
+  const [filterJobId, setFilterJobId] = useState(searchParams.get('jobId') ?? '');
+  const [filterStatus, setFilterStatus] = useState<ApplicationStatus | ''>('');
+
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.replace('/login?redirect=/recruiter/applications');
+      return;
+    }
+    if (!authLoading && isAuthenticated && !isRecruiter) {
+      router.replace('/feed');
+    }
+  }, [isAuthenticated, authLoading, isRecruiter, router]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isRecruiter) return;
+    fetchJobs();
+  }, [isAuthenticated, isRecruiter]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !isRecruiter) return;
+    fetchApplications();
+  }, [isAuthenticated, isRecruiter, filterJobId, filterStatus]);
+
+  async function fetchJobs() {
+    try {
+      const data = await jobsService.list({ limit: 100 });
+      setJobs((data as any)?.items ?? []);
+    } catch {
+      // non-critical
+    }
+  }
+
+  async function fetchApplications() {
+    setLoading(true);
+    setError(null);
+    try {
+      const params: Record<string, any> = { limit: 50 };
+      if (filterJobId) params.jobId = filterJobId;
+      if (filterStatus) params.status = filterStatus;
+      const data = await applicationsService.list(params);
+      setApplications((data as any)?.items ?? []);
+    } catch (e: any) {
+      setError(e?.message ?? 'Failed to load applications');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateStatus(appId: string, status: ApplicationStatus) {
+    setUpdatingId(appId);
+    try {
+      await applicationsService.updateStatus(appId, status);
+      setApplications((prev) =>
+        prev.map((a) => (a.id === appId ? { ...a, status } : a)),
+      );
+    } catch {
+      // silently fail — status stays unchanged
+    } finally {
+      setUpdatingId(null);
+    }
+  }
+
+  if (authLoading || (!isAuthenticated && !authLoading)) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#F77B0F] border-t-transparent" />
+      </div>
+    );
+  }
+
+  // Status summary counts
+  const counts = ALL_STATUSES.reduce<Record<string, number>>((acc, s) => {
+    acc[s] = applications.filter((a) => a.status === s).length;
+    return acc;
+  }, {});
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Applications</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">
+            {loading ? 'Loading...' : `${applications.length} application${applications.length !== 1 ? 's' : ''}`}
+            {filterJobId || filterStatus ? ' (filtered)' : ' total'}
+          </p>
+        </div>
+        <Link
+          href="/recruiter"
+          className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Dashboard
+        </Link>
+      </div>
+
+      {/* Status summary chips */}
+      {!loading && applications.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {ALL_STATUSES.map((s) => (
+            counts[s] > 0 && (
+              <button
+                key={s}
+                onClick={() => setFilterStatus(filterStatus === s ? '' : s)}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                  filterStatus === s
+                    ? STATUS_COLORS[s] + ' border-transparent ring-2 ring-offset-1 ring-[#F77B0F]'
+                    : STATUS_COLORS[s] + ' border-transparent'
+                }`}
+              >
+                {STATUS_LABELS[s]} · {counts[s]}
+              </button>
+            )
+          ))}
+        </div>
+      )}
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3">
+        <select
+          value={filterJobId}
+          onChange={(e) => setFilterJobId(e.target.value)}
+          className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#F77B0F]"
+        >
+          <option value="">All Jobs</option>
+          {jobs.map((j) => (
+            <option key={j.id} value={j.id}>{j.title}</option>
+          ))}
+        </select>
+
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value as ApplicationStatus | '')}
+          className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#F77B0F]"
+        >
+          <option value="">All Statuses</option>
+          {ALL_STATUSES.map((s) => (
+            <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+          ))}
+        </select>
+
+        {(filterJobId || filterStatus) && (
+          <button
+            onClick={() => { setFilterJobId(''); setFilterStatus(''); }}
+            className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 border border-gray-200 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+          >
+            Clear filters
+          </button>
+        )}
+      </div>
+
+      {/* Error */}
+      {error && (
+        <div className="rounded-xl border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 p-4 text-sm text-red-600 dark:text-red-400">
+          {error}
+          <button onClick={fetchApplications} className="ml-3 underline font-medium">Retry</button>
+        </div>
+      )}
+
+      {/* Loading skeletons */}
+      {loading && (
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="animate-pulse rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-5">
+              <div className="flex gap-4">
+                <div className="h-10 w-10 rounded-xl bg-gray-200 dark:bg-gray-700 shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-40 rounded bg-gray-200 dark:bg-gray-700" />
+                  <div className="h-3 w-28 rounded bg-gray-200 dark:bg-gray-700" />
+                </div>
+                <div className="h-6 w-20 rounded-full bg-gray-200 dark:bg-gray-700" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!loading && !error && applications.length === 0 && (
+        <div className="rounded-2xl border border-dashed border-gray-300 dark:border-gray-600 p-12 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-700">
+            <svg className="w-7 h-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </div>
+          <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-1">No applications yet</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            {filterJobId || filterStatus ? 'Try adjusting your filters' : 'Applications will appear here once candidates apply to your jobs'}
+          </p>
+          {!filterJobId && !filterStatus && (
+            <Link
+              href="/post-job"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#F77B0F] text-white rounded-xl text-sm font-medium hover:bg-[#e06a0d]"
+            >
+              Post a Job
+            </Link>
+          )}
+        </div>
+      )}
+
+      {/* Applications list */}
+      {!loading && !error && applications.length > 0 && (
+        <div className="space-y-3">
+          {applications.map((app) => (
+            <ApplicationCard
+              key={app.id}
+              application={app}
+              updating={updatingId === app.id}
+              onStatusChange={(status) => updateStatus(app.id, status)}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ApplicationCard({
+  application,
+  updating,
+  onStatusChange,
+}: {
+  application: Application;
+  updating: boolean;
+  onStatusChange: (status: ApplicationStatus) => void;
+}) {
+  const [showActions, setShowActions] = useState(false);
+  const actions = NEXT_ACTIONS[application.status] ?? [];
+
+  const candidateName =
+    (application as any)?.user?.firstName
+      ? `${(application as any).user.firstName} ${(application as any).user.lastName ?? ''}`
+      : `Applicant #${application.id.slice(-5)}`;
+
+  const candidateInitials = candidateName
+    .split(' ')
+    .slice(0, 2)
+    .map((w: string) => w[0])
+    .join('')
+    .toUpperCase();
+
+  const avatarUrl = (application as any)?.user?.avatarUrl;
+
+  return (
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-5 hover:border-[#F77B0F]/40 hover:shadow-sm transition-all">
+      <div className="flex items-start gap-4">
+        {/* Candidate avatar */}
+        <div className="shrink-0">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" className="h-10 w-10 rounded-xl object-cover" />
+          ) : (
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#192C67] text-white text-xs font-bold">
+              {candidateInitials}
+            </div>
+          )}
+        </div>
+
+        {/* Info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="font-semibold text-gray-900 dark:text-white">{candidateName}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Applied for{' '}
+                <Link
+                  href={`/jobs/${application.jobId}`}
+                  className="font-medium text-gray-700 dark:text-gray-300 hover:text-[#F77B0F] dark:hover:text-[#F77B0F]"
+                >
+                  {application.job?.title ?? 'this job'}
+                </Link>
+              </p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              {updating ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#F77B0F] border-t-transparent" />
+              ) : (
+                <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[application.status]}`}>
+                  {STATUS_LABELS[application.status]}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Cover letter preview */}
+          {application.coverLetter && (
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
+              {application.coverLetter}
+            </p>
+          )}
+
+          <div className="mt-3 flex items-center justify-between">
+            <span className="text-xs text-gray-400 dark:text-gray-500">
+              Applied {new Date(application.appliedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </span>
+
+            <div className="flex items-center gap-2">
+              {/* Resume link */}
+              {application.resumeUrl && (
+                <a
+                  href={application.resumeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  Resume
+                </a>
+              )}
+
+              {/* Status actions */}
+              {actions.length > 0 && (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowActions((o) => !o)}
+                    disabled={updating}
+                    className="flex items-center gap-1 px-3 py-1 text-xs font-medium text-[#F77B0F] border border-[#F77B0F]/50 rounded-lg hover:bg-[#F77B0F]/10 transition-colors disabled:opacity-50"
+                  >
+                    Update Status
+                    <svg className={`w-3 h-3 transition-transform ${showActions ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {showActions && (
+                    <div className="absolute right-0 top-8 z-20 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg py-1 min-w-[160px]">
+                      {actions.map((action) => (
+                        <button
+                          key={action.status}
+                          onClick={() => {
+                            onStatusChange(action.status);
+                            setShowActions(false);
+                          }}
+                          className={`block w-full text-left px-4 py-2 text-sm border-b border-transparent last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium ${action.color}`}
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function RecruiterApplicationsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#F77B0F] border-t-transparent" />
+        </div>
+      }
+    >
+      <RecruiterApplicationsContent />
+    </Suspense>
+  );
+}
