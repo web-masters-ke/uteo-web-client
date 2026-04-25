@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { jobsService } from '@/lib/services/jobs';
 import { applicationsService } from '@/lib/services/applications';
+import { api, unwrap } from '@/lib/api';
 import type { Job } from '@/lib/uteo-types';
 import Modal from '@/components/ui/Modal';
 import { CardSkeleton } from '@/components/ui/LoadingSkeleton';
@@ -61,6 +62,7 @@ const labelCls = "block text-xs font-semibold text-gray-500 dark:text-white/50 u
 
 function ApplyModal({ job, onClose, onSuccess }: { job: Job; onClose: () => void; onSuccess: () => void }) {
   const { user } = useAuth();
+  const fileRef = useRef<HTMLInputElement>(null);
   const [step, setStep] = useState<1 | 2 | 3>(1);
 
   // Step 1 — Personal & Work Details
@@ -75,6 +77,9 @@ function ApplyModal({ job, onClose, onSuccess }: { job: Job; onClose: () => void
 
   // Step 2 — Documents & Logistics
   const [resumeUrl, setResumeUrl] = useState('');
+  const [uploadedFileName, setUploadedFileName] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const [linkedIn, setLinkedIn] = useState('');
   const [portfolio, setPortfolio] = useState('');
   const [noticePeriod, setNoticePeriod] = useState('');
@@ -91,6 +96,29 @@ function ApplyModal({ job, onClose, onSuccess }: { job: Job; onClose: () => void
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { setUploadError('File too large — max 10MB'); return; }
+    setUploading(true);
+    setUploadError('');
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await api.post<any>('/media/upload?folder=resumes', fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const { url } = unwrap(res.data) as { url: string };
+      setResumeUrl(url);
+      setUploadedFileName(file.name);
+    } catch {
+      setUploadError('Upload failed — try again or paste a URL below');
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = '';
+    }
+  };
 
   const salary = job.salaryMin && job.salaryMax
     ? `${job.currency ?? 'KES'} ${(job.salaryMin / 1000).toFixed(0)}k – ${(job.salaryMax / 1000).toFixed(0)}k`
@@ -224,9 +252,39 @@ function ApplyModal({ job, onClose, onSuccess }: { job: Job; onClose: () => void
           {step === 2 && (
             <>
               <div>
-                <label className={labelCls}>Resume / CV URL</label>
-                <input type="url" className={inputCls} value={resumeUrl} onChange={(e) => setResumeUrl(e.target.value)} placeholder="Google Drive, Dropbox, or any public link" />
-                <p className="text-[11px] text-gray-400 dark:text-white/30 mt-1">Ensure the link is publicly accessible. PDF format preferred.</p>
+                <label className={labelCls}>Resume / CV</label>
+                {resumeUrl && uploadedFileName ? (
+                  <div className="flex items-center gap-3 p-3 rounded-xl border border-[#F77B0F]/30 bg-[#F77B0F]/5">
+                    <svg className="w-5 h-5 text-[#F77B0F] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <span className="flex-1 text-sm text-gray-700 dark:text-white/80 truncate">{uploadedFileName}</span>
+                    <button onClick={() => { setResumeUrl(''); setUploadedFileName(''); }} className="text-xs text-gray-400 hover:text-red-500 transition-colors shrink-0">Remove</button>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div
+                      onClick={() => fileRef.current?.click()}
+                      className={`flex flex-col items-center justify-center gap-2 p-6 rounded-xl border-2 border-dashed cursor-pointer transition-all ${uploading ? 'border-[#F77B0F]/40 bg-[#F77B0F]/5' : 'border-gray-200 dark:border-white/10 hover:border-[#F77B0F]/50 hover:bg-[#F77B0F]/5'}`}
+                    >
+                      {uploading ? (
+                        <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#F77B0F] border-t-transparent" />
+                      ) : (
+                        <svg className="w-8 h-8 text-gray-300 dark:text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                      )}
+                      <p className="text-sm text-gray-500 dark:text-white/40 text-center">
+                        {uploading ? 'Uploading to S3...' : <><span className="text-[#F77B0F] font-medium">Click to upload</span> your resume</>}
+                      </p>
+                      <p className="text-[11px] text-gray-400 dark:text-white/25">PDF, DOC, DOCX · max 10MB</p>
+                      <input ref={fileRef} type="file" accept=".pdf,.doc,.docx" className="hidden" onChange={handleFileUpload} />
+                    </div>
+                    {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
+                    <p className="text-center text-[11px] text-gray-400 dark:text-white/25">— or paste a public link —</p>
+                    <input type="url" className={inputCls} value={resumeUrl} onChange={(e) => { setResumeUrl(e.target.value); setUploadedFileName(''); }} placeholder="Google Drive, Dropbox, or any hosted URL" />
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
