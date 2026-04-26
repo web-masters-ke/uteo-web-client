@@ -107,6 +107,8 @@ const icons: Record<string, string> = {
     "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4",
   credentials:
     "M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z",
+  aiTools:
+    "M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m1.636 6.364l.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
   certificates:
     "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
   transcript:
@@ -131,6 +133,7 @@ const NAV: NavItem[] = [
   // ── JOB SEEKER (CLIENT) ──────────────────────────────────────────────────────
   { href: "/feed",          label: "My Feed",         icon: "feed",         group: "Discover",  roles: ["CLIENT"] },
   { href: "/jobs",          label: "Browse Jobs",     icon: "jobs",         group: "Discover",  roles: ["CLIENT"] },
+  { href: "/jobs/ai-tools", label: "AI Tools",        icon: "aiTools",      group: "Discover",  roles: ["CLIENT"] },
   { href: "/applications",  label: "My Applications", icon: "applications", group: "Activity",  roles: ["CLIENT"] },
   { href: "/saved-jobs",    label: "Saved Jobs",      icon: "savedJobs",    group: "Activity",  roles: ["CLIENT"] },
   { href: "/messages",      label: "Messages",        icon: "messages",     group: "Activity",  roles: ["CLIENT"] },
@@ -143,6 +146,7 @@ const NAV: NavItem[] = [
   { href: "/recruiter/applications",   label: "Applications",     icon: "applications",   group: "Hiring",    roles: ["TRAINER"] },
   { href: "/recruiter/candidates",     label: "Candidates",       icon: "candidates",     group: "Talent",    roles: ["TRAINER"] },
   { href: "/recruiter/interviews",     label: "Interviews",       icon: "interviews",     group: "Talent",    roles: ["TRAINER"] },
+  { href: "/recruiter/ai-tools",       label: "AI Tools",         icon: "aiTools",        group: "Insights",  roles: ["TRAINER"] },
   { href: "/recruiter/analytics",      label: "Analytics",        icon: "performance",    group: "Insights",  roles: ["TRAINER"] },
   { href: "/recruiter/company",        label: "Company",          icon: "companies",      group: "Workspace", roles: ["TRAINER"] },
   { href: "/messages",                 label: "Messages",         icon: "messages",       group: "Workspace", roles: ["TRAINER"] },
@@ -405,7 +409,7 @@ function ShellInner({ children }: { children: ReactNode }) {
                 {groupItems.map((item) => {
                   // Exact-match pages (to avoid /feed matching /feed/... sub-paths that don't exist,
                   // and /recruiter matching /recruiter/applications accidentally)
-                  const exactMatchHrefs = ["/feed", "/recruiter", "/dashboard", "/post-job", "/saved-jobs", "/recruiter/candidates", "/recruiter/interviews", "/recruiter/company", "/recruiter/analytics"];
+                  const exactMatchHrefs = ["/feed", "/recruiter", "/dashboard", "/post-job", "/saved-jobs", "/jobs/ai-tools", "/recruiter/candidates", "/recruiter/interviews", "/recruiter/company", "/recruiter/analytics"];
                   const active = exactMatchHrefs.includes(item.href)
                     ? pathname === item.href
                     : pathname === item.href || pathname.startsWith(item.href + "/");

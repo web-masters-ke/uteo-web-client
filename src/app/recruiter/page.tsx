@@ -246,6 +246,7 @@ function RecruiterDashboardContent() {
               { href: '/post-job', label: 'Post New Job' },
               { href: '/recruiter/applications', label: 'Review Applications' },
               { href: '/recruiter/candidates', label: 'Browse Candidates' },
+              { href: '/recruiter/ai-tools', label: '✦ AI Hiring Tools' },
               { href: '/recruiter/company', label: 'Company Profile' },
             ].map(({ href, label }) => (
               <Link

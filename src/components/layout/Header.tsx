@@ -36,6 +36,7 @@ export default function Header() {
     { href: '/feed', label: 'Feed' },
     { href: '/jobs', label: 'Browse Jobs' },
     { href: '/applications', label: 'My Applications' },
+    { href: '/jobs/ai-tools', label: 'AI Tools' },
     { href: '/messages', label: 'Messages' },
     { href: '/notifications', label: 'Notifications' },
   ];
@@ -44,6 +45,7 @@ export default function Header() {
     { href: '/recruiter', label: 'Dashboard' },
     { href: '/post-job', label: 'Post Job' },
     { href: '/recruiter/applications', label: 'Applications' },
+    { href: '/recruiter/ai-tools', label: 'AI Tools' },
     { href: '/messages', label: 'Messages' },
   ];
 
