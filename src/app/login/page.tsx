@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const schema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -44,7 +45,12 @@ export default function LoginPage() {
   const ic = "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0f1724] text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-[#192C67] focus:border-[#192C67] outline-none text-sm transition-colors";
 
   return (
-    <div className="h-screen flex overflow-hidden">
+    <div className="h-screen flex overflow-hidden relative">
+      {/* Theme toggle pinned top-right */}
+      <div className="absolute top-4 right-5 z-30">
+        <ThemeToggle className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm" />
+      </div>
+
       {/* Left — Image */}
       <div className="hidden lg:flex lg:w-1/2 flex-col relative">
         <img
