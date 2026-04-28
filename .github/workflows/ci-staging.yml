@@ -1,44 +1,21 @@
-# =============================================================================
-# WASAA STAGING CI/CD TEMPLATE
-# =============================================================================
-# Usage: Copy this file to .github/workflows/ci-staging.yml in your repo.
-# No edits required — everything is derived from the GitHub repository context.
+# Uteo Web Client — Staging CI/CD
+# Adapted from wasaa-ci-shared-workflows ci-staging template.
 #
-# What this does:
-#   1. build-test      — install deps, lint, run tests
-#   2. security-scan   — Gitleaks (secrets, hard-fail) + Semgrep SAST + dep audit
-#   3. build-push      — build Docker image, scan it with Trivy, push to GHCR
-#   4. update-helm     — update image tag in Ventures-Helm-Charts (staging branch)
-#   5. trigger-argocd  — call ArgoCD sync API for fast rollout
-#   6. report          — post deployment summary as job summary
+# Repo variables to set (Settings → Variables):
+#   HELM_CHART_PATH   = charts/uteo-web-client
+#   ARGOCD_APP_NAME   = uteo-web-client
+#   SKIP_BUILD_TEST   = true   (optional — skips lint/test if no test suite)
 #
-# Required secrets (set at org or repo level):
-#   HELM_CHARTS_PAT    — GitHub PAT with write access to Ventures-Helm-Charts
-#   ARGOCD_TOKEN       — ArgoCD API token (Settings → Accounts → Generate Token)
-#   SEMGREP_APP_TOKEN  — (optional) Semgrep Cloud Platform token for dashboard
-#
-# Optional repo-level variables (Settings → Variables):
-#   ARGOCD_APP_NAME    — Override ArgoCD app name
-#                        (default: <repo-name> or <repo-name>-staging if found)
-#   HELM_IMAGE_PATH    — YAML path to update in values.yaml
-#                        (default: wasaa-base.image.tag)
-#                        For multi-component ventures:
-#                          backend.image.tag | web.image.tag | admin.image.tag
-#   HELM_CHART_PATH    — Override chart directory (default: charts/<repo-name>)
-#   HELM_REPO          — Override helm charts repo
-#                        (default: web-masters-ke/Ventures-Helm-Charts)
-# =============================================================================
+# Repo secrets to set (Settings → Secrets):
+#   HELM_CHARTS_PAT   = PAT with write access to helm-charts-on-prem
+#   ARGOCD_TOKEN      = ArgoCD API token (argocd.wasaachat.com)
 
 name: CI - Staging
 
 on:
   push:
     branches:
-      - staging
-      - develop
-  pull_request:
-    branches:
-      - staging
+      - main
   workflow_dispatch:
 
 permissions:
@@ -52,209 +29,87 @@ env:
   REGISTRY: ghcr.io
   ORG: web-masters-ke
   SERVICE_NAME: ${{ github.event.repository.name }}
-  HELM_REPO: ${{ vars.HELM_REPO || 'web-masters-ke/Ventures-Helm-Charts' }}
-  HELM_BRANCH: staging
+  HELM_REPO: ${{ vars.HELM_REPO || 'web-masters-ke/helm-charts-on-prem' }}
+  HELM_BRANCH: ${{ vars.HELM_BRANCH || 'main' }}
   ARGOCD_URL: https://argocd.wasaachat.com
 
-# ─────────────────────────────────────────────────────────────────────────────
-# JOB 1: Build & Test
-# ─────────────────────────────────────────────────────────────────────────────
 jobs:
   build-test:
     name: Build & Test
+    if: vars.SKIP_BUILD_TEST != 'true'
     runs-on: wasaa-org-runners
     timeout-minutes: 20
     outputs:
       node_project: ${{ steps.detect.outputs.node_project }}
-      python_project: ${{ steps.detect.outputs.python_project }}
-      go_project: ${{ steps.detect.outputs.go_project }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Detect project type
         id: detect
-        run: |
-          echo "node_project=$([[ -f package.json ]] && echo true || echo false)" >> $GITHUB_OUTPUT
-          echo "python_project=$([[ -f requirements.txt || -f pyproject.toml ]] && echo true || echo false)" >> $GITHUB_OUTPUT
-          echo "go_project=$([[ -f go.mod ]] && echo true || echo false)" >> $GITHUB_OUTPUT
+        run: echo "node_project=$([[ -f package.json ]] && echo true || echo false)" >> $GITHUB_OUTPUT
 
-      - name: Setup Node.js
-        if: steps.detect.outputs.node_project == 'true'
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'npm'
-
-      - name: Setup Python
-        if: steps.detect.outputs.python_project == 'true'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-          cache: 'pip'
-
-      - name: Setup Go
-        if: steps.detect.outputs.go_project == 'true'
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-
-      - name: Install dependencies (Node)
+      - name: Install dependencies
         if: steps.detect.outputs.node_project == 'true'
         run: |
-          if [ -f package-lock.json ]; then
-            npm ci --ignore-scripts && npm rebuild
-          else
-            npm install --legacy-peer-deps --ignore-scripts && npm rebuild
-          fi
+          npm config set cache /home/runner/_work/.npm-cache
+          if [ -f package-lock.json ]; then npm ci --ignore-scripts && npm rebuild
+          else npm install --legacy-peer-deps --ignore-scripts && npm rebuild; fi
 
-      - name: Install dependencies (Python)
-        if: steps.detect.outputs.python_project == 'true'
-        run: |
-          pip install --upgrade pip
-          [[ -f requirements.txt ]] && pip install -r requirements.txt
-          [[ -f pyproject.toml ]] && pip install -e ".[dev]" || true
-
-      - name: Lint (Node)
+      - name: Lint
         if: steps.detect.outputs.node_project == 'true'
         continue-on-error: true
         run: |
-          if npm run --silent 2>/dev/null | grep -q "^  lint"; then
-            npm run lint
-          else
-            echo "No lint script — skipping"
-          fi
+          if npm run --silent 2>/dev/null | grep -q "^  lint"; then npm run lint
+          else echo "No lint script — skipping"; fi
 
-      - name: Run tests (Node)
+      - name: Test
         if: steps.detect.outputs.node_project == 'true'
         run: |
-          if npm run --silent 2>/dev/null | grep -q "^  test:run"; then
-            npm run test:run
-          elif npm run --silent 2>/dev/null | grep -q "^  test:unit"; then
-            npm run test:unit -- --forceExit --testTimeout=30000
+          if npm run --silent 2>/dev/null | grep -q "^  test:run"; then npm run test:run
           elif npm run --silent 2>/dev/null | grep -q "^  test"; then
             npm run test -- --forceExit --testTimeout=30000
-          else
-            echo "No test script — skipping"
-          fi
+          else echo "No test script — skipping"; fi
 
-      - name: Run tests (Python)
-        if: steps.detect.outputs.python_project == 'true'
-        continue-on-error: true
-        run: |
-          if command -v pytest &>/dev/null; then
-            pytest --timeout=60 -q || true
-          fi
-
-      - name: Run tests (Go)
-        if: steps.detect.outputs.go_project == 'true'
-        continue-on-error: true
-        run: go test ./... -timeout 60s
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 2: Security Scan
-  # ─────────────────────────────────────────────────────────────────────────────
   security-scan:
     name: Security Scan
     needs: build-test
+    if: always() && !failure() && !cancelled()
     runs-on: wasaa-org-runners
     timeout-minutes: 15
-    outputs:
-      secrets_found: ${{ steps.gitleaks.outputs.exit_code }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # ── Secret Detection (HARD FAIL) ──────────────────────────────────────
       - name: Secret Detection (Gitleaks)
-        id: gitleaks
         run: |
-          GITLEAKS_VERSION="8.24.3"
-          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
-            | tar -xz -C /tmp
-          sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
-
-          # Scan current working tree only (--no-git skips history,
-          # avoids blocking on pre-existing findings in old commits)
           CONFIG_ARG=""
           [ -f .gitleaks.toml ] && CONFIG_ARG="--config .gitleaks.toml"
+          if command -v gitleaks &>/dev/null; then
+            gitleaks detect --no-git --source . \
+              --report-format json --report-path gitleaks-report.json \
+              --exit-code 1 --log-level warn $CONFIG_ARG
+          else
+            docker run --rm -v "$(pwd):/scan" zricethezav/gitleaks:v8.24.3 \
+              detect --no-git --source /scan \
+              --report-format json --report-path /scan/gitleaks-report.json \
+              --exit-code 1 --log-level warn
+          fi
 
-          gitleaks detect --no-git --source . \
-            --report-format json \
-            --report-path gitleaks-report.json \
-            --exit-code 1 \
-            --log-level warn \
-            $CONFIG_ARG
-
-      # ── Dependency Audit (Node) ───────────────────────────────────────────
-      - name: Dependency Audit (npm)
-        if: hashFiles('package.json') != ''
-        continue-on-error: true
-        run: |
-          npm audit --audit-level=high --json 2>/dev/null > npm-audit.json || true
-          CRITICAL=$(python3 -c "
-          import json
-          try:
-            d = json.load(open('npm-audit.json'))
-            print(d.get('metadata', {}).get('vulnerabilities', {}).get('critical', 0))
-          except: print(0)
-          ")
-          [[ "$CRITICAL" -gt 0 ]] && echo "::warning::${CRITICAL} critical npm vulnerabilities found"
-
-      # ── Dependency Audit (Python) ─────────────────────────────────────────
-      - name: Dependency Audit (pip-audit)
-        if: hashFiles('requirements.txt') != ''
-        continue-on-error: true
-        run: |
-          pip install pip-audit --quiet
-          pip-audit -r requirements.txt --format json -o pip-audit.json 2>/dev/null || true
-
-      # ── Filesystem Security Scan (Trivy) ─────────────────────────────────
-      - name: Filesystem Security Scan (Trivy)
+      - name: Filesystem Scan (Trivy)
         uses: aquasecurity/trivy-action@0.35.0
         with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-fs-results.sarif'
-          severity: 'CRITICAL,HIGH'
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-fs-results.sarif
+          severity: CRITICAL,HIGH
           ignore-unfixed: true
           exit-code: '0'
-
-      # ── SAST (Semgrep) ────────────────────────────────────────────────────
-      - name: SAST Scan (Semgrep)
-        uses: semgrep/semgrep-action@v1
-        continue-on-error: true
-        with:
-          config: 'auto'
-          generateSarif: '1'
-          auditOn: push
-        env:
-          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
-
-      # ── Upload SARIF results ──────────────────────────────────────────────
-      - name: Upload Trivy FS SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        continue-on-error: true
-        with:
-          sarif_file: trivy-fs-results.sarif
-          category: trivy-filesystem
-
-      - name: Upload Semgrep SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        if: always() && hashFiles('semgrep.sarif') != ''
-        continue-on-error: true
-        with:
-          sarif_file: semgrep.sarif
-          category: semgrep
 
       - name: Upload security artifacts
         uses: actions/upload-artifact@v4
@@ -263,19 +118,13 @@ jobs:
           name: security-scan-results
           path: |
             trivy-fs-results.sarif
-            semgrep.sarif
-            npm-audit.json
-            pip-audit.json
+            gitleaks-report.json
           retention-days: 14
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 3: Build & Push to GHCR
-  # ─────────────────────────────────────────────────────────────────────────────
   build-push:
     name: Build & Push Image
     needs: security-scan
-    # Skip on PRs — only push on actual pushes to staging/develop
-    if: github.event_name != 'pull_request'
+    if: always() && needs.security-scan.result == 'success'
     runs-on: wasaa-org-runners
     timeout-minutes: 30
     permissions:
@@ -284,11 +133,9 @@ jobs:
     outputs:
       version_tag: ${{ steps.version.outputs.tag }}
       image: ${{ steps.version.outputs.image }}
-      sha: ${{ steps.version.outputs.sha }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Generate version tag
         id: version
@@ -297,79 +144,41 @@ jobs:
           TIMESTAMP=$(date +%Y%m%d%H%M)
           TAG="${ENVIRONMENT}-${TIMESTAMP}-${SHA}"
           IMAGE="${REGISTRY}/${ORG}/${SERVICE_NAME}"
-          echo "tag=${TAG}"      >> $GITHUB_OUTPUT
-          echo "image=${IMAGE}"  >> $GITHUB_OUTPUT
-          echo "sha=${SHA}"      >> $GITHUB_OUTPUT
-          echo "Generated tag: ${TAG}"
+          echo "tag=${TAG}"     >> $GITHUB_OUTPUT
+          echo "image=${IMAGE}" >> $GITHUB_OUTPUT
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
         with:
           driver-opts: network=host
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push image
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: |
             ${{ steps.version.outputs.image }}:${{ steps.version.outputs.tag }}
-            ${{ steps.version.outputs.image }}:latest-${{ env.ENVIRONMENT }}
-          labels: |
-            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.revision=${{ github.sha }}
-            org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
+            ${{ steps.version.outputs.image }}:latest-staging
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: false
 
-      # ── Container Image Security Scan ─────────────────────────────────────
-      - name: Container Image Scan (Trivy)
-        uses: aquasecurity/trivy-action@0.35.0
-        with:
-          image-ref: '${{ steps.version.outputs.image }}:${{ steps.version.outputs.tag }}'
-          format: 'sarif'
-          output: 'trivy-image-results.sarif'
-          severity: 'CRITICAL,HIGH'
-          ignore-unfixed: true
-          exit-code: '0'
-          timeout: '10m'
-
-      - name: Upload Image Trivy SARIF
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
-        continue-on-error: true
-        with:
-          sarif_file: trivy-image-results.sarif
-          category: trivy-image
-
-      - name: Upload image scan artifact
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: image-scan-results
-          path: trivy-image-results.sarif
-          retention-days: 14
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 4: Update Helm Chart
-  # ─────────────────────────────────────────────────────────────────────────────
   update-helm:
     name: Update Helm Values
     needs: build-push
-    if: github.event_name != 'pull_request'
+    if: always() && needs.build-push.result == 'success'
     runs-on: wasaa-org-runners
     timeout-minutes: 10
 
     steps:
-      - name: Checkout Helm Charts repo
+      - name: Checkout helm-charts-on-prem
         uses: actions/checkout@v4
         with:
           repository: ${{ env.HELM_REPO }}
@@ -378,84 +187,21 @@ jobs:
           path: helm-charts
           fetch-depth: 2
 
-      - name: Update image tag in values.yaml
+      - name: Update image tag
         env:
           NEW_TAG: ${{ needs.build-push.outputs.version_tag }}
-          IMAGE_PATH: ${{ vars.HELM_IMAGE_PATH || 'wasaa-base.image.tag' }}
+          IMAGE_PATH: ${{ vars.HELM_IMAGE_PATH || 'image.tag' }}
           CHART_PATH: ${{ vars.HELM_CHART_PATH || format('charts/{0}', github.event.repository.name) }}
         run: |
           VALUES="helm-charts/${CHART_PATH}/values.yaml"
-
           if [ ! -f "$VALUES" ]; then
-            echo "::error::values.yaml not found at ${VALUES}"
-            echo "Available charts:"
-            ls helm-charts/charts/ 2>/dev/null || echo "(none)"
-            exit 1
+            echo "::error::values.yaml not found at ${VALUES}"; exit 1
           fi
+          echo "Updating ${IMAGE_PATH} → ${NEW_TAG}"
+          sed -i "s/^\(\s*tag:\s*\).*/\1${NEW_TAG}/" "$VALUES"
+          grep "tag:" "$VALUES" | head -3
 
-          echo "Updating ${IMAGE_PATH} → ${NEW_TAG} in ${VALUES}"
-          echo "Before:"
-          grep "tag:" "$VALUES" | head -5
-
-          # NOTE: CHART_PATH and IMAGE_PATH are in env: so Python can read them.
-          # VALUES is a shell variable — Python constructs the path from CHART_PATH instead.
-          python3 - <<'PYEOF'
-          import sys, os, re
-
-          chart_path = os.environ['CHART_PATH']
-          values_file = f'helm-charts/{chart_path}/values.yaml'
-          new_tag = os.environ['NEW_TAG']
-          image_path = os.environ['IMAGE_PATH']
-
-          with open(values_file, 'r') as f:
-              content = f.read()
-
-          path_parts = image_path.split('.')
-          top_key = path_parts[0]
-
-          in_section = False
-          lines = content.split('\n')
-          updated = []
-          replaced = False
-
-          for line in lines:
-              if not replaced:
-                  if re.match(r'^' + re.escape(top_key) + r'\s*:', line):
-                      in_section = True
-                  elif in_section:
-                      if line and not line.startswith(' ') and not line.startswith('\t') and not line.startswith('#'):
-                          in_section = False
-                      elif re.match(r'^\s+tag\s*:', line) and in_section:
-                          indent = re.match(r'^(\s+)', line).group(1) if re.match(r'^(\s+)', line) else '    '
-                          line = f'{indent}tag: {new_tag}'
-                          replaced = True
-                          in_section = False
-              updated.append(line)
-
-          if not replaced:
-              new_lines = []
-              for line in updated:
-                  if not replaced and re.match(r'^\s+tag\s*:', line):
-                      indent = re.match(r'^(\s+)', line).group(1) if re.match(r'^(\s+)', line) else '    '
-                      line = f'{indent}tag: {new_tag}'
-                      replaced = True
-                  new_lines.append(line)
-              updated = new_lines
-
-          if not replaced:
-              print(f'ERROR: Could not find tag field at {image_path}', file=sys.stderr)
-              sys.exit(1)
-
-          with open(values_file, 'w') as f:
-              f.write('\n'.join(updated))
-
-          print(f'Updated tag to {new_tag}')
-          PYEOF
-
-          echo "After:"
-          grep "tag:" "$VALUES" | head -5
-
-      - name: Commit and push chart update
+      - name: Commit and push
         env:
           NEW_TAG: ${{ needs.build-push.outputs.version_tag }}
           CHART_PATH: ${{ vars.HELM_CHART_PATH || format('charts/{0}', github.event.repository.name) }}
@@ -464,25 +210,18 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
           git add "${CHART_PATH}/values.yaml"
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "ci(staging): update ${SERVICE_NAME} → ${NEW_TAG}"
+          for i in 1 2 3 4 5; do
+            git push origin ${{ env.HELM_BRANCH }} && break
+            git pull --rebase origin ${{ env.HELM_BRANCH }}
+            sleep $((i * 2))
+          done
 
-          if git diff --cached --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "ci(staging): update ${SERVICE_NAME} → ${NEW_TAG}
-
-          Source: ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}
-          Triggered by: ${{ github.actor }}"
-            git push origin ${{ env.HELM_BRANCH }}
-            echo "Helm chart updated"
-          fi
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 5: Trigger ArgoCD Sync
-  # ─────────────────────────────────────────────────────────────────────────────
   trigger-argocd:
     name: Trigger ArgoCD Sync
     needs: [build-push, update-helm]
-    if: github.event_name != 'pull_request'
+    if: always() && needs.build-push.result == 'success' && needs.update-helm.result == 'success'
     runs-on: wasaa-org-runners
     timeout-minutes: 10
     outputs:
@@ -492,64 +231,30 @@ jobs:
     steps:
       - name: Resolve ArgoCD app name
         id: app
-        env:
-          ARGOCD_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
         run: |
-          # Try repo-level override first, then try <repo>-staging, then <repo>
           CUSTOM="${{ vars.ARGOCD_APP_NAME }}"
-          if [ -n "$CUSTOM" ]; then
-            echo "name=${CUSTOM}" >> $GITHUB_OUTPUT
-            echo "Using configured app name: ${CUSTOM}"
-            exit 0
-          fi
+          if [ -n "$CUSTOM" ]; then echo "name=${CUSTOM}" >> $GITHUB_OUTPUT; exit 0; fi
+          echo "name=${SERVICE_NAME}" >> $GITHUB_OUTPUT
 
-          BASE="${SERVICE_NAME}"
-
-          # Check if <repo-name>-staging app exists
-          if [ -n "$ARGOCD_TOKEN" ]; then
-            HTTP=$(curl -s -o /dev/null -w "%{http_code}" \
-              "${ARGOCD_URL}/api/v1/applications/${BASE}-staging" \
-              -H "Authorization: Bearer ${ARGOCD_TOKEN}")
-            if [[ "$HTTP" == "200" ]]; then
-              echo "name=${BASE}-staging" >> $GITHUB_OUTPUT
-              echo "Using app name: ${BASE}-staging"
-              exit 0
-            fi
-          fi
-
-          echo "name=${BASE}" >> $GITHUB_OUTPUT
-          echo "Using app name: ${BASE}"
-
-      - name: Trigger ArgoCD sync
+      - name: Trigger sync
         id: sync
         env:
           ARGOCD_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
           APP_NAME: ${{ steps.app.outputs.name }}
         run: |
           if [ -z "$ARGOCD_TOKEN" ]; then
-            echo "::warning::ARGOCD_TOKEN not set — skipping sync trigger"
-            echo "sync_triggered=false" >> $GITHUB_OUTPUT
-            exit 0
+            echo "::warning::ARGOCD_TOKEN not set — skipping"
+            echo "sync_triggered=false" >> $GITHUB_OUTPUT; exit 0
           fi
-
-          echo "Triggering ArgoCD sync for: ${APP_NAME}"
-
-          HTTP_CODE=$(curl -s -o /tmp/sync_resp.json -w "%{http_code}" \
+          HTTP=$(curl -s -o /dev/null -w "%{http_code}" \
             -X POST "${ARGOCD_URL}/api/v1/applications/${APP_NAME}/sync" \
             -H "Authorization: Bearer ${ARGOCD_TOKEN}" \
             -H "Content-Type: application/json" \
-            -d '{"prune":true,"dryRun":false,"force":false,"retry":{"limit":3,"backoff":{"duration":"5s","factor":2,"maxDuration":"3m"}}}')
+            -d '{"prune":true,"dryRun":false,"force":false}')
+          [[ "$HTTP" == "200" ]] && echo "sync_triggered=true" >> $GITHUB_OUTPUT \
+            || { echo "::warning::ArgoCD returned HTTP ${HTTP}"; echo "sync_triggered=false" >> $GITHUB_OUTPUT; }
 
-          echo "HTTP ${HTTP_CODE}"
-          if [[ "$HTTP_CODE" == "200" ]]; then
-            echo "sync_triggered=true" >> $GITHUB_OUTPUT
-          else
-            cat /tmp/sync_resp.json
-            echo "::warning::ArgoCD returned HTTP ${HTTP_CODE}"
-            echo "sync_triggered=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Wait for sync (health gate)
+      - name: Wait for health
         id: wait
         env:
           ARGOCD_TOKEN: ${{ secrets.ARGOCD_TOKEN }}
@@ -557,113 +262,42 @@ jobs:
         run: |
           if [ -z "$ARGOCD_TOKEN" ] || [ "${{ steps.sync.outputs.sync_triggered }}" != "true" ]; then
             echo "sync_status=Skipped" >> $GITHUB_OUTPUT
-            echo "health_status=Unknown" >> $GITHUB_OUTPUT
-            exit 0
+            echo "health_status=Unknown" >> $GITHUB_OUTPUT; exit 0
           fi
-
-          TIMEOUT=240
-          INTERVAL=15
-          ELAPSED=0
-
-          echo "Waiting for ${APP_NAME} (timeout: ${TIMEOUT}s)"
-
+          TIMEOUT=240; INTERVAL=15; ELAPSED=0
           while [ $ELAPSED -lt $TIMEOUT ]; do
-            RESPONSE=$(curl -sf "${ARGOCD_URL}/api/v1/applications/${APP_NAME}" \
+            RESP=$(curl -sf "${ARGOCD_URL}/api/v1/applications/${APP_NAME}" \
               -H "Authorization: Bearer ${ARGOCD_TOKEN}" 2>/dev/null || echo '{}')
-
-            SYNC=$(echo "$RESPONSE" | python3 -c "
-          import sys, json
-          d = json.load(sys.stdin)
-          print(d.get('status', {}).get('sync', {}).get('status', 'Unknown'))
-          " 2>/dev/null || echo "Unknown")
-
-            HEALTH=$(echo "$RESPONSE" | python3 -c "
-          import sys, json
-          d = json.load(sys.stdin)
-          print(d.get('status', {}).get('health', {}).get('status', 'Unknown'))
-          " 2>/dev/null || echo "Unknown")
-
-            echo "[${ELAPSED}s] sync=${SYNC}  health=${HEALTH}"
-
+            SYNC=$(echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status',{}).get('sync',{}).get('status','Unknown'))" 2>/dev/null || echo Unknown)
+            HEALTH=$(echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status',{}).get('health',{}).get('status','Unknown'))" 2>/dev/null || echo Unknown)
+            echo "[${ELAPSED}s] sync=${SYNC} health=${HEALTH}"
             if [ "$SYNC" = "Synced" ] && [ "$HEALTH" = "Healthy" ]; then
-              echo "sync_status=Synced"   >> $GITHUB_OUTPUT
-              echo "health_status=Healthy" >> $GITHUB_OUTPUT
-              exit 0
+              echo "sync_status=Synced" >> $GITHUB_OUTPUT
+              echo "health_status=Healthy" >> $GITHUB_OUTPUT; exit 0
             fi
-
-            sleep $INTERVAL
-            ELAPSED=$((ELAPSED + INTERVAL))
+            sleep $INTERVAL; ELAPSED=$((ELAPSED + INTERVAL))
           done
-
-          echo "::warning::Timeout waiting for Synced+Healthy"
           echo "sync_status=Timeout" >> $GITHUB_OUTPUT
           echo "health_status=Unknown" >> $GITHUB_OUTPUT
-          exit 0
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # JOB 6: Deployment Report
-  # ─────────────────────────────────────────────────────────────────────────────
   report:
     name: Deployment Report
     needs: [build-test, security-scan, build-push, update-helm, trigger-argocd]
     if: always()
     runs-on: wasaa-org-runners
     timeout-minutes: 5
-
     steps:
-      - name: Generate deployment summary
+      - name: Summary
         env:
-          VERSION_TAG: ${{ needs.build-push.outputs.version_tag || 'N/A (PR check)' }}
-          IMAGE: ${{ needs.build-push.outputs.image || 'N/A' }}
+          VERSION_TAG: ${{ needs.build-push.outputs.version_tag || 'N/A' }}
           SYNC_STATUS: ${{ needs.trigger-argocd.outputs.sync_status || 'Skipped' }}
           HEALTH_STATUS: ${{ needs.trigger-argocd.outputs.health_status || 'N/A' }}
-          BUILD_TEST_RESULT: ${{ needs.build-test.result }}
-          SECURITY_RESULT: ${{ needs.security-scan.result }}
-          BUILD_PUSH_RESULT: ${{ needs.build-push.result }}
-          UPDATE_HELM_RESULT: ${{ needs.update-helm.result }}
-          ARGOCD_RESULT: ${{ needs.trigger-argocd.result }}
         run: |
-          STATUS_ICON() {
-            case "$1" in
-              success)   echo "✅" ;;
-              failure)   echo "❌" ;;
-              skipped)   echo "⏭️" ;;
-              cancelled) echo "🚫" ;;
-              *)         echo "⚠️" ;;
-            esac
-          }
-
-          IS_PR="${{ github.event_name == 'pull_request' }}"
-
           cat >> $GITHUB_STEP_SUMMARY << EOF
-          # $([[ "$BUILD_PUSH_RESULT" == "success" || "$IS_PR" == "true" ]] && echo "✅" || echo "❌") Staging Run — ${SERVICE_NAME}
-
-          ## Summary
-          | Field | Value |
-          |-------|-------|
-          | **Service** | \`${SERVICE_NAME}\` |
-          | **Environment** | Staging |
-          | **Run type** | $([[ "$IS_PR" == "true" ]] && echo "Pull Request check" || echo "Deployment") |
-          | **Image** | \`${IMAGE}:${VERSION_TAG}\` |
+          ## Staging Deploy — ${SERVICE_NAME}
+          | | |
+          |---|---|
+          | **Tag** | \`${VERSION_TAG}\` |
+          | **ArgoCD** | ${SYNC_STATUS} / ${HEALTH_STATUS} |
           | **Commit** | [\`${{ github.sha }}\`](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}) |
-          | **Triggered by** | ${{ github.actor }} |
-          | **ArgoCD** | [${SYNC_STATUS} / ${HEALTH_STATUS}](${{ env.ARGOCD_URL }}/applications/${SERVICE_NAME}) |
-
-          ## Pipeline Steps
-          | Step | Status |
-          |------|--------|
-          | Build & Test | $(STATUS_ICON "$BUILD_TEST_RESULT") \`${BUILD_TEST_RESULT}\` |
-          | Security Scan | $(STATUS_ICON "$SECURITY_RESULT") \`${SECURITY_RESULT}\` |
-          | Build & Push | $(STATUS_ICON "$BUILD_PUSH_RESULT") \`${BUILD_PUSH_RESULT}\` |
-          | Update Helm | $(STATUS_ICON "$UPDATE_HELM_RESULT") \`${UPDATE_HELM_RESULT}\` |
-          | ArgoCD Sync | $(STATUS_ICON "$ARGOCD_RESULT") \`${ARGOCD_RESULT}\` |
-
-          ## Helm Chart
-          - **Repo:** \`${{ env.HELM_REPO }}\` (branch: \`${{ env.HELM_BRANCH }}\`)
-          - **Chart:** \`charts/${SERVICE_NAME}/values.yaml\`
-          - **Image path:** \`${{ vars.HELM_IMAGE_PATH || 'wasaa-base.image.tag' }}\`
-
-          ## Security
-          - Full results in GitHub **Security** tab → Code scanning alerts
-          - Artifacts: [security-scan-results](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
           EOF
