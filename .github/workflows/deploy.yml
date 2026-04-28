@@ -38,6 +38,10 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://api.uteo.ai/api/v1
+            NEXT_PUBLIC_WS_URL=https://api.uteo.ai
+            NEXT_PUBLIC_JAAS_APP_ID=vpaas-magic-cookie-315e6ce2ff244da49ecbd19f303846d7
           push: true
           tags: |
             ghcr.io/web-masters-ke/uteo-web-client:${{ github.sha }}
