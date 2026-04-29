@@ -25,8 +25,12 @@ interface RegisterPayload {
 }
 
 export const authService = {
-  async login(email: string, password: string): Promise<LoginResponse> {
-    const res = await apiPost<LoginResponse>("/auth/login", { email, password });
+  async login(identifier: string, password: string): Promise<LoginResponse> {
+    // Backend accepts { identifier, password }; legacy: { email, password }
+    const payload = identifier.includes("@")
+      ? { identifier, email: identifier, password }
+      : { identifier, password };
+    const res = await apiPost<LoginResponse>("/auth/login", payload);
     const token = res.accessToken;
     setAuthToken(token);
     if (res.user && typeof window !== "undefined") {

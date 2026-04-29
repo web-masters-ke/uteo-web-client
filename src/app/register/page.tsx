@@ -1,11 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { useState, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
 import { apiPost } from "@/lib/api";
+
+/**
+ * Password strength: 0-4 score based on length + character classes.
+ */
+function passwordScore(pw: string): { score: 0 | 1 | 2 | 3 | 4; label: string; color: string } {
+  if (!pw) return { score: 0, label: "", color: "bg-gray-200" };
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+  if (/\d/.test(pw) && /[^A-Za-z0-9]/.test(pw)) score++;
+  const map: Record<number, { label: string; color: string }> = {
+    0: { label: "Too short", color: "bg-red-500" },
+    1: { label: "Weak", color: "bg-red-500" },
+    2: { label: "Fair", color: "bg-amber-500" },
+    3: { label: "Good", color: "bg-emerald-500" },
+    4: { label: "Strong", color: "bg-emerald-600" },
+  };
+  const clamped = Math.min(score, 4) as 0 | 1 | 2 | 3 | 4;
+  return { score: clamped, ...map[clamped] };
+}
+
+/**
+ * Pan-African phone validation — accepts +CC (7-15 digits) or 0XX (10 digits).
+ * Returns null if the format is acceptable, error string otherwise.
+ */
+function validatePhone(phone: string): string | null {
+  if (!phone.trim()) return "Phone number is required";
+  const cleaned = phone.replace(/[\s\-()\.]/g, "");
+  if (!/^(\+|00)?\d{7,15}$/.test(cleaned)) {
+    return "Use international format, e.g. +254712345678";
+  }
+  return null;
+}
 
 type RoleChoice = "seeker" | "recruiter";
 type RecruiterType = "individual" | "organization";
@@ -87,6 +121,42 @@ function RegisterPageInner() {
     confirmPassword: "",
   });
 
+  // Live availability checks against /auth/check-availability (debounced)
+  const [emailAvail, setEmailAvail] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
+  const [phoneAvail, setPhoneAvail] = useState<"idle" | "checking" | "available" | "taken" | "invalid">("idle");
+  const emailDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const phoneDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (emailDebounce.current) clearTimeout(emailDebounce.current);
+    if (!account.email) { setEmailAvail("idle"); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account.email)) { setEmailAvail("invalid"); return; }
+    setEmailAvail("checking");
+    emailDebounce.current = setTimeout(async () => {
+      try {
+        const r = await apiPost<{ email?: { available: boolean } }>("/auth/check-availability", { email: account.email });
+        setEmailAvail(r?.email?.available ? "available" : "taken");
+      } catch { setEmailAvail("idle"); }
+    }, 450);
+    return () => { if (emailDebounce.current) clearTimeout(emailDebounce.current); };
+  }, [account.email]);
+
+  useEffect(() => {
+    if (phoneDebounce.current) clearTimeout(phoneDebounce.current);
+    if (!account.phone.trim()) { setPhoneAvail("idle"); return; }
+    if (validatePhone(account.phone)) { setPhoneAvail("invalid"); return; }
+    setPhoneAvail("checking");
+    phoneDebounce.current = setTimeout(async () => {
+      try {
+        const r = await apiPost<{ phone?: { available: boolean } }>("/auth/check-availability", { phone: account.phone });
+        setPhoneAvail(r?.phone?.available ? "available" : "taken");
+      } catch { setPhoneAvail("idle"); }
+    }, 450);
+    return () => { if (phoneDebounce.current) clearTimeout(phoneDebounce.current); };
+  }, [account.phone]);
+
+  const pwdStrength = passwordScore(account.password);
+
   const [company, setCompany] = useState<CompanyData>({
     name: "",
     industry: "",
@@ -109,14 +179,23 @@ function RegisterPageInner() {
 
   function validate(): boolean {
     const errs: Record<string, string> = {};
-    if (!account.firstName.trim()) errs.firstName = "Required";
-    if (!account.lastName.trim()) errs.lastName = "Required";
-    if (!account.email) errs.email = "Required";
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account.email)) errs.email = "Invalid email";
-    if (!account.phone.trim()) errs.phone = "Required";
-    if (!account.password) errs.password = "Required";
-    else if (account.password.length < 8) errs.password = "At least 8 characters";
-    if (account.password !== account.confirmPassword) errs.confirmPassword = "Passwords don't match";
+    if (!account.firstName.trim()) errs.firstName = "First name is required";
+    if (!account.lastName.trim()) errs.lastName = "Last name is required";
+    if (!account.email) errs.email = "Email is required";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account.email)) errs.email = "Enter a valid email address";
+    else if (emailAvail === "taken") errs.email = "This email is already registered";
+
+    const phoneErr = validatePhone(account.phone);
+    if (phoneErr) errs.phone = phoneErr;
+    else if (phoneAvail === "taken") errs.phone = "This phone number is already registered";
+
+    if (!account.password) errs.password = "Password is required";
+    else if (account.password.length < 8) errs.password = "Use at least 8 characters";
+    else if (!/[A-Za-z]/.test(account.password) || !/\d/.test(account.password)) errs.password = "Include at least one letter and one number";
+
+    if (!account.confirmPassword) errs.confirmPassword = "Please confirm your password";
+    else if (account.password !== account.confirmPassword) errs.confirmPassword = "Passwords don't match";
+
     if (isOrg && !company.name.trim()) errs.company_name = "Company name is required";
     setFieldErrors(errs);
     return Object.keys(errs).length === 0;
@@ -156,11 +235,56 @@ function RegisterPageInner() {
       addToast("success", "Account created! Let's set up your profile.");
       router.push("/onboarding");
     } catch (err: unknown) {
-      const e = err as { response?: { status?: number; data?: { error?: { message?: string }; message?: string } }; message?: string };
-      const msg = e.response?.data?.error?.message ?? e.response?.data?.message ?? e.message ?? "Registration failed";
-      const is409 = e.response?.status === 409 || /exist|duplicate|already/i.test(msg);
-      if (is409) setError(/phone/i.test(msg) ? "That phone number is already registered." : "That email is already registered. Sign in instead.");
-      else setError(msg);
+      const e = err as {
+        response?: {
+          status?: number;
+          data?: {
+            error?: { code?: string; message?: string; field?: string; hint?: string };
+            message?: string | string[];
+            code?: string;
+          };
+        };
+        message?: string;
+      };
+      const errBody = e.response?.data?.error ?? (e.response?.data as any) ?? {};
+      const code = errBody.code ?? e.response?.data?.code;
+      const rawMsg = errBody.message ?? e.response?.data?.message ?? e.message ?? "Registration failed";
+      const msg = Array.isArray(rawMsg) ? rawMsg[0] : rawMsg;
+
+      // Map structured codes → field-level errors
+      switch (code) {
+        case "EMAIL_EXISTS":
+          setFieldErrors(p => ({ ...p, email: "This email is already registered" }));
+          setError("That email is already registered. Sign in instead.");
+          break;
+        case "PHONE_EXISTS":
+          setFieldErrors(p => ({ ...p, phone: "This phone number is already registered" }));
+          setError("That phone number is already registered.");
+          break;
+        case "INVALID_PHONE":
+          setFieldErrors(p => ({ ...p, phone: msg as string }));
+          setError(null);
+          break;
+        case "WEAK_PASSWORD":
+          setFieldErrors(p => ({ ...p, password: msg as string }));
+          setError(null);
+          break;
+        default: {
+          const is409 = e.response?.status === 409 || /exist|duplicate|already/i.test(msg as string);
+          if (is409) {
+            const isPhone = /phone/i.test(msg as string);
+            if (isPhone) {
+              setFieldErrors(p => ({ ...p, phone: "This phone number is already registered" }));
+              setError("That phone number is already registered.");
+            } else {
+              setFieldErrors(p => ({ ...p, email: "This email is already registered" }));
+              setError("That email is already registered. Sign in instead.");
+            }
+          } else {
+            setError(msg as string);
+          }
+        }
+      }
     } finally {
       setLoading(false);
     }
@@ -426,10 +550,67 @@ function RegisterPageInner() {
                       </Field>
                     </div>
                     <Field label="Email address" error={fieldErrors.email} required>
-                      <input className={inputCls} type="email" value={account.email} onChange={(e) => setA("email", e.target.value)} placeholder="jane@example.com" autoComplete="email" />
+                      <div className="relative">
+                        <input className={inputCls + " pr-10"} type="email" value={account.email} onChange={(e) => setA("email", e.target.value)} placeholder="jane@example.com" autoComplete="email" />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                          {emailAvail === "checking" && (
+                            <svg className="h-4 w-4 animate-spin text-zinc-400" viewBox="0 0 24 24" fill="none">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                            </svg>
+                          )}
+                          {emailAvail === "available" && (
+                            <svg className="h-4 w-4 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          {emailAvail === "taken" && (
+                            <svg className="h-4 w-4 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 010 1.414L11.414 12l2.293 2.293a1 1 0 01-1.414 1.414L10 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L8.586 12 6.293 9.707a1 1 0 011.414-1.414L10 10.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </span>
+                      </div>
+                      {emailAvail === "taken" && !fieldErrors.email && (
+                        <p className="mt-1 text-[11px] text-red-600 dark:text-red-400">
+                          Already in use.{" "}
+                          <Link href="/login" className="underline font-semibold hover:text-red-700">Sign in instead</Link>
+                        </p>
+                      )}
                     </Field>
                     <Field label="Phone number" error={fieldErrors.phone} required>
-                      <input className={inputCls} type="tel" value={account.phone} onChange={(e) => setA("phone", e.target.value)} placeholder="+254 700 000 000" />
+                      <div className="relative">
+                        <input className={inputCls + " pr-10"} type="tel" value={account.phone} onChange={(e) => setA("phone", e.target.value)} placeholder="+254 700 000 000" />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2">
+                          {phoneAvail === "checking" && (
+                            <svg className="h-4 w-4 animate-spin text-zinc-400" viewBox="0 0 24 24" fill="none">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                            </svg>
+                          )}
+                          {phoneAvail === "available" && (
+                            <svg className="h-4 w-4 text-emerald-500" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                          {phoneAvail === "taken" && (
+                            <svg className="h-4 w-4 text-red-500" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 010 1.414L11.414 12l2.293 2.293a1 1 0 01-1.414 1.414L10 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L8.586 12 6.293 9.707a1 1 0 011.414-1.414L10 10.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </span>
+                      </div>
+                      {!fieldErrors.phone && phoneAvail !== "taken" && phoneAvail !== "invalid" && (
+                        <p className="mt-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+                          Use international format with country code (e.g. +254, +234, +233).
+                        </p>
+                      )}
+                      {phoneAvail === "taken" && !fieldErrors.phone && (
+                        <p className="mt-1 text-[11px] text-red-600 dark:text-red-400">
+                          Already in use.{" "}
+                          <Link href="/login" className="underline font-semibold hover:text-red-700">Sign in instead</Link>
+                        </p>
+                      )}
                     </Field>
                     <Field
                       label="Password"
@@ -443,6 +624,27 @@ function RegisterPageInner() {
                       }
                     >
                       <input className={inputCls} type={showPwd ? "text" : "password"} value={account.password} onChange={(e) => setA("password", e.target.value)} placeholder="Min. 8 characters" autoComplete="new-password" />
+                      {account.password && (
+                        <div className="mt-2">
+                          <div className="flex gap-1">
+                            {[1, 2, 3, 4].map(i => (
+                              <div
+                                key={i}
+                                className={`h-1 flex-1 rounded-full transition-colors ${
+                                  i <= pwdStrength.score ? pwdStrength.color : "bg-zinc-200 dark:bg-zinc-700"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <p className={`mt-1 text-[11px] ${
+                            pwdStrength.score <= 1 ? "text-red-600 dark:text-red-400"
+                            : pwdStrength.score === 2 ? "text-amber-600 dark:text-amber-400"
+                            : "text-emerald-600 dark:text-emerald-400"
+                          }`}>
+                            {pwdStrength.label}{pwdStrength.score < 3 && " — add length, uppercase + symbols for a stronger password"}
+                          </p>
+                        </div>
+                      )}
                     </Field>
                     <Field
                       label="Confirm password"

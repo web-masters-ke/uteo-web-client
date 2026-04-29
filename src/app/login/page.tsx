@@ -11,10 +11,17 @@ import { useToast } from "@/lib/toast";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const schema = z.object({
-  email: z.string().email("Please enter a valid email"),
+  identifier: z
+    .string()
+    .min(1, "Enter your email or phone number")
+    .refine(v => v.includes("@") || /^(\+|00)?\d{7,15}$/.test(v.replace(/[\s\-()\.]/g, "")), {
+      message: "Enter a valid email or phone number",
+    }),
   password: z.string().min(1, "Password is required"),
 });
 type Form = z.infer<typeof schema>;
+
+type LoginErrCode = "INVALID_CREDENTIALS" | "ACCOUNT_SUSPENDED" | "ACCOUNT_DEACTIVATED" | "ACCOUNT_LOCKED" | "UNKNOWN";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -22,6 +29,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [showPw, setShowPw] = useState(false);
+  const [authError, setAuthError] = useState<{ code: LoginErrCode; message: string; hint?: string } | null>(null);
   const {
     register,
     handleSubmit,
@@ -30,13 +38,40 @@ export default function LoginPage() {
 
   const onSubmit = async (data: Form) => {
     setSubmitting(true);
+    setAuthError(null);
     try {
-      await login({ email: data.email, password: data.password });
+      await login({ email: data.identifier, password: data.password } as any);
       addToast("success", "Welcome back!");
       router.push("/feed");
     } catch (err: unknown) {
-      const axiosErr = err as { response?: { data?: { message?: string } } };
-      addToast("error", axiosErr.response?.data?.message || "Invalid email or password");
+      const e = err as {
+        response?: {
+          status?: number;
+          data?: {
+            error?: { code?: string; message?: string; hint?: string };
+            message?: string | string[];
+            code?: string;
+          };
+        };
+      };
+      const errBody = e.response?.data?.error ?? (e.response?.data as any) ?? {};
+      const code = (errBody.code ?? e.response?.data?.code) as string | undefined;
+      const rawMsg = errBody.message ?? e.response?.data?.message ?? "Sign-in failed";
+      const message = Array.isArray(rawMsg) ? rawMsg[0] : (rawMsg as string);
+      const hint = errBody.hint as string | undefined;
+
+      const safeCode: LoginErrCode =
+        code === "ACCOUNT_SUSPENDED" || code === "ACCOUNT_DEACTIVATED" || code === "ACCOUNT_LOCKED"
+          ? code
+          : code === "INVALID_CREDENTIALS"
+          ? "INVALID_CREDENTIALS"
+          : "UNKNOWN";
+
+      setAuthError({
+        code: safeCode,
+        message: safeCode === "UNKNOWN" ? message : message,
+        hint,
+      });
     } finally {
       setSubmitting(false);
     }
@@ -87,11 +122,28 @@ export default function LoginPage() {
             <h1 className="text-2xl font-black text-gray-900 dark:text-white mb-1">Welcome back</h1>
             <p className="text-gray-500 dark:text-gray-400 mb-7 text-sm">Sign in to your Uteo account</p>
 
+            {authError && (
+              <div className={`mb-5 rounded-xl border p-4 ${
+                authError.code === "ACCOUNT_SUSPENDED" || authError.code === "ACCOUNT_DEACTIVATED"
+                  ? "bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-200"
+                  : "bg-red-50 dark:bg-red-500/10 border-red-200 dark:border-red-500/30 text-red-800 dark:text-red-200"
+              }`}>
+                <p className="text-sm font-semibold">{authError.message}</p>
+                {authError.hint && <p className="text-xs mt-1 opacity-80">{authError.hint}</p>}
+                {authError.code === "INVALID_CREDENTIALS" && (
+                  <p className="text-xs mt-2">
+                    Forgot your password?{" "}
+                    <Link href="/forgot-password" className="font-semibold underline">Reset it here</Link>
+                  </p>
+                )}
+              </div>
+            )}
+
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Email</label>
-                <input {...register("email")} type="email" className={ic} placeholder="you@example.com" />
-                {errors.email && <p className="text-xs text-red-500 mt-1.5">{errors.email.message}</p>}
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Email or phone</label>
+                <input {...register("identifier")} type="text" className={ic} placeholder="you@example.com or +254712345678" autoComplete="username" />
+                {errors.identifier && <p className="text-xs text-red-500 mt-1.5">{errors.identifier.message}</p>}
               </div>
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Password</label>
