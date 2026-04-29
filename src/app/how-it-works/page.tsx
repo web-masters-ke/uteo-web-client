@@ -17,7 +17,7 @@ export default function HowItWorksPage() {
     {
       step: 3,
       title: 'Apply in one click',
-      desc: 'Your profile is your application. Tap apply and your full profile, skills and CV go to the employer instantly. No forms. No retyping.',
+      desc: 'Your profile is your application. Tap apply and your profile, skills and CV go to the employer instantly. No forms. No retyping.',
       icon: 'M13 10V3L4 14h7v7l9-11h-7z',
     },
     {
@@ -44,7 +44,7 @@ export default function HowItWorksPage() {
     {
       step: 3,
       title: 'Get pre matched candidates',
-      desc: 'No more flood of irrelevant CVs. Uteo surfaces the candidates whose skills actually match the role, ranked by match score.',
+      desc: 'No more flood of irrelevant CVs. Uteo surfaces the candidates whose skills actually match the role ranked by match score.',
       icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z',
     },
     {
@@ -73,7 +73,7 @@ export default function HowItWorksPage() {
             Skill matched, instantly. <span className="text-[#F77B0F]">By design.</span>
           </h1>
           <p className="mt-5 text-lg text-white/75 max-w-2xl leading-relaxed">
-            Uteo&apos;s AI does the heavy lifting on both sides — so seekers find roles that fit, and employers find candidates who can actually do the job.
+            Uteo&apos;s AI does the heavy lifting on both sides. So seekers find roles that fit, and employers find candidates who can actually do the job.
           </p>
         </div>
       </section>
@@ -117,7 +117,7 @@ export default function HowItWorksPage() {
             For employers
           </span>
           <h2 className="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-12 max-w-2xl leading-tight">
-            Hire smarter, not harder.
+            Hire smarter not harder.
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">

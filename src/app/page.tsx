@@ -219,19 +219,17 @@ export default function LandingPage() {
       <Navbar />
 
       {/* ── HERO ─ split layout: copy + animated feed mockup ───────────── */}
-      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 min-h-screen flex items-center overflow-hidden bg-[#060d1f]">
-        {/* Background image, dark, with gradient mesh */}
+      <section className="relative pt-24 pb-20 lg:pt-32 lg:pb-28 min-h-screen flex items-center overflow-hidden">
+        {/* Background image at full strength */}
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=2400&q=100"
             alt="Diverse young professionals in Africa"
-            className="h-full w-full object-cover opacity-30"
+            className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-[#060d1f] via-[#060d1f]/90 to-[#192C67]/40" />
+          {/* Left-to-right neutral fade so copy stays readable, mockup side stays clear */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/10" />
         </div>
-        {/* Soft animated orbs for life */}
-        <div className="absolute top-1/4 -left-20 w-96 h-96 bg-[#F77B0F]/15 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[#192C67]/40 rounded-full blur-3xl" />
 
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-10 items-center">
@@ -249,7 +247,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="mt-7 text-lg lg:text-xl text-white/55 max-w-xl leading-relaxed">
-                Uteo&apos;s AI ranks every live role against your skills and surfaces only the ones that fit. One personalised feed. One click apply. Live status from submitted to hired.
+                Build a profile in two minutes. Get a feed of jobs that actually match your skills. Apply in one click. Track every step.
               </p>
 
               <div className="mt-9 flex flex-col sm:flex-row gap-3">
@@ -257,7 +255,7 @@ export default function LandingPage() {
                   href="/register"
                   className="inline-flex items-center justify-center gap-2 bg-[#F77B0F] text-white font-bold px-7 py-4 rounded-full hover:bg-[#e06a0d] transition-colors shadow-2xl shadow-[#F77B0F]/30 text-sm"
                 >
-                  Get started — it&apos;s free
+                  Get started, it&apos;s free
                   <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
                   </svg>
@@ -318,7 +316,7 @@ export default function LandingPage() {
               One platform. Both sides win.
             </h2>
             <p className="mt-5 text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
-              Skill matched, instantly — by design.
+              Skill matched, instantly. By design.
             </p>
           </div>
 
@@ -341,9 +339,9 @@ export default function LandingPage() {
                 </h3>
                 <ol className="space-y-3.5">
                   {[
-                    'Build your profile — skills, experience, salary expectations',
+                    'Build your profile: skills, experience, salary expectations',
                     'AI scores every live job against your profile',
-                    'One click apply — your profile is your CV',
+                    'One click apply. Your profile is your CV',
                     'Live tracking from Submitted to Hired',
                   ].map((step, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -382,9 +380,9 @@ export default function LandingPage() {
                 <ol className="space-y-3.5">
                   {[
                     'Create your company page and team workspace',
-                    'Post a role — Uteo tags it with the skill graph',
+                    'Post a role. Uteo tags it with the skill graph',
                     'Get pre matched candidates ranked by match score',
-                    'Pipeline tools — shortlist, interview, hire',
+                    'Pipeline tools: shortlist, interview, hire',
                   ].map((step, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <span className="w-6 h-6 rounded-full bg-[#192C67] dark:bg-white text-white dark:text-[#192C67] text-xs font-black flex items-center justify-center shrink-0 mt-0.5">
@@ -449,7 +447,7 @@ export default function LandingPage() {
                   Personalised job feed, ranked by match score.
                 </h3>
                 <p className="text-gray-500 dark:text-gray-400 leading-relaxed text-base">
-                  Every live role scored against your profile — your skills, your experience, your salary band, your location. The feed updates daily. The more you use it, the sharper it gets.
+                  Every live role gets a score. Skills, experience, salary, location. The feed refreshes daily. Gets sharper the more you use it.
                 </p>
               </div>
             </div>
@@ -467,7 +465,7 @@ export default function LandingPage() {
                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#192C67] dark:text-white/80 mb-3 block">02 · Skill graph</span>
                 <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 leading-tight">Skills, not signals.</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                  We map every job and every profile onto a structured skill graph. No more keyword roulette — match by what you can actually do.
+                  We tag every job and every profile by skill. No keyword games. You match on what you can do.
                 </p>
               </div>
             </div>
@@ -541,7 +539,7 @@ export default function LandingPage() {
                   Manage the whole hiring funnel in one place.
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-5">
-                  Pre matched candidates, shortlist, schedule, interview, hire. Plus auto-generated tasks for the team — so nothing falls through the cracks.
+                  Pre matched candidates, shortlist, schedule, interview, hire. Plus auto-generated tasks for the team, so nothing falls through the cracks.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-auto">
                   {['Submitted', 'Reviewed', 'Shortlisted', 'Interview', 'Hired'].map(s => (
@@ -564,7 +562,7 @@ export default function LandingPage() {
                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#F77B0F] mb-3 block">07 · Built in Africa</span>
                 <h3 className="text-2xl font-black mb-3 leading-tight">For our markets, our currencies, our hiring norms.</h3>
                 <p className="text-sm text-white/65 leading-relaxed mb-7">
-                  Designed in Nairobi for the continent — KES, NGN, GHS, ZAR salaries; M-PESA-friendly; built by people who hire here.
+                  Designed in Nairobi for the continent: KES, NGN, GHS, ZAR salaries; M-PESA friendly; built by people who hire here.
                 </p>
                 <div className="mt-auto flex flex-wrap gap-2">
                   {['🇰🇪 Kenya', '🇳🇬 Nigeria', '🇬🇭 Ghana', '🇿🇦 South Africa', '🇺🇬 Uganda', '🇹🇿 Tanzania'].map(c => (
@@ -579,7 +577,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FOR EMPLOYERS — full bleed pitch ──────────────────────────── */}
+      {/* ── FOR EMPLOYERS — full bleed pitch ──────────────────── */}
       <section className="relative min-h-[70vh] flex items-center overflow-hidden" id="for-employers">
         <div className="absolute inset-0">
           <img
@@ -598,7 +596,7 @@ export default function LandingPage() {
               Hire smarter. Not harder.
             </h2>
             <p className="text-lg text-white/85 leading-relaxed mb-8 drop-shadow-lg">
-              Stop drowning in irrelevant CVs. Uteo delivers pre matched candidates ranked by skill fit — straight into your pipeline. Cut time to hire in half.
+              Stop drowning in irrelevant CVs. Get candidates who match your role. Ranked by skill fit. Straight into your pipeline.
             </p>
             <div className="grid grid-cols-2 gap-3 mb-8">
               {['Pre matched candidates', 'Pipeline workspace', 'Match score ranking', 'Live applicant feed', 'Built in messaging', 'Hiring analytics'].map(item => (
@@ -634,7 +632,7 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-6">
             {[
               {
-                quote: "Uteo surfaced a senior backend role at a fintech I'd never heard of. The match score said 92%. I applied in 30 seconds, got an interview within 48 hours, and signed an offer two weeks later.",
+                quote: "Uteo surfaced a senior backend role at a fintech I'd never heard of. The match score said 92%. I applied in 30 seconds, got an interview within 48 hours and signed an offer two weeks later.",
                 name: 'Amara Osei',
                 role: 'Senior Engineer · hired at a Nairobi fintech',
                 metric: '92%',
@@ -701,10 +699,10 @@ export default function LandingPage() {
           <div className="space-y-3">
             {[
               { q: 'How does the AI feed actually work?', a: 'Every job and every profile gets mapped onto a structured skill graph. The matching engine computes a 0–100 fit score per role using skill overlap, experience level, location preferences and salary band. Your feed is just the top ranked roles, refreshed daily.' },
-              { q: 'Is Uteo really free for job seekers?', a: "Yes. Always. Browse jobs, apply, message employers, track applications — completely free, forever. We don't charge seekers a cent. Employers fund the platform." },
+              { q: 'Is Uteo really free for job seekers?', a: "Yes. Always. Browse jobs, apply, message employers, track applications. Completely free, forever. We don't charge seekers a cent. Employers fund the platform." },
               { q: 'How does one click apply work?', a: 'Your Uteo profile IS your application. When you tap Apply, your full profile (skills, experience, education, CV) goes to the employer instantly. No forms, no retyping.' },
-              { q: 'Can recruiters find me directly?', a: 'Yes — if you opt in. Open Profile > Visibility and turn on Open to Work. Recruiters can search the talent pool by skills and reach out to you directly.' },
-              { q: 'Which countries does Uteo cover?', a: 'Live in Kenya, Nigeria, Ghana, Tanzania, Uganda and South Africa today. Rolling out across the continent through 2026 — and globally after that.' },
+              { q: 'Can recruiters find me directly?', a: 'Yes, if you opt in. Open Profile > Visibility and turn on Open to Work. Recruiters can search the talent pool by skills and reach out to you directly.' },
+              { q: 'Which countries does Uteo cover?', a: 'Live in Kenya, Nigeria, Ghana, Tanzania, Uganda and South Africa today. Rolling out across the continent through 2026. Globally after that.' },
               { q: 'How do I post a job as an employer?', a: 'Register as a recruiter, add your company profile, post your role. Uteo immediately tags it with the right skill graph and starts surfacing matched candidates within hours.' },
             ].map((faq, i) => (
               <div key={i} className="rounded-2xl border border-gray-100 dark:border-white/5 overflow-hidden bg-white dark:bg-white/[0.02]">
@@ -724,17 +722,16 @@ export default function LandingPage() {
       </section>
 
       {/* ── FINAL CTA ────────────────────────────────────────────────── */}
-      <section className="py-28 lg:py-40 relative overflow-hidden bg-[#060d1f]">
+      <section className="py-28 lg:py-40 relative overflow-hidden">
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=2400&q=100"
             alt="Handshake"
-            className="h-full w-full object-cover opacity-40"
+            className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#060d1f]/85 via-[#060d1f]/65 to-[#060d1f]/95" />
+          {/* Light vignette only — keep image fully visible */}
+          <div className="absolute inset-0 bg-black/45" />
         </div>
-        <div className="absolute -top-20 left-1/4 w-96 h-96 bg-[#F77B0F]/15 rounded-full blur-3xl" />
-        <div className="absolute -bottom-20 right-1/4 w-96 h-96 bg-[#192C67]/40 rounded-full blur-3xl" />
 
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 mb-8">
@@ -769,36 +766,107 @@ export default function LandingPage() {
       </section>
 
       {/* ── FOOTER ───────────────────────────────────────────────────── */}
-      <footer className="bg-[#020611] py-16">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-10">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-10 lg:gap-16 mb-14">
-            <div className="col-span-2 md:col-span-1">
+      <footer className="bg-white dark:bg-[#0a1628] border-t border-gray-100 dark:border-white/5">
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-16 lg:py-20">
+          {/* Top — brand + nav */}
+          <div className="grid grid-cols-2 md:grid-cols-12 gap-10 lg:gap-12 mb-14">
+            {/* Brand block */}
+            <div className="col-span-2 md:col-span-4">
               <Link href="/" className="flex items-center gap-2 mb-5">
-                <span className="text-2xl font-black text-white">Uteo</span>
+                <span className="text-2xl font-black text-gray-900 dark:text-white tracking-tight">Uteo</span>
                 <span className="w-2 h-2 rounded-full bg-[#F77B0F]" />
               </Link>
-              <p className="text-xs text-gray-500 leading-relaxed mb-3">Your dream job finds you.</p>
-              <p className="text-xs text-gray-600">AI powered recruitment for Africa.</p>
-            </div>
-            {[
-              { title: 'For Job Seekers', links: [['Browse Jobs', '/jobs'], ['My Feed', '/feed'], ['My Applications', '/applications'], ['Saved Jobs', '/saved-jobs']] },
-              { title: 'For Employers', links: [['Post a Job', '/post-job'], ['Recruiter Dashboard', '/recruiter'], ['Pricing', '/pricing'], ['For Employers', '/for-trainers']] },
-              { title: 'Support', links: [['Help Centre', '/help'], ['Contact Us', '/contact'], ['About', '/about'], ['How It Works', '/how-it-works']] },
-              { title: 'Legal', links: [['Privacy Policy', '/privacy'], ['Terms of Service', '/terms'], ['Cookies', '/privacy'], ['Security', '/privacy']] },
-            ].map(({ title, links }) => (
-              <div key={title}>
-                <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500 mb-4">{title}</div>
-                {links.map(([label, href]) => (
-                  <Link key={label} href={href} className="block text-xs text-gray-500 hover:text-gray-300 transition-colors mb-3">
-                    {label}
-                  </Link>
+              <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed max-w-xs mb-5">
+                AI powered recruitment for Africa. Free for job seekers. Always.
+              </p>
+              <div className="flex items-center gap-3">
+                {[
+                  { name: 'Twitter', href: 'https://twitter.com/uteoafrica', d: 'M22.46 6c-.77.35-1.6.59-2.47.7.89-.53 1.57-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05A4.28 4.28 0 0016.11 4c-2.37 0-4.29 1.92-4.29 4.29 0 .34.04.67.11.99-3.57-.18-6.74-1.89-8.86-4.49-.37.64-.58 1.39-.58 2.18 0 1.49.76 2.81 1.91 3.58-.7-.02-1.36-.21-1.94-.53v.05c0 2.08 1.48 3.82 3.44 4.21-.36.1-.74.16-1.13.16-.28 0-.54-.03-.81-.08.55 1.71 2.14 2.95 4.02 2.99A8.6 8.6 0 012 18.59 12.13 12.13 0 008.56 20.5c7.88 0 12.19-6.53 12.19-12.19 0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.13-2.22-.77.34-1.59.57-2.45.67z' },
+                  { name: 'LinkedIn', href: 'https://linkedin.com/company/uteo', d: 'M19 0h-14c-2.76 0-5 2.24-5 5v14c0 2.76 2.24 5 5 5h14c2.76 0 5-2.24 5-5v-14c0-2.76-2.24-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.27c-.97 0-1.75-.78-1.75-1.75s.78-1.75 1.75-1.75 1.75.78 1.75 1.75-.78 1.75-1.75 1.75zm13.5 12.27h-3v-5.6c0-1.34-.46-2.27-1.66-2.27-.91 0-1.45.61-1.69 1.2-.09.21-.11.5-.11.79v5.88h-3v-11h3v1.55c.41-.62 1.13-1.55 2.74-1.55 2 0 3.5 1.31 3.5 4.13v6.87z' },
+                  { name: 'Instagram', href: 'https://instagram.com/uteoafrica', d: 'M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.43.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.43.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.43-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.43-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07zM12 0C8.74 0 8.33.01 7.05.07 5.78.13 4.9.33 4.14.63 3.35.95 2.68 1.37 2.02 2.02 1.37 2.68.95 3.35.63 4.14.33 4.9.13 5.78.07 7.05.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.27.26 2.15.56 2.91.32.79.74 1.46 1.4 2.12.66.66 1.33 1.08 2.12 1.4.76.3 1.64.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.27-.06 2.15-.26 2.91-.56.79-.32 1.46-.74 2.12-1.4.66-.66 1.08-1.33 1.4-2.12.3-.76.5-1.64.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.27-.26-2.15-.56-2.91-.32-.79-.74-1.46-1.4-2.12C21.32 1.37 20.65.95 19.86.63 19.1.33 18.22.13 16.95.07 15.67.01 15.26 0 12 0zm0 5.84c-3.4 0-6.16 2.76-6.16 6.16s2.76 6.16 6.16 6.16 6.16-2.76 6.16-6.16-2.76-6.16-6.16-6.16zm0 10.16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm6.41-11.85c-.8 0-1.44.65-1.44 1.44 0 .8.65 1.44 1.44 1.44.8 0 1.44-.65 1.44-1.44 0-.8-.65-1.44-1.44-1.44z' },
+                ].map(s => (
+                  <a
+                    key={s.name}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={s.name}
+                    className="w-9 h-9 rounded-full bg-gray-100 dark:bg-white/5 hover:bg-[#F77B0F] hover:text-white text-gray-600 dark:text-gray-400 flex items-center justify-center transition-colors"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d={s.d} />
+                    </svg>
+                  </a>
                 ))}
+              </div>
+            </div>
+
+            {/* Nav columns */}
+            {[
+              {
+                title: 'Job Seekers',
+                links: [
+                  ['Browse Jobs', '/jobs'],
+                  ['My Feed', '/feed'],
+                  ['My Applications', '/applications'],
+                  ['Saved Jobs', '/saved-jobs'],
+                  ['Create Profile', '/register'],
+                ],
+              },
+              {
+                title: 'Employers',
+                links: [
+                  ['Post a Job', '/post-job'],
+                  ['For Employers', '/for-trainers'],
+                  ['Pricing', '/pricing'],
+                  ['Recruiter Login', '/login'],
+                ],
+              },
+              {
+                title: 'Company',
+                links: [
+                  ['About', '/about'],
+                  ['How It Works', '/how-it-works'],
+                  ['Help Centre', '/help'],
+                  ['Contact', '/contact'],
+                ],
+              },
+              {
+                title: 'Legal',
+                links: [
+                  ['Privacy', '/privacy'],
+                  ['Terms', '/terms'],
+                ],
+              },
+            ].map(({ title, links }) => (
+              <div key={title} className="md:col-span-2">
+                <div className="text-[11px] font-black uppercase tracking-[0.2em] text-gray-900 dark:text-white mb-5">
+                  {title}
+                </div>
+                <ul className="space-y-3">
+                  {links.map(([label, href]) => (
+                    <li key={label}>
+                      <Link
+                        href={href}
+                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-[#F77B0F] dark:hover:text-[#F77B0F] transition-colors"
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
-          <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-gray-600">&copy; {new Date().getFullYear()} Uteo. All rights reserved.</p>
-            <p className="text-xs text-gray-600">Built in Nairobi for the continent.</p>
+
+          {/* Bottom — copyright + tagline */}
+          <div className="pt-8 border-t border-gray-100 dark:border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              &copy; {new Date().getFullYear()} Uteo. All rights reserved.
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              Built in Nairobi for the continent.
+            </p>
           </div>
         </div>
       </footer>

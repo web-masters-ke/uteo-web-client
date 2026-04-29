@@ -4,7 +4,7 @@ export default function ForEmployersPage() {
   const features = [
     {
       title: 'Pre matched candidates',
-      desc: "Stop drowning in irrelevant CVs. Uteo's AI surfaces only candidates whose skills match your role, ranked by match score.",
+      desc: "Stop drowning in irrelevant CVs. Uteo's AI surfaces only candidates whose skills match your role ranked by match score.",
       icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
     },
     {
@@ -19,17 +19,17 @@ export default function ForEmployersPage() {
     },
     {
       title: 'Live applicant feed',
-      desc: 'Get notified the moment a strong candidate applies. No more checking inboxes — Uteo pushes the right person to you.',
+      desc: 'Get notified the moment a strong candidate applies. No more checking inboxes. Uteo pushes the right person to you.',
       icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9',
     },
     {
       title: 'Hiring analytics',
-      desc: 'See time to hire, source-of-hire, drop-off points. Run a hiring funnel like you run product.',
+      desc: 'See time to hire, source of hire, drop-off points. Run a hiring funnel like you run product.',
       icon: 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z',
     },
     {
       title: 'Built in messaging',
-      desc: 'Talk to candidates directly inside Uteo. No more lost email threads. Audit-ready, GDPR-friendly logs.',
+      desc: 'Talk to candidates directly inside Uteo. No more lost email threads. Audit ready, GDPR friendly logs.',
       icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
     },
   ];

@@ -27,7 +27,7 @@ export default function AboutPage() {
       <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-20 lg:py-28">
         {/* Intro */}
         <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mb-20">
-          Job hunting in Africa has always been broken — endless searching, generic listings, applications that disappear. Uteo flips it. We deliver a personalised feed of jobs ranked against your actual skills, and let you apply in one click. Employers get pre matched candidates, not a flood of CVs.
+          Job hunting in Africa has always been broken. Endless searching. Generic listings. Applications that disappear. Uteo flips it. We deliver a personalised feed of jobs ranked against your actual skills and let you apply in one click. Employers get pre matched candidates, not a flood of CVs.
         </p>
 
         {/* Mission / Vision */}
@@ -40,7 +40,7 @@ export default function AboutPage() {
               Get every African into the right work.
             </h2>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              Build the AI infrastructure that surfaces opportunity by skill — not network, not pedigree, not luck. Anyone with the right skills should be findable for the right role, full stop.
+              Build the AI infrastructure that surfaces opportunity by skill. Not network. Not pedigree. Not luck. Anyone with the right skills should be findable for the right role, full stop.
             </p>
           </div>
           <div>
@@ -51,7 +51,7 @@ export default function AboutPage() {
               The default place Africa hires.
             </h2>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              From Nairobi to Lagos to Cape Town — a single feed based recruitment platform that learns from every interaction and matches better tomorrow than it did yesterday.
+              From Nairobi to Lagos to Cape Town: a single feed based recruitment platform that learns from every interaction and matches better tomorrow than it did yesterday.
             </p>
           </div>
         </div>
@@ -84,7 +84,7 @@ export default function AboutPage() {
                 items: [
                   'Post jobs, get pre matched candidates',
                   'No more sifting through irrelevant CVs',
-                  'Pipeline tools — shortlist, schedule, hire',
+                  'Pipeline tools: shortlist, schedule, hire',
                   'Company profile that builds your brand',
                   'Live notifications on every applicant',
                 ],
