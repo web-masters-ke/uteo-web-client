@@ -3,7 +3,7 @@ import Link from 'next/link';
 export default function ForEmployersPage() {
   const features = [
     {
-      title: 'Pre-matched candidates',
+      title: 'Pre matched candidates',
       desc: "Stop drowning in irrelevant CVs. Uteo's AI surfaces only candidates whose skills match your role, ranked by match score.",
       icon: 'M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z',
     },
@@ -24,11 +24,11 @@ export default function ForEmployersPage() {
     },
     {
       title: 'Hiring analytics',
-      desc: 'See time-to-hire, source-of-hire, drop-off points. Run a hiring funnel like you run product.',
+      desc: 'See time to hire, source-of-hire, drop-off points. Run a hiring funnel like you run product.',
       icon: 'M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z',
     },
     {
-      title: 'Built-in messaging',
+      title: 'Built in messaging',
       desc: 'Talk to candidates directly inside Uteo. No more lost email threads. Audit-ready, GDPR-friendly logs.',
       icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
     },
@@ -52,7 +52,7 @@ export default function ForEmployersPage() {
             Hire smarter, <span className="text-[#F77B0F]">not harder.</span>
           </h1>
           <p className="mt-5 text-lg text-white/75 max-w-2xl leading-relaxed">
-            Stop posting and praying. Uteo delivers pre-matched candidates straight into your pipeline. Cut time-to-hire in half.
+            Stop posting and praying. Uteo delivers pre matched candidates straight into your pipeline. Cut time to hire in half.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
             <Link
@@ -104,7 +104,7 @@ export default function ForEmployersPage() {
           <div className="absolute -top-20 -left-20 w-72 h-72 bg-[#F77B0F]/20 rounded-full blur-3xl" />
           <div className="relative grid grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { n: '50%', l: 'Faster time-to-hire' },
+              { n: '50%', l: 'Faster time to hire' },
               { n: '3x', l: 'Higher response rates' },
               { n: '10,000+', l: 'Active job seekers' },
               { n: '< 24hrs', l: 'First match delivered' },

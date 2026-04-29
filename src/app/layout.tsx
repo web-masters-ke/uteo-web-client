@@ -9,9 +9,9 @@ import LayoutShell from "@/components/layout/LayoutShell";
 import AiAdvisor from "@/components/AiAdvisor";
 
 export const metadata: Metadata = {
-  title: "Uteo — AI-Powered Job Matching. Your Dream Job Finds You.",
+  title: "Uteo — AI Job Matching. Your Dream Job Finds You.",
   description:
-    "Uteo is an AI-powered, feed-based recruitment platform. Personalized job discovery, one-click apply, real-time application tracking.",
+    "Uteo is an AI powered, feed based recruitment platform. Personalized job discovery, one click apply, real time application tracking.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

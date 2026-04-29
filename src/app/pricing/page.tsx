@@ -8,9 +8,9 @@ export default function PricingPage() {
       period: 'forever',
       desc: 'For everyone looking for work.',
       features: [
-        'AI-powered job feed',
-        'One-click apply',
-        'Real-time application tracking',
+        'AI powered job feed',
+        'One click apply',
+        'Real time application tracking',
         'Match score on every role',
         'In-app messaging with employers',
       ],
@@ -25,7 +25,7 @@ export default function PricingPage() {
       desc: 'Small teams hiring 1–3 roles at a time.',
       features: [
         'Up to 3 active job postings',
-        'Pre-matched candidates',
+        'Pre matched candidates',
         'Pipeline & shortlist tools',
         'Company brand page',
         'Email + chat support',

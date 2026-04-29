@@ -13,12 +13,12 @@ const FAQ_RECRUITERS = [
   { q: "How does messaging with candidates work?", a: "Once a candidate has applied, you can message them directly inside Uteo from the application detail. All messages are logged and searchable. No email back-and-forth." },
   { q: "How do I schedule interviews?", a: "From the application detail, click Schedule Interview. Pick a time, add details, and the candidate gets an in-app + email notification. They can confirm or request a different slot." },
   { q: "Can I close or pause a job posting?", a: "Yes. Open the job in your dashboard and toggle status: Active, Paused (hidden but kept) or Closed (archived with all applicants). Reopen any time." },
-  { q: "What analytics do I get?", a: "Time-to-hire, source-of-hire, drop-off by stage, applicant volume per role, and match-score distribution. Available on Starter and Enterprise plans from the Analytics tab." },
+  { q: "What analytics do I get?", a: "Time-to-hire, source-of-hire, drop-off by stage, applicant volume per role, and match score distribution. Available on Starter and Enterprise plans from the Analytics tab." },
 ];
 
 const FAQ_SEEKERS = [
   { q: "Why am I seeing these jobs in my feed?", a: "Every job in your feed is ranked by match score against your profile — your skills, experience, salary expectations and location preferences. The more complete your profile, the better the matches." },
-  { q: "How does one-click apply work?", a: "Your Uteo profile IS your application. When you tap Apply, your full profile (skills, experience, education, CV) goes to the employer instantly. No forms to fill, no retyping." },
+  { q: "How does one click apply work?", a: "Your Uteo profile IS your application. When you tap Apply, your full profile (skills, experience, education, CV) goes to the employer instantly. No forms to fill, no retyping." },
   { q: "How do I track my applications?", a: "Go to My Applications from the sidebar. Every application shows a live status — Submitted, Reviewed, Shortlisted, Interview, Hired or Rejected. You'll get a notification the moment status changes." },
   { q: "Can recruiters find me directly?", a: "Yes — if you opt in. Open Profile > Visibility and turn on Open to Work. Recruiters can search the talent pool by skills and reach out to you directly. You decide what is public." },
   { q: "How do I improve my match score?", a: "Add more skills (especially the technical ones), keep work experience current, upload a fresh CV (we parse it automatically), set clear salary expectations and target locations. Every save makes the engine smarter about you." },

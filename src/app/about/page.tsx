@@ -19,7 +19,7 @@ export default function AboutPage() {
             Your dream job <span className="text-[#F77B0F]">finds you.</span>
           </h1>
           <p className="mt-5 text-lg text-white/75 max-w-2xl leading-relaxed">
-            Uteo is an AI-powered, feed-based recruitment platform connecting Africa&apos;s talent with the right opportunities — instantly.
+            Uteo is an AI powered, feed based recruitment platform connecting Africa&apos;s talent with the right opportunities — instantly.
           </p>
         </div>
       </section>
@@ -27,7 +27,7 @@ export default function AboutPage() {
       <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-20 lg:py-28">
         {/* Intro */}
         <p className="text-lg lg:text-xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl mb-20">
-          Job hunting in Africa has always been broken — endless searching, generic listings, applications that disappear. Uteo flips it. We deliver a personalised feed of jobs ranked against your actual skills, and let you apply in one click. Employers get pre-matched candidates, not a flood of CVs.
+          Job hunting in Africa has always been broken — endless searching, generic listings, applications that disappear. Uteo flips it. We deliver a personalised feed of jobs ranked against your actual skills, and let you apply in one click. Employers get pre matched candidates, not a flood of CVs.
         </p>
 
         {/* Mission / Vision */}
@@ -51,7 +51,7 @@ export default function AboutPage() {
               The default place Africa hires.
             </h2>
             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
-              From Nairobi to Lagos to Cape Town — a single feed-based recruitment platform that learns from every interaction and matches better tomorrow than it did yesterday.
+              From Nairobi to Lagos to Cape Town — a single feed based recruitment platform that learns from every interaction and matches better tomorrow than it did yesterday.
             </p>
           </div>
         </div>
@@ -71,8 +71,8 @@ export default function AboutPage() {
                 title: 'For job seekers',
                 items: [
                   'Personalised AI feed updated daily',
-                  'One-click apply — your profile is your CV',
-                  'Real-time application tracking, end to end',
+                  'One click apply — your profile is your CV',
+                  'Real time application tracking, end to end',
                   'Match score on every job before you apply',
                   'Skill-based — your profile speaks for you',
                 ],
@@ -82,7 +82,7 @@ export default function AboutPage() {
               {
                 title: 'For employers',
                 items: [
-                  'Post jobs, get pre-matched candidates',
+                  'Post jobs, get pre matched candidates',
                   'No more sifting through irrelevant CVs',
                   'Pipeline tools — shortlist, schedule, hire',
                   'Company profile that builds your brand',
@@ -149,7 +149,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
               { title: 'Skills over signals', desc: 'A degree from the right school is not a proxy for capability. We rank by what you can do.' },
-              { title: 'Mobile-first, always', desc: 'Most of Africa works from a phone. So we build for a phone before anything else.' },
+              { title: 'Mobile first, always', desc: 'Most of Africa works from a phone. So we build for a phone before anything else.' },
               { title: 'Transparent matching', desc: 'You see your match score. You see why a job appeared in your feed. No black boxes.' },
               { title: 'Free for seekers, forever', desc: 'Job seekers will never pay to use Uteo. Period. Employers fund the platform.' },
               { title: 'Data is yours', desc: 'Your profile, your applications, your messages — exportable any time. No lock-in.' },

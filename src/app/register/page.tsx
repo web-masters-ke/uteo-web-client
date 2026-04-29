@@ -421,7 +421,7 @@ function RegisterPageInner() {
                       </svg>
                     </div>
                     <div className="text-sm font-bold text-zinc-900 dark:text-zinc-50 mb-1">I'm looking for work</div>
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400">Find jobs that match your skills with AI-powered feed</p>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">Find jobs that match your skills with AI powered feed</p>
                     {role === "seeker" && (
                       <div className="absolute right-3 top-3 w-5 h-5 rounded-full bg-[#F77B0F] flex items-center justify-center">
                         <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>

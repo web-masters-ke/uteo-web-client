@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useTheme } from '@/lib/theme';
 
 /* ─────────────────────────────────────────────────────────────────────
-   Uteo — AI-powered, feed-based recruitment platform.
+   Uteo — AI powered, feed based recruitment platform.
    Brand: navy #192C67 · orange #F77B0F · dark #060d1f
    ───────────────────────────────────────────────────────────────────── */
 
@@ -249,7 +249,7 @@ export default function LandingPage() {
               </h1>
 
               <p className="mt-7 text-lg lg:text-xl text-white/55 max-w-xl leading-relaxed">
-                Uteo&apos;s AI ranks every live role against your skills and surfaces only the ones that fit. One personalised feed. One-click apply. Live status from submitted to hired.
+                Uteo&apos;s AI ranks every live role against your skills and surfaces only the ones that fit. One personalised feed. One click apply. Live status from submitted to hired.
               </p>
 
               <div className="mt-9 flex flex-col sm:flex-row gap-3">
@@ -318,7 +318,7 @@ export default function LandingPage() {
               One platform. Both sides win.
             </h2>
             <p className="mt-5 text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
-              Skill-matched, instantly — by design.
+              Skill matched, instantly — by design.
             </p>
           </div>
 
@@ -343,7 +343,7 @@ export default function LandingPage() {
                   {[
                     'Build your profile — skills, experience, salary expectations',
                     'AI scores every live job against your profile',
-                    'One-click apply — your profile is your CV',
+                    'One click apply — your profile is your CV',
                     'Live tracking from Submitted to Hired',
                   ].map((step, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -377,13 +377,13 @@ export default function LandingPage() {
               </div>
               <div className="p-8 lg:p-10 flex-1">
                 <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-6 leading-tight">
-                  Pre-matched candidates, faster hires.
+                  Pre matched candidates, faster hires.
                 </h3>
                 <ol className="space-y-3.5">
                   {[
                     'Create your company page and team workspace',
                     'Post a role — Uteo tags it with the skill graph',
-                    'Get pre-matched candidates ranked by match score',
+                    'Get pre matched candidates ranked by match score',
                     'Pipeline tools — shortlist, interview, hire',
                   ].map((step, i) => (
                     <li key={i} className="flex items-start gap-3">
@@ -417,7 +417,7 @@ export default function LandingPage() {
               Built for how Africa works.
             </h2>
             <p className="mt-5 text-lg text-gray-500 dark:text-gray-400 leading-relaxed">
-              Mobile-first. Skill-graph-powered. Real-time. Free for seekers, fair for employers.
+              Mobile first. Skill graph-powered. Real time. Free for seekers, fair for employers.
             </p>
           </div>
 
@@ -472,7 +472,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* One-click apply */}
+            {/* One click apply */}
             <div className="lg:col-span-4 group rounded-3xl overflow-hidden border border-gray-100 dark:border-white/5 bg-white dark:bg-white/[0.02] flex flex-col min-h-[400px]">
               <div className="relative h-44 overflow-hidden">
                 <img
@@ -482,7 +482,7 @@ export default function LandingPage() {
                 />
               </div>
               <div className="p-7 flex-1">
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-600 mb-3 block">03 · One-click apply</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-600 mb-3 block">03 · One click apply</span>
                 <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 leading-tight">Profile is your CV.</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   Tap apply. Your profile, skills and CV reach the recruiter instantly. No forms, no retyping.
@@ -501,14 +501,14 @@ export default function LandingPage() {
               </div>
               <div className="p-7 flex-1">
                 <span className="text-[11px] font-black uppercase tracking-[0.2em] text-violet-600 dark:text-violet-400 mb-3 block">04 · Live status</span>
-                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 leading-tight">End-to-end tracking.</h3>
+                <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 leading-tight">End to end tracking.</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
-                  Submitted, Reviewed, Shortlisted, Interview, Hired. Real-time updates. No more black holes.
+                  Submitted, Reviewed, Shortlisted, Interview, Hired. Real time updates. No more black holes.
                 </p>
               </div>
             </div>
 
-            {/* Mobile-first */}
+            {/* Mobile first */}
             <div className="lg:col-span-4 group rounded-3xl overflow-hidden border border-gray-100 dark:border-white/5 bg-white dark:bg-white/[0.02] flex flex-col min-h-[400px]">
               <div className="relative h-44 overflow-hidden">
                 <img
@@ -518,7 +518,7 @@ export default function LandingPage() {
                 />
               </div>
               <div className="p-7 flex-1">
-                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-amber-600 mb-3 block">05 · Mobile-first</span>
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-amber-600 mb-3 block">05 · Mobile first</span>
                 <h3 className="text-xl font-black text-gray-900 dark:text-white mb-2 leading-tight">Built for the phone.</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   Most of Africa works from a phone. Native Android &amp; iOS apps. Fast, offline-tolerant, beautiful.
@@ -541,7 +541,7 @@ export default function LandingPage() {
                   Manage the whole hiring funnel in one place.
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-5">
-                  Pre-matched candidates, shortlist, schedule, interview, hire. Plus auto-generated tasks for the team — so nothing falls through the cracks.
+                  Pre matched candidates, shortlist, schedule, interview, hire. Plus auto-generated tasks for the team — so nothing falls through the cracks.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-auto">
                   {['Submitted', 'Reviewed', 'Shortlisted', 'Interview', 'Hired'].map(s => (
@@ -579,7 +579,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── FOR EMPLOYERS — full-bleed pitch ──────────────────────────── */}
+      {/* ── FOR EMPLOYERS — full bleed pitch ──────────────────────────── */}
       <section className="relative min-h-[70vh] flex items-center overflow-hidden" id="for-employers">
         <div className="absolute inset-0">
           <img
@@ -598,10 +598,10 @@ export default function LandingPage() {
               Hire smarter. Not harder.
             </h2>
             <p className="text-lg text-white/85 leading-relaxed mb-8 drop-shadow-lg">
-              Stop drowning in irrelevant CVs. Uteo delivers pre-matched candidates ranked by skill fit — straight into your pipeline. Cut time-to-hire in half.
+              Stop drowning in irrelevant CVs. Uteo delivers pre matched candidates ranked by skill fit — straight into your pipeline. Cut time to hire in half.
             </p>
             <div className="grid grid-cols-2 gap-3 mb-8">
-              {['Pre-matched candidates', 'Pipeline workspace', 'Match-score ranking', 'Live applicant feed', 'Built-in messaging', 'Hiring analytics'].map(item => (
+              {['Pre matched candidates', 'Pipeline workspace', 'Match score ranking', 'Live applicant feed', 'Built in messaging', 'Hiring analytics'].map(item => (
                 <div key={item} className="flex items-center gap-2 text-white text-sm drop-shadow">
                   <svg className="h-4 w-4 text-[#F77B0F] shrink-0" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -642,9 +642,9 @@ export default function LandingPage() {
                 img: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=400&q=100',
               },
               {
-                quote: 'We were getting 200 CVs per role and reading maybe 20 before getting tired. With Uteo we read 5, every single one a strong fit. We cut time-to-hire by 60%.',
+                quote: 'We were getting 200 CVs per role and reading maybe 20 before getting tired. With Uteo we read 5, every single one a strong fit. We cut time to hire by 60%.',
                 name: 'James Mutua',
-                role: 'Head of Talent · pan-African tech firm',
+                role: 'Head of Talent · pan African tech firm',
                 metric: '-60%',
                 metricLabel: 'time to hire',
                 img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=100',
@@ -700,9 +700,9 @@ export default function LandingPage() {
           </div>
           <div className="space-y-3">
             {[
-              { q: 'How does the AI feed actually work?', a: 'Every job and every profile gets mapped onto a structured skill graph. The matching engine computes a 0–100 fit score per role using skill overlap, experience level, location preferences and salary band. Your feed is just the top-ranked roles, refreshed daily.' },
+              { q: 'How does the AI feed actually work?', a: 'Every job and every profile gets mapped onto a structured skill graph. The matching engine computes a 0–100 fit score per role using skill overlap, experience level, location preferences and salary band. Your feed is just the top ranked roles, refreshed daily.' },
               { q: 'Is Uteo really free for job seekers?', a: "Yes. Always. Browse jobs, apply, message employers, track applications — completely free, forever. We don't charge seekers a cent. Employers fund the platform." },
-              { q: 'How does one-click apply work?', a: 'Your Uteo profile IS your application. When you tap Apply, your full profile (skills, experience, education, CV) goes to the employer instantly. No forms, no retyping.' },
+              { q: 'How does one click apply work?', a: 'Your Uteo profile IS your application. When you tap Apply, your full profile (skills, experience, education, CV) goes to the employer instantly. No forms, no retyping.' },
               { q: 'Can recruiters find me directly?', a: 'Yes — if you opt in. Open Profile > Visibility and turn on Open to Work. Recruiters can search the talent pool by skills and reach out to you directly.' },
               { q: 'Which countries does Uteo cover?', a: 'Live in Kenya, Nigeria, Ghana, Tanzania, Uganda and South Africa today. Rolling out across the continent through 2026 — and globally after that.' },
               { q: 'How do I post a job as an employer?', a: 'Register as a recruiter, add your company profile, post your role. Uteo immediately tags it with the right skill graph and starts surfacing matched candidates within hours.' },
@@ -778,7 +778,7 @@ export default function LandingPage() {
                 <span className="w-2 h-2 rounded-full bg-[#F77B0F]" />
               </Link>
               <p className="text-xs text-gray-500 leading-relaxed mb-3">Your dream job finds you.</p>
-              <p className="text-xs text-gray-600">AI-powered recruitment for Africa.</p>
+              <p className="text-xs text-gray-600">AI powered recruitment for Africa.</p>
             </div>
             {[
               { title: 'For Job Seekers', links: [['Browse Jobs', '/jobs'], ['My Feed', '/feed'], ['My Applications', '/applications'], ['Saved Jobs', '/saved-jobs']] },

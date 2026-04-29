@@ -388,7 +388,7 @@ export default function SettingsPage() {
                 {[
                   { key: 'emailNotifications' as const, label: 'Email Notifications', desc: 'Job alerts, application updates, and messages via email' },
                   { key: 'smsNotifications' as const,   label: 'SMS Notifications',   desc: 'Text messages for important updates and reminders' },
-                  { key: 'pushNotifications' as const,  label: 'Push Notifications',  desc: 'Real-time job match and message alerts in the browser' },
+                  { key: 'pushNotifications' as const,  label: 'Push Notifications',  desc: 'Real time job match and message alerts in the browser' },
                 ].map((item) => (
                   <SettingRow key={item.key} label={item.label} desc={item.desc}>
                     <ToggleSwitch checked={prefs[item.key]} onChange={() => handlePrefChange(item.key)} disabled={prefsSaving} />

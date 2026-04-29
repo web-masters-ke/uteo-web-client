@@ -104,10 +104,10 @@ export default function LoginPage() {
             Your Dream Job<br />Finds You.
           </h2>
           <p className="mt-3 text-white/55 max-w-md leading-relaxed text-sm">
-            AI-powered job discovery — personalized feeds, one-click apply, and real-time application tracking.
+            AI powered job discovery — personalized feeds, one click apply, and real time application tracking.
           </p>
           <div className="flex flex-wrap gap-2 mt-6">
-            {['AI Job Feed', 'One-Click Apply', 'Match Score', 'Track Applications', 'Recruiter Tools', 'Skill Matching'].map(f => (
+            {['AI Job Feed', 'One Click Apply', 'Match Score', 'Track Applications', 'Recruiter Tools', 'Skill Matching'].map(f => (
               <span key={f} className="px-3 py-1.5 rounded-full bg-white/10 text-xs font-semibold text-white/80 backdrop-blur-sm">{f}</span>
             ))}
           </div>
