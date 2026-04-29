@@ -163,6 +163,10 @@ jobs:
         with:
           context: .
           push: true
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://api.uteo.ai/api/v1
+            NEXT_PUBLIC_WS_URL=https://api.uteo.ai
+            NEXT_PUBLIC_JAAS_APP_ID=vpaas-magic-cookie-315e6ce2ff244da49ecbd19f303846d7
           tags: |
             ${{ steps.version.outputs.image }}:${{ steps.version.outputs.tag }}
             ${{ steps.version.outputs.image }}:latest-staging
