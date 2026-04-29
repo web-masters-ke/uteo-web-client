@@ -8,6 +8,7 @@ export interface CertificateInstructor {
 export interface CertificateCourse {
   title: string;
   category?: string;
+  thumbnail?: string | null;
   instructor?: CertificateInstructor;
 }
 

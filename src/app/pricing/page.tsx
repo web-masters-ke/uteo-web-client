@@ -2,73 +2,195 @@ import Link from 'next/link';
 
 export default function PricingPage() {
   const plans = [
-    { name: 'Free', price: 'KES 0', period: 'forever', desc: 'For clients and new trainers', features: ['Browse trainer profiles', 'Book sessions', 'Secure wallet payments', 'Reviews & ratings', 'In-app messaging'], cta: 'Get Started Free', href: '/register' },
-    { name: 'Professional', price: 'KES 2,499', period: '/month', desc: 'For active trainers', features: ['Everything in Free', 'Featured listing in directory', 'Unlimited bookings', 'Priority support', 'Analytics dashboard', 'Verified badge', 'Custom profile URL'], cta: 'Start Professional', href: '/register?role=TRAINER', recommended: true },
-    { name: 'Enterprise', price: 'KES 4,999', period: '/month', desc: 'For training organizations', features: ['Everything in Professional', 'Team management', 'Custom branding', 'API access', 'Dedicated account manager', 'Bulk booking discounts', 'Priority placement'], cta: 'Contact Sales', href: '/contact' },
+    {
+      name: 'Seeker',
+      price: 'Free',
+      period: 'forever',
+      desc: 'For everyone looking for work.',
+      features: [
+        'AI-powered job feed',
+        'One-click apply',
+        'Real-time application tracking',
+        'Match score on every role',
+        'In-app messaging with employers',
+      ],
+      cta: 'Create your profile',
+      href: '/register',
+      recommended: false,
+    },
+    {
+      name: 'Starter',
+      price: 'KES 4,999',
+      period: '/month',
+      desc: 'Small teams hiring 1–3 roles at a time.',
+      features: [
+        'Up to 3 active job postings',
+        'Pre-matched candidates',
+        'Pipeline & shortlist tools',
+        'Company brand page',
+        'Email + chat support',
+      ],
+      cta: 'Start hiring',
+      href: '/register?role=recruiter',
+      recommended: true,
+    },
+    {
+      name: 'Enterprise',
+      price: 'Custom',
+      period: '',
+      desc: 'Large teams with multi-role hiring at scale.',
+      features: [
+        'Unlimited active postings',
+        'Multi-recruiter workspace',
+        'Custom brand & careers page',
+        'Hiring funnel analytics',
+        'API access + ATS integrations',
+        'Dedicated success manager',
+      ],
+      cta: 'Talk to sales',
+      href: '/contact',
+      recommended: false,
+    },
   ];
 
   return (
     <>
       {/* Hero */}
-      <section className="relative h-[40vh] min-h-[320px] flex items-end pb-12 overflow-hidden">
+      <section className="relative h-[45vh] min-h-[360px] flex items-end pb-14 overflow-hidden">
         <div className="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=4096&q=100" alt="Business meeting" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-[#192C67]/75" />
+          <img
+            src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=2400&q=100"
+            alt="Office team"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/65" />
         </div>
         <div className="relative z-10 mx-auto max-w-[1400px] px-6 lg:px-10 w-full">
-          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">Uteo</p>
-          <h1 className="text-4xl lg:text-6xl font-black text-white">Simple, Transparent Pricing</h1>
-          <p className="mt-4 text-lg text-white/80 max-w-xl">Clients use Uteo for free. Trainers choose a plan that fits.</p>
+          <p className="text-[13px] font-bold uppercase tracking-[0.25em] text-white/60 mb-4">Pricing</p>
+          <h1 className="text-4xl lg:text-6xl font-black text-white leading-[1.05] max-w-3xl">
+            Free for seekers. <span className="text-[#F77B0F]">Fair for hirers.</span>
+          </h1>
+          <p className="mt-5 text-lg text-white/75 max-w-2xl leading-relaxed">
+            Job seekers will never pay to use Uteo. Employers fund the platform — and only when you find someone worth hiring.
+          </p>
         </div>
       </section>
 
       <div className="mx-auto max-w-[1400px] px-6 lg:px-10 py-20 lg:py-28">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
-          {plans.map((plan) => (
-            <div key={plan.name} className={`relative bg-white dark:bg-gray-800 rounded-2xl border-2 p-8 ${plan.recommended ? 'border-secondary-500 shadow-xl' : 'border-gray-200 dark:border-gray-700'}`}>
+        {/* Plans */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 mb-24 max-w-5xl mx-auto">
+          {plans.map(plan => (
+            <div
+              key={plan.name}
+              className={`relative rounded-3xl p-8 lg:p-9 ${
+                plan.recommended
+                  ? 'bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-2xl shadow-gray-900/20 ring-1 ring-[#F77B0F]/30'
+                  : 'bg-white dark:bg-white/[0.02] border border-gray-100 dark:border-white/10'
+              }`}
+            >
               {plan.recommended && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-secondary-500 text-white text-xs font-bold rounded-full">MOST POPULAR</div>
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-[#F77B0F] text-white text-[10px] font-black uppercase tracking-widest">
+                    Most popular
+                  </span>
+                </div>
               )}
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white">{plan.name}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{plan.desc}</p>
-              <div className="mt-6 mb-8">
-                <span className="text-3xl font-bold text-gray-900 dark:text-white">{plan.price}</span>
-                <span className="text-gray-500 dark:text-gray-400 text-sm">{plan.period}</span>
+
+              <div
+                className={`text-xs font-bold uppercase tracking-widest mb-2 ${
+                  plan.recommended ? 'text-[#F77B0F]' : 'text-[#F77B0F]'
+                }`}
+              >
+                {plan.name}
               </div>
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                    <svg className="w-4 h-4 text-accent-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+
+              <div className="flex items-baseline gap-1 mb-3">
+                <span className={`text-4xl font-black tracking-tight ${plan.recommended ? 'text-white dark:text-gray-900' : 'text-gray-900 dark:text-white'}`}>
+                  {plan.price}
+                </span>
+                <span className={`text-sm font-semibold ${plan.recommended ? 'text-white/60 dark:text-gray-500' : 'text-gray-400'}`}>
+                  {plan.period}
+                </span>
+              </div>
+
+              <p className={`text-sm mb-7 ${plan.recommended ? 'text-white/60 dark:text-gray-600' : 'text-gray-500 dark:text-gray-400'}`}>
+                {plan.desc}
+              </p>
+
               <Link
                 href={plan.href}
-                className={`block w-full text-center py-3 rounded-lg font-semibold text-sm transition-colors ${
-                  plan.recommended
-                    ? 'bg-secondary-500 text-white hover:bg-secondary-600'
-                    : 'bg-[#F77B0F] text-white hover:bg-[#e06a0d]'
+                className={`block text-center py-3 rounded-full font-bold text-sm mb-7 transition-opacity hover:opacity-90 ${
+                  plan.recommended ? 'bg-[#F77B0F] text-white' : 'bg-gray-900 dark:bg-white text-white dark:text-gray-900'
                 }`}
               >
                 {plan.cta}
               </Link>
+
+              <ul className="space-y-3">
+                {plan.features.map(f => (
+                  <li key={f} className="flex items-start gap-2.5 text-sm">
+                    <svg
+                      className={`h-4 w-4 shrink-0 mt-0.5 ${plan.recommended ? 'text-[#F77B0F]' : 'text-[#F77B0F]'}`}
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <span className={plan.recommended ? 'text-white/85 dark:text-gray-700' : 'text-gray-600 dark:text-gray-300'}>
+                      {f}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
 
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-8">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Frequently Asked Questions</h2>
+        {/* FAQ */}
+        <div className="max-w-3xl mx-auto">
+          <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-[#F77B0F]/10 text-[#F77B0F] text-[11px] font-bold uppercase tracking-widest mb-4">
+            FAQ
+          </span>
+          <h2 className="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-10 leading-tight">
+            Pricing questions.
+          </h2>
           <div className="space-y-4">
             {[
-              { q: 'Is Uteo free for clients?', a: 'Yes! Clients can browse trainers, book sessions, and use the wallet for free. You only pay for the training sessions you book.' },
-              { q: 'Can I cancel my subscription?', a: 'Yes, you can cancel anytime. Your premium features will remain active until the end of your billing period.' },
-              { q: 'What payment methods are accepted?', a: 'We accept M-Pesa for all payments. Wallet deposits, session payments, and subscription fees can all be paid via M-Pesa.' },
-              { q: 'How does escrow work?', a: 'When you book a session, your payment is held in escrow. After the session is completed, the funds are released to the trainer. If there is a dispute, our team will review and resolve it.' },
+              {
+                q: 'Is Uteo really free for job seekers?',
+                a: 'Yes. Always. Browse jobs, apply, message employers, track applications — all free, forever. We don&apos;t charge seekers a cent. Employers fund the platform.',
+              },
+              {
+                q: 'Do I need a credit card to start as an employer?',
+                a: 'No. Your first job posting is free. Add a card only when you upgrade to Starter or buy a one-off post.',
+              },
+              {
+                q: 'Can I post one job without a subscription?',
+                a: 'Yes. Pay-as-you-go pricing is available — talk to sales for a single-post quote.',
+              },
+              {
+                q: 'What payment methods do you accept?',
+                a: 'M-Pesa, Visa, Mastercard, and bank transfer for Enterprise. KES is the default — USD invoicing available on Enterprise.',
+              },
+              {
+                q: 'Can I cancel any time?',
+                a: 'Yes. Month-to-month with no contracts on Starter. Cancel any time and your active jobs stay live until the end of the billing period.',
+              },
+              {
+                q: 'Do you offer discounts for NGOs or government?',
+                a: 'Yes. Reach out via the contact form and we&apos;ll get you onto a sector rate.',
+              },
             ].map((faq, i) => (
-              <div key={i} className="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0">
-                <h3 className="font-semibold text-gray-900 dark:text-white mb-1">{faq.q}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-300">{faq.a}</p>
+              <div
+                key={i}
+                className="rounded-2xl border border-gray-100 dark:border-white/10 bg-gray-50 dark:bg-white/[0.02] p-6"
+              >
+                <h3 className="font-bold text-gray-900 dark:text-white text-sm mb-2">{faq.q}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed" dangerouslySetInnerHTML={{ __html: faq.a }} />
               </div>
             ))}
           </div>

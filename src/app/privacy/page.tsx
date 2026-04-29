@@ -7,15 +7,15 @@ export default function PrivacyPage() {
       <div className="prose dark:prose-invert max-w-none space-y-6 text-gray-600 dark:text-gray-300">
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">1. Information We Collect</h2>
-          <p>We collect personal information you provide during registration (name, email, phone number), profile information (bio, skills, certifications), booking data, payment information, and usage data.</p>
+          <p>We collect personal information you provide during registration (name, email, phone number), profile information (bio, skills, certifications), job applications, payment information, and usage data.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">2. How We Use Your Information</h2>
-          <p>We use your information to provide and improve our services, process payments, facilitate bookings, send notifications, and ensure platform security. We do not sell your personal data to third parties.</p>
+          <p>We use your information to provide and improve our services, process payments where applicable, facilitate job applications, send notifications, and ensure platform security. We do not sell your personal data to third parties.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">3. Data Sharing</h2>
-          <p>We share information with payment processors (M-Pesa/Safaricom) for payment processing, and with other users as necessary for bookings (e.g., trainer sees client name). We may share data with law enforcement if required by law.</p>
+          <p>We share information with payment processors (M-Pesa/Safaricom) for payment processing, and with other users as necessary for job applications (e.g., recruiters see candidate profiles). We may share data with law enforcement if required by law.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">4. Data Security</h2>
@@ -27,7 +27,7 @@ export default function PrivacyPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">6. Your Rights</h2>
-          <p>You have the right to access, update, or delete your personal data. You can update your profile at any time or delete your account through the Settings page. For data requests, contact privacy@uteo.co.ke.</p>
+          <p>You have the right to access, update, or delete your personal data. You can update your profile at any time or delete your account through the Settings page. For data requests, contact privacy@uteo.ai.</p>
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">7. Data Retention</h2>
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
         </section>
         <section>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">10. Contact</h2>
-          <p>For privacy-related questions, contact us at privacy@uteo.co.ke.</p>
+          <p>For privacy-related questions, contact us at privacy@uteo.ai.</p>
         </section>
       </div>
     </div>

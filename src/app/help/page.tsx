@@ -5,32 +5,33 @@ import { apiPost } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
 
-const FAQ_TRAINERS = [
-  { q: "How do I get verified on Uteo?", a: "Go to Profile > Verification. Upload your ID, professional certifications (IHRM, NITA, etc.), and portfolio. Our team reviews documents within 2-3 business days. Once verified, you get a blue badge on your profile." },
-  { q: "How do I set my availability?", a: "Go to Availability from the sidebar. Set your weekly schedule with time slots for each day. Clients can only book during your available hours." },
-  { q: "How does payment work for trainers?", a: "When a client books you, their payment goes into escrow. After the session is marked complete, Uteo deducts the platform commission (based on your subscription tier: 10% Basic, 7% Professional, 5% Enterprise) and credits the rest to your wallet. You can withdraw to M-Pesa anytime." },
-  { q: "How do I conduct a virtual session?", a: "Go to Sessions from the sidebar. Start an instant meeting or join a scheduled one. Uteo uses Jitsi for HD video — no downloads required. Sessions can be recorded for playback." },
-  { q: "Can I have a team under my firm?", a: "Yes. Enterprise plan subscribers can add team members to their training firm. Go to Settings > Team Management to invite consultants to your organization." },
-  { q: "How do I manage my subscription?", a: "Go to Subscriptions from the sidebar. You can upgrade from Basic (free) to Professional (KES 2,500/mo) or Enterprise (KES 7,500/mo) anytime. Downgrade takes effect at the end of your billing cycle." },
-  { q: "What happens if a client disputes a session?", a: "The escrowed funds are frozen during the dispute. A Uteo administrator reviews the case and resolves it — either releasing funds to you or refunding the client. All disputes are logged with full audit trails." },
-  { q: "How do I improve my ranking in search results?", a: "Complete your profile fully, maintain a high rating (4.5+), respond quickly to booking requests, keep your availability calendar updated, and consider upgrading to Professional or Enterprise for priority placement." },
+const FAQ_RECRUITERS = [
+  { q: "How do I post my first job?", a: "Go to Post a Job from the sidebar. Add your company details (one-time), then describe the role — title, must-have skills, location, salary band. Uteo's AI tags it with the right skill graph and starts surfacing matched candidates immediately." },
+  { q: "What does match score mean?", a: "Match score is a 0–100 measure of how well a candidate fits a specific role, based on skill overlap, experience fit, location and salary expectations. Above 80 = strong fit. Below 60 = poor fit. The pipeline view sorts the strongest matches first." },
+  { q: "How do I review applications?", a: "Open the job in Recruiter Dashboard. You'll see all applicants ranked by match score. Move them through Submitted → Reviewed → Shortlisted → Interview → Hired or Rejected with one click." },
+  { q: "Can my whole team manage hiring together?", a: "Yes. On the Starter plan you get one workspace seat — invite teammates as recruiters. On Enterprise you get unlimited seats with role-based access (admin, recruiter, viewer)." },
+  { q: "How does messaging with candidates work?", a: "Once a candidate has applied, you can message them directly inside Uteo from the application detail. All messages are logged and searchable. No email back-and-forth." },
+  { q: "How do I schedule interviews?", a: "From the application detail, click Schedule Interview. Pick a time, add details, and the candidate gets an in-app + email notification. They can confirm or request a different slot." },
+  { q: "Can I close or pause a job posting?", a: "Yes. Open the job in your dashboard and toggle status: Active, Paused (hidden but kept) or Closed (archived with all applicants). Reopen any time." },
+  { q: "What analytics do I get?", a: "Time-to-hire, source-of-hire, drop-off by stage, applicant volume per role, and match-score distribution. Available on Starter and Enterprise plans from the Analytics tab." },
 ];
 
-const FAQ_CLIENTS = [
-  { q: "How do I find the right trainer?", a: "Use Find Trainers from the sidebar. Filter by specialization (HR, Strategy, Leadership, etc.), county, price range, rating, and session type (virtual, physical, hybrid). Every trainer's profile shows their credentials, reviews, and availability." },
-  { q: "How does escrow payment work?", a: "When you book a session, your payment is held securely in escrow — not in the trainer's account. The trainer only receives payment after the session is completed and you confirm it. If something goes wrong, you can raise a dispute for a full refund." },
-  { q: "Can I book both online and in-person sessions?", a: "Yes. Many trainers offer virtual (video call), physical (in-person at their office or yours), and hybrid sessions. You can filter by session type when searching." },
-  { q: "How do I pay for sessions?", a: "Top up your Uteo wallet via M-Pesa (Deposit from the Wallet page). When you book, the amount is deducted from your wallet and held in escrow. You can also pay directly via M-Pesa STK push during booking." },
-  { q: "What if I need to cancel a booking?", a: "Go to My Bookings, find the booking, and click Cancel. Free cancellation is available up to 24 hours before the session. The escrowed amount is refunded to your wallet instantly." },
-  { q: "How do I leave a review?", a: "After a completed session, go to My Bookings > the completed booking > Leave Review. Rate the trainer (1-5 stars) and write your feedback. Reviews are public and help other clients make informed choices." },
-  { q: "Can I book training for my team?", a: "Yes. You can book group sessions for your organization. Specify the number of participants and any special requirements in the booking notes. Many trainers offer corporate rates for bulk bookings." },
-  { q: "How do I contact a trainer before booking?", a: "Use Messages from the sidebar. Search for the trainer and start a conversation. You can discuss requirements, negotiate rates, and clarify details before committing to a booking." },
+const FAQ_SEEKERS = [
+  { q: "Why am I seeing these jobs in my feed?", a: "Every job in your feed is ranked by match score against your profile — your skills, experience, salary expectations and location preferences. The more complete your profile, the better the matches." },
+  { q: "How does one-click apply work?", a: "Your Uteo profile IS your application. When you tap Apply, your full profile (skills, experience, education, CV) goes to the employer instantly. No forms to fill, no retyping." },
+  { q: "How do I track my applications?", a: "Go to My Applications from the sidebar. Every application shows a live status — Submitted, Reviewed, Shortlisted, Interview, Hired or Rejected. You'll get a notification the moment status changes." },
+  { q: "Can recruiters find me directly?", a: "Yes — if you opt in. Open Profile > Visibility and turn on Open to Work. Recruiters can search the talent pool by skills and reach out to you directly. You decide what is public." },
+  { q: "How do I improve my match score?", a: "Add more skills (especially the technical ones), keep work experience current, upload a fresh CV (we parse it automatically), set clear salary expectations and target locations. Every save makes the engine smarter about you." },
+  { q: "Why don't I see applications I made on other sites?", a: "Uteo only tracks applications submitted through Uteo. We can't see jobs you applied to via LinkedIn or company sites. To get the full tracking view, apply through Uteo." },
+  { q: "How do I message an employer?", a: "Once you've applied to a job, you can message the recruiter from the application detail. Use this for quick clarifications — the recruiter sees your message in their pipeline." },
+  { q: "Can I save jobs to apply later?", a: "Yes. Tap the bookmark icon on any job to save it. Open Saved Jobs from the sidebar to apply when ready. Save first, decide later." },
 ];
 
 const GENERAL_FAQ = [
-  { q: "Is my data safe on Uteo?", a: "Uteo complies with the Kenya Data Protection Act. All data is encrypted in transit (TLS) and at rest. Financial transactions use a double-entry ledger with full audit trails. Your personal information is never shared without consent." },
+  { q: "Is Uteo really free for job seekers?", a: "Yes. Always. Browse jobs, apply, message employers, track applications — completely free, forever. We don't charge seekers a cent. Employers fund the platform." },
+  { q: "Is my data safe on Uteo?", a: "Uteo complies with the Kenya Data Protection Act. All data is encrypted in transit (TLS) and at rest. Your personal information is never shared without consent. You can export or delete your data any time from Settings." },
   { q: "How do I reset my password?", a: "Click 'Forgot password?' on the login page. Enter your email and we'll send a reset link. You can also change your password from Settings > Change Password when logged in." },
-  { q: "Who do I contact for support?", a: "Raise a support ticket below, or email hello@uteo.co.ke, or call +254 700 000 000 (Mon-Fri 8am-5pm EAT)." },
+  { q: "Who do I contact for support?", a: "Raise a support ticket below, or email hello@uteo.ai, or call +254 700 000 000 (Mon–Fri 8am–5pm EAT)." },
 ];
 
 interface Ticket {
@@ -45,7 +46,7 @@ interface Ticket {
 export default function HelpPage() {
   const { user } = useAuth();
   const { addToast } = useToast();
-  const isTrainer = user?.role === "TRAINER";
+  const isRecruiter = user?.role === "TRAINER";
 
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [faqSection, setFaqSection] = useState<"role" | "general">("role");
@@ -56,7 +57,7 @@ export default function HelpPage() {
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const roleFaqs = isTrainer ? FAQ_TRAINERS : FAQ_CLIENTS;
+  const roleFaqs = isRecruiter ? FAQ_RECRUITERS : FAQ_SEEKERS;
   const activeFaqs = faqSection === "role" ? roleFaqs : GENERAL_FAQ;
 
   const submitTicket = async (e: FormEvent) => {
@@ -99,7 +100,7 @@ export default function HelpPage() {
       {/* Contact info */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
         {[
-          { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Email", value: "hello@uteo.co.ke", href: "mailto:hello@uteo.co.ke" },
+          { icon: "M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z", label: "Email", value: "hello@uteo.ai", href: "mailto:hello@uteo.ai" },
           { icon: "M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z", label: "Phone", value: "+254 700 000 000", href: "tel:+254700000000" },
           { icon: "M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z", label: "Hours", value: "Mon-Fri 8am-5pm EAT", href: null },
         ].map((c) => (
@@ -125,7 +126,7 @@ export default function HelpPage() {
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">Frequently Asked Questions</h2>
           <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 p-0.5">
             <button onClick={() => { setFaqSection("role"); setOpenFaq(null); }} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${faqSection === "role" ? "bg-[#F77B0F] text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"}`}>
-              {isTrainer ? "For Trainers" : "For Clients"}
+              {isRecruiter ? "For Employers" : "For Job Seekers"}
             </button>
             <button onClick={() => { setFaqSection("general"); setOpenFaq(null); }} className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${faqSection === "general" ? "bg-[#F77B0F] text-white" : "text-gray-500 hover:text-gray-700 dark:text-gray-400"}`}>
               General
