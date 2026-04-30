@@ -49,6 +49,7 @@ export default function EditJobPage() {
     expiresAt: '',
     status: 'ACTIVE',
     vacancies: '1',
+    showSalary: false,
   });
 
   useEffect(() => {
@@ -73,6 +74,7 @@ export default function EditJobPage() {
         expiresAt: j.expiresAt ? String(j.expiresAt).split('T')[0] : '',
         status: j.status ?? 'ACTIVE',
         vacancies: j.vacancies != null ? String(j.vacancies) : '1',
+        showSalary: j.showSalary === true,
       });
       const skills: Skill[] = (j.jobSkills ?? []).map((js: any) => js.skill).filter(Boolean);
       setSelectedSkills(skills);
@@ -139,6 +141,7 @@ export default function EditJobPage() {
       if (form.expiresAt) payload.expiresAt = form.expiresAt;
       if (form.vacancies) payload.vacancies = Number(form.vacancies);
       payload.posterUrl = posterUrl || null;
+      payload.showSalary = form.showSalary;
       payload.skillIds = selectedSkills.map((s) => s.id);
 
       await jobsService.update(id, payload);
@@ -310,6 +313,21 @@ export default function EditJobPage() {
             <input type="number" value={form.salaryMax} onChange={(e) => setForm((f) => ({ ...f, salaryMax: e.target.value }))} className={inputCls} />
           </div>
         </div>
+
+        <label className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-[#F77B0F] transition-colors">
+          <input
+            type="checkbox"
+            checked={form.showSalary}
+            onChange={(e) => setForm((f) => ({ ...f, showSalary: e.target.checked }))}
+            className="w-4 h-4 accent-[#F77B0F]"
+          />
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-gray-900 dark:text-white">Show salary range publicly</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              When off (default), the salary band is hidden from candidates on the job listing and detail page. Recruiters always see it.
+            </p>
+          </div>
+        </label>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>

@@ -57,14 +57,22 @@ function timeAgo(dateStr: string) {
 // ─── Job Card ──────────────────────────────────────────────────────────────────
 
 function JobCard({ job }: { job: Job }) {
-  const salary = formatSalary(job.salaryMin, job.salaryMax, job.currency);
+  const showSalary = (job as any).showSalary === true;
+  const salary = showSalary ? formatSalary(job.salaryMin, job.salaryMax, job.currency) : null;
   const skills = job.jobSkills?.map((js) => js.skill) ?? [];
+  const posterUrl = (job as any).posterUrl as string | undefined;
 
   return (
     <Link
       href={`/jobs/${job.id}`}
-      className="block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 hover:border-[#192C67] dark:hover:border-[#5b8bc7] hover:shadow-md transition-all group"
+      className="block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-[#192C67] dark:hover:border-[#5b8bc7] hover:shadow-md transition-all group"
     >
+      {posterUrl && (
+        <div className="aspect-[1200/420] w-full overflow-hidden bg-gray-100 dark:bg-gray-900">
+          <img src={posterUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
+        </div>
+      )}
+      <div className="p-5">
       <div className="flex items-start gap-3 mb-3">
         {job.company.logoUrl ? (
           <img
@@ -128,6 +136,7 @@ function JobCard({ job }: { job: Job }) {
           )}
         </div>
       )}
+      </div>
     </Link>
   );
 }

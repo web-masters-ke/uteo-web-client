@@ -136,7 +136,7 @@ function ApplyModal({
     }
   };
 
-  const salary = job.salaryMin && job.salaryMax
+  const salary = ((job as any).showSalary === true) && job.salaryMin && job.salaryMax
     ? `${job.currency ?? 'KES'} ${(job.salaryMin / 1000).toFixed(0)}k – ${(job.salaryMax / 1000).toFixed(0)}k`
     : null;
 
@@ -559,7 +559,8 @@ export default function JobDetailPage() {
     </div>
   );
 
-  const salary = formatSalary(job.salaryMin, job.salaryMax, job.currency);
+  const showSalary = (job as any).showSalary === true;
+  const salary = showSalary ? formatSalary(job.salaryMin, job.salaryMax, job.currency) : null;
   const skills = job.jobSkills?.map((js) => js.skill) ?? [];
 
   return (

@@ -34,6 +34,7 @@ export default function RecruiterMyJobsPage() {
   const [jobs, setJobs] = useState<MyJob[]>([]);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) { router.replace('/login?redirect=/recruiter/jobs'); return; }
@@ -110,6 +111,42 @@ export default function RecruiterMyJobsPage() {
         </Link>
       </div>
 
+      {/* Status filter tabs */}
+      {jobs.length > 0 && (() => {
+        const counts: Record<string, number> = { ALL: jobs.length };
+        for (const j of jobs) counts[j.status] = (counts[j.status] || 0) + 1;
+        const tabs = [
+          { v: 'ALL',     label: 'All' },
+          { v: 'ACTIVE',  label: 'Active' },
+          { v: 'PAUSED',  label: 'Paused' },
+          { v: 'DRAFT',   label: 'Drafts' },
+          { v: 'CLOSED',  label: 'Closed' },
+          { v: 'EXPIRED', label: 'Expired' },
+        ];
+        return (
+          <div className="flex flex-wrap gap-2">
+            {tabs.map((t) => {
+              const n = counts[t.v] ?? 0;
+              if (t.v !== 'ALL' && n === 0) return null;
+              const selected = statusFilter === t.v;
+              return (
+                <button
+                  key={t.v}
+                  onClick={() => setStatusFilter(t.v)}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-full border transition-colors ${
+                    selected
+                      ? 'bg-[#F77B0F] text-white border-[#F77B0F]'
+                      : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#F77B0F] hover:text-[#F77B0F]'
+                  }`}
+                >
+                  {t.label} · {n}
+                </button>
+              );
+            })}
+          </div>
+        );
+      })()}
+
       {!loading && jobs.length === 0 && (
         <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-10 text-center">
           <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">You haven't posted any jobs yet.</p>
@@ -119,10 +156,19 @@ export default function RecruiterMyJobsPage() {
         </div>
       )}
 
-      {jobs.length > 0 && (
+      {jobs.length > 0 && (() => {
+        const filtered = statusFilter === 'ALL' ? jobs : jobs.filter((j) => j.status === statusFilter);
+        if (filtered.length === 0) {
+          return (
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-10 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">No jobs in this status. Switch tabs above.</p>
+            </div>
+          );
+        }
+        return (
         <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 overflow-hidden">
           <div className="divide-y divide-gray-100 dark:divide-gray-700">
-            {jobs.map((j) => (
+            {filtered.map((j) => (
               <div key={j.id} className="p-5 flex flex-wrap items-start gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -172,7 +218,8 @@ export default function RecruiterMyJobsPage() {
             ))}
           </div>
         </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
