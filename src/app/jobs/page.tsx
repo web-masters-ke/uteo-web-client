@@ -237,14 +237,6 @@ function JobCard({ job }: { job: Job }) {
         )}
       </Link>
 
-      {/* Hover preview — single short line only */}
-      {job.description && (
-        <div className="overflow-hidden max-h-0 group-hover:max-h-10 transition-all duration-200 ease-out px-5">
-          <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate pb-2.5 border-t border-gray-100/80 dark:border-gray-700/60 pt-2">
-            {job.description.replace(/<[^>]+>/g, '').slice(0, 90)}…
-          </p>
-        </div>
-      )}
 
       {/* Share button row — outside Link so it doesn't trigger navigation */}
       <div className="px-5 pb-3 flex justify-end">
