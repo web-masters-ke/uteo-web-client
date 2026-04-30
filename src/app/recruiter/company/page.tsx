@@ -57,7 +57,9 @@ function CompanyContent() {
     website: '',
     size: '',
     location: '',
+    logoUrl: '',
   });
+  const [logoUploading, setLogoUploading] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) { router.replace('/login?redirect=/recruiter/company'); return; }
@@ -87,6 +89,7 @@ function CompanyContent() {
           website: full.website ?? '',
           size: full.size ?? '',
           location: full.location ?? '',
+          logoUrl: full.logoUrl ?? '',
         });
       }
     } catch {
@@ -107,6 +110,7 @@ function CompanyContent() {
           website: form.website.trim() || undefined,
           size: form.size || undefined,
           location: form.location.trim() || undefined,
+          logoUrl: form.logoUrl || undefined,
         });
         addToast('success', 'Company profile updated');
         loadCompany();
@@ -119,6 +123,7 @@ function CompanyContent() {
           website: form.website.trim() || undefined,
           size: form.size || undefined,
           location: form.location.trim() || undefined,
+          logoUrl: form.logoUrl || undefined,
         });
         setCompany(created as Company);
         addToast('success', 'Company created!');
@@ -207,6 +212,67 @@ function CompanyContent() {
       {/* Profile form */}
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-5">
         <h2 className="text-base font-semibold text-gray-900 dark:text-white">Company Information</h2>
+
+        {/* Logo upload */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Company logo</label>
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 flex items-center justify-center overflow-hidden shrink-0">
+              {form.logoUrl ? (
+                <img src={form.logoUrl} alt="Company logo" className="w-full h-full object-cover" />
+              ) : logoUploading ? (
+                <svg className="w-5 h-5 animate-spin text-gray-400" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1" />
+                </svg>
+              )}
+            </div>
+            <div className="flex-1 flex items-center gap-2">
+              <label className="inline-flex items-center px-4 py-2 rounded-xl bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-700 dark:text-gray-200 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                {form.logoUrl ? 'Change logo' : 'Upload logo'}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                  className="hidden"
+                  disabled={logoUploading}
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    if (f.size > 5 * 1024 * 1024) { addToast('error', 'Logo must be 5MB or smaller'); return; }
+                    setLogoUploading(true);
+                    try {
+                      const fd = new FormData();
+                      fd.append('file', f);
+                      const r = await apiPost<{ url: string }>('/media/upload?folder=company-logos', fd);
+                      const url = (r as any)?.url ?? (r as any)?.data?.url ?? '';
+                      if (!url) throw new Error('Upload returned no URL');
+                      setForm((s) => ({ ...s, logoUrl: url }));
+                    } catch (err: any) {
+                      addToast('error', err?.message ?? 'Logo upload failed');
+                    } finally {
+                      setLogoUploading(false);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+              </label>
+              {form.logoUrl && (
+                <button
+                  type="button"
+                  onClick={() => setForm((s) => ({ ...s, logoUrl: '' }))}
+                  className="text-xs font-semibold text-red-500 hover:underline"
+                >
+                  Remove
+                </button>
+              )}
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-gray-400 dark:text-gray-500">PNG, JPG, SVG or WebP · max 5MB · stored in S3</p>
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">

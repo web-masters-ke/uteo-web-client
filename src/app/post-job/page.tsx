@@ -205,6 +205,10 @@ function PostJobContent() {
   const [editingStage, setEditingStage] = useState<number | null>(null);
   const [companyMode, setCompanyMode] = useState<'select' | 'new'>('select');
   const [newCompanyName, setNewCompanyName] = useState('');
+  const [newCompanyLogo, setNewCompanyLogo] = useState<string>('');
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [posterUrl, setPosterUrl] = useState<string>('');
+  const [posterUploading, setPosterUploading] = useState(false);
   const [addingSkill, setAddingSkill] = useState(false);
   const [postedJob, setPostedJob] = useState<{ id: string; title: string; companyName: string } | null>(null);
   const [copied, setCopied] = useState(false);
@@ -307,7 +311,10 @@ function PostJobContent() {
     try {
       let companyId = form.companyId;
       if (companyMode === 'new') {
-        const created = await companiesService.create({ name: newCompanyName.trim() });
+        const created = await companiesService.create({
+          name: newCompanyName.trim(),
+          logoUrl: newCompanyLogo || undefined,
+        });
         companyId = (created as any)?.id ?? (created as any)?.data?.id;
         if (!companyId) throw new Error('Failed to create company');
       }
@@ -319,6 +326,7 @@ function PostJobContent() {
         jobType: form.jobType,
       };
       if (form.requirements.trim()) payload.requirements = form.requirements.trim();
+      if (posterUrl) payload.posterUrl = posterUrl;
       if (form.location.trim()) payload.location = form.location.trim();
       if (form.salaryMin) payload.salaryMin = Number(form.salaryMin);
       if (form.salaryMax) payload.salaryMax = Number(form.salaryMax);
@@ -456,6 +464,59 @@ function PostJobContent() {
                 <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
                   Added to the platform — other recruiters will see it in their list too.
                 </p>
+
+                {/* Logo upload */}
+                <div className="mt-4 flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 flex items-center justify-center overflow-hidden shrink-0">
+                    {newCompanyLogo ? (
+                      <img src={newCompanyLogo} alt="Logo preview" className="w-full h-full object-cover" />
+                    ) : logoUploading ? (
+                      <svg className="w-5 h-5 animate-spin text-gray-400" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <label className="inline-flex items-center px-4 py-2 rounded-xl bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm font-semibold text-gray-700 dark:text-gray-200 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors">
+                      {newCompanyLogo ? 'Change logo' : 'Upload company logo'}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                        className="hidden"
+                        disabled={logoUploading}
+                        onChange={async (e) => {
+                          const f = e.target.files?.[0];
+                          if (!f) return;
+                          if (f.size > 5 * 1024 * 1024) {
+                            setError('Logo must be 5MB or smaller');
+                            return;
+                          }
+                          setLogoUploading(true);
+                          setError(null);
+                          try {
+                            const fd = new FormData();
+                            fd.append('file', f);
+                            const url = await apiPost<{ url: string }>('/media/upload?folder=company-logos', fd);
+                            const finalUrl = (url as any)?.url ?? (url as any)?.data?.url ?? '';
+                            if (!finalUrl) throw new Error('Upload returned no URL');
+                            setNewCompanyLogo(finalUrl);
+                          } catch (err: any) {
+                            setError(err?.message ?? 'Logo upload failed');
+                          } finally {
+                            setLogoUploading(false);
+                            e.target.value = '';
+                          }
+                        }}
+                      />
+                    </label>
+                    <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">PNG, JPG, SVG or WebP · max 5MB · stored in S3</p>
+                  </div>
+                </div>
               </>
             ) : (
               <select
@@ -502,6 +563,104 @@ function PostJobContent() {
                 className={inputCls}
               />
             </div>
+          </div>
+
+          {/* Poster image (optional) */}
+          <div className="mt-6">
+            <label className={labelCls}>Poster image <span className="text-gray-400 font-normal">(optional)</span></label>
+            <p className="mb-3 text-xs text-gray-400 dark:text-gray-500">Add a banner image that shows on the job card and detail page. Recommended 1200×630.</p>
+
+            {posterUrl ? (
+              <div className="relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-600 group">
+                <img src={posterUrl} alt="Job poster preview" className="w-full max-h-72 object-cover" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <div className="flex gap-2">
+                    <label className="inline-flex items-center px-4 py-2 rounded-xl bg-white text-gray-900 text-sm font-semibold cursor-pointer hover:bg-gray-100">
+                      Replace
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        className="hidden"
+                        disabled={posterUploading}
+                        onChange={async (e) => {
+                          const f = e.target.files?.[0];
+                          if (!f) return;
+                          if (f.size > 8 * 1024 * 1024) { setError('Poster must be 8MB or smaller'); return; }
+                          setPosterUploading(true);
+                          setError(null);
+                          try {
+                            const fd = new FormData();
+                            fd.append('file', f);
+                            const r = await apiPost<{ url: string }>('/media/upload?folder=job-posters', fd);
+                            const url = (r as any)?.url ?? (r as any)?.data?.url ?? '';
+                            if (!url) throw new Error('Upload returned no URL');
+                            setPosterUrl(url);
+                          } catch (err: any) {
+                            setError(err?.message ?? 'Poster upload failed');
+                          } finally {
+                            setPosterUploading(false);
+                            e.target.value = '';
+                          }
+                        }}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setPosterUrl('')}
+                      className="px-4 py-2 rounded-xl bg-red-500 text-white text-sm font-semibold hover:bg-red-600"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <label className="flex flex-col items-center justify-center w-full h-40 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 cursor-pointer hover:border-[#F77B0F] hover:bg-orange-50/30 dark:hover:bg-gray-700 transition-colors">
+                {posterUploading ? (
+                  <>
+                    <svg className="w-6 h-6 animate-spin text-[#F77B0F]" viewBox="0 0 24 24" fill="none">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+                    </svg>
+                    <p className="mt-2 text-sm text-gray-500">Uploading…</p>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-7 h-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <p className="mt-2 text-sm font-semibold text-gray-700 dark:text-gray-300">Click to upload a poster</p>
+                    <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">PNG, JPG or WebP · max 8MB · stored in S3</p>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  className="hidden"
+                  disabled={posterUploading}
+                  onChange={async (e) => {
+                    const f = e.target.files?.[0];
+                    if (!f) return;
+                    if (f.size > 8 * 1024 * 1024) { setError('Poster must be 8MB or smaller'); return; }
+                    setPosterUploading(true);
+                    setError(null);
+                    try {
+                      const fd = new FormData();
+                      fd.append('file', f);
+                      const r = await apiPost<{ url: string }>('/media/upload?folder=job-posters', fd);
+                      const url = (r as any)?.url ?? (r as any)?.data?.url ?? '';
+                      if (!url) throw new Error('Upload returned no URL');
+                      setPosterUrl(url);
+                    } catch (err: any) {
+                      setError(err?.message ?? 'Poster upload failed');
+                    } finally {
+                      setPosterUploading(false);
+                      e.target.value = '';
+                    }
+                  }}
+                />
+              </label>
+            )}
           </div>
         </SectionCard>
 
