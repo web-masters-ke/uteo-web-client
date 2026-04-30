@@ -483,6 +483,7 @@ export default function JobDetailPage() {
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [similarJobs, setSimilarJobs] = useState<Job[]>([]);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [myCompanyIds, setMyCompanyIds] = useState<string[]>([]);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
@@ -505,6 +506,20 @@ export default function JobDetailPage() {
       })
       .catch(() => setError('Job not found or no longer available.'))
       .finally(() => setLoading(false));
+
+    // Fetch the recruiter's company memberships so any HR teammate at the
+    // same company (not just the literal postedById) sees Edit / View
+    // Applicants on this page.
+    if (user) {
+      import('@/lib/api').then(({ apiGet }) => {
+        apiGet<any>('/companies/mine')
+          .then((c) => {
+            const cid = c?.id;
+            if (cid) setMyCompanyIds([cid]);
+          })
+          .catch(() => null);
+      });
+    }
   }, [id]);
 
   const handleSaveToggle = async () => {
@@ -698,7 +713,10 @@ export default function JobDetailPage() {
           {(() => {
             const role = (user as any)?.role;
             const isRecruiter = role === 'TRAINER' || role === 'RECRUITER' || role === 'EMPLOYER';
-            const isOwnJob = isRecruiter && job?.postedById && (user as any)?.id === job.postedById;
+            const isOwnJob = isRecruiter && (
+              ((user as any)?.id === job?.postedById)
+              || (job?.company?.id && myCompanyIds.includes(job.company.id))
+            );
             return (
           <div className="sticky top-24 space-y-4">
             {/* CTA card */}
@@ -719,16 +737,22 @@ export default function JobDetailPage() {
                   {isOwnJob ? (
                     <>
                       <Link
-                        href={`/recruiter/jobs/${job.id}/candidates`}
+                        href={`/recruiter/applications?jobId=${job.id}`}
                         className="block w-full py-3 bg-[#192C67] text-white font-semibold rounded-xl hover:bg-[#14234f] transition-colors text-center mb-3"
                       >
                         View Applicants
                       </Link>
                       <Link
-                        href="/recruiter"
+                        href={`/recruiter/jobs/${job.id}/edit`}
+                        className="block w-full py-2.5 bg-[#F77B0F] text-white font-semibold rounded-xl hover:bg-[#e06a0d] transition-colors text-center mb-3"
+                      >
+                        Edit this job
+                      </Link>
+                      <Link
+                        href="/recruiter/jobs"
                         className="block w-full py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center text-sm"
                       >
-                        Recruiter Dashboard
+                        All my jobs
                       </Link>
                     </>
                   ) : (
