@@ -193,7 +193,7 @@ function JobCard({ job }: { job: Job }) {
                 </svg>
               )}
             </div>
-            <h3 className="font-bold text-gray-900 group-hover:text-[#192C67] transition-colors line-clamp-1 group-hover:line-clamp-none mt-0.5">
+            <h3 className="font-bold text-gray-900 group-hover:text-[#192C67] transition-colors leading-snug mt-0.5">
               {job.title}
             </h3>
           </div>
