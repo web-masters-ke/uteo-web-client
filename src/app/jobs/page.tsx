@@ -5,6 +5,8 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import SmartImg from '@/components/ui/SmartImg';
 import { jobsService } from '@/lib/services/jobs';
+import { companiesService } from '@/lib/services/companies';
+import { useAuth } from '@/lib/auth';
 import type { Job, JobType } from '@/lib/uteo-types';
 import { CardSkeleton } from '@/components/ui/LoadingSkeleton';
 import Pagination from '@/components/ui/Pagination';
@@ -151,6 +153,10 @@ function JobCard({ job }: { job: Job }) {
 
 function JobsPageInner() {
   const searchParams = useSearchParams();
+  const { user } = useAuth();
+  const isRecruiter = user?.role === 'TRAINER'; // TRAINER = recruiter role in this system
+  const [recruiterCompanyId, setRecruiterCompanyId] = useState<string | null>(null);
+
   const [jobs, setJobs] = useState<Job[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -165,7 +171,15 @@ function JobsPageInner() {
   const [page, setPage] = useState(1);
   const LIMIT = 12;
 
+  // For recruiters: fetch their company once so we can scope the job list
+  useEffect(() => {
+    if (!isRecruiter) return;
+    companiesService.mine().then((c) => { if (c?.id) setRecruiterCompanyId(c.id); }).catch(() => {});
+  }, [isRecruiter]);
+
   const fetchJobs = useCallback(async () => {
+    // If user is a recruiter and we haven't resolved their company yet, wait
+    if (isRecruiter && recruiterCompanyId === null) return;
     setLoading(true);
     try {
       const params: Record<string, any> = { page, limit: LIMIT };
@@ -174,6 +188,8 @@ function JobsPageInner() {
       if (selectedTypes.size > 0) params.jobType = [...selectedTypes].join(',');
       if (salaryMin) params.salaryMin = Number(salaryMin);
       if (salaryMax) params.salaryMax = Number(salaryMax);
+      // Scope to recruiter's own company so they only see their own listings
+      if (isRecruiter && recruiterCompanyId) params.companyId = recruiterCompanyId;
       const data = await jobsService.list(params);
       setJobs(data?.items ?? []);
       setTotal(data?.total ?? 0);
@@ -183,7 +199,7 @@ function JobsPageInner() {
     } finally {
       setLoading(false);
     }
-  }, [keyword, location, selectedTypes, salaryMin, salaryMax, page]);
+  }, [keyword, location, selectedTypes, salaryMin, salaryMax, page, isRecruiter, recruiterCompanyId]);
 
   useEffect(() => { fetchJobs(); }, [fetchJobs]);
 
@@ -271,9 +287,17 @@ function JobsPageInner() {
     <div className="max-w-[1400px] mx-auto px-4 lg:px-6 py-6">
       {/* Page header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Browse Jobs</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          {isRecruiter ? 'Your Company Jobs' : 'Browse Jobs'}
+        </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {total > 0 ? `${total.toLocaleString()} jobs found` : 'Search and filter thousands of opportunities'}
+          {isRecruiter
+            ? total > 0
+              ? `${total.toLocaleString()} jobs posted by your company`
+              : 'All job listings posted under your company'
+            : total > 0
+              ? `${total.toLocaleString()} jobs found`
+              : 'Search and filter thousands of opportunities'}
         </p>
       </div>
 

@@ -5,6 +5,7 @@ export const companiesService = {
   list: (params?: Record<string, any>) =>
     apiGet<{ items: Company[]; total: number }>('/companies', { params }),
   get: (id: string) => apiGet<Company>(`/companies/${id}`),
+  mine: () => apiGet<Company>('/companies/mine'),
   create: (data: any) => apiPost<Company>('/companies', data),
   update: (id: string, data: any) => apiPatch<Company>(`/companies/${id}`, data),
 };
