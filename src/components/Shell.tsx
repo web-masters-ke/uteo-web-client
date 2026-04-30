@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth";
 import { NotificationsProvider, useNotifications } from "@/lib/notifications";
 import { fmtRelative } from "@/lib/format";
 import type { UserRole } from "@/lib/types";
+import SmartImg from "@/components/ui/SmartImg";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -289,11 +290,13 @@ function UserMenu({ onLogout }: { onLogout: () => void }) {
         onClick={() => setOpen((o) => !o)}
         className="flex h-8 w-8 items-center justify-center rounded-full bg-[#192C67] dark:bg-white/10 text-xs font-bold text-white hover:opacity-90 transition-opacity"
       >
-        {(user?.avatarUrl || (user as any)?.avatar) ? (
-          <img src={user?.avatarUrl || (user as any)?.avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
-        ) : (
-          initials
-        )}
+        <SmartImg
+          src={user?.avatarUrl || (user as any)?.avatar}
+          alt=""
+          className="h-8 w-8 rounded-full object-cover"
+          loading="eager"
+          fallback={<span>{initials}</span>}
+        />
       </button>
       {open && (
         <div className="absolute right-0 top-10 z-50 w-56 rounded-xl border border-zinc-200 bg-white py-1 shadow-2xl dark:border-white/8 dark:bg-[#222222]">
@@ -449,11 +452,13 @@ function ShellInner({ children }: { children: ReactNode }) {
         <div className="border-t border-zinc-100 dark:border-white/5 px-3 py-3">
           <div className="flex items-center gap-2.5 rounded-lg px-2 py-1.5">
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#192C67] dark:bg-white/10 text-xs font-bold text-white overflow-hidden">
-              {(user.avatarUrl || (user as any).avatar) ? (
-                <img src={user.avatarUrl || (user as any).avatar} alt="" className="h-8 w-8 rounded-full object-cover" />
-              ) : (
-                ((user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "")).toUpperCase()
-              )}
+              <SmartImg
+                src={user.avatarUrl || (user as any).avatar}
+                alt=""
+                className="h-8 w-8 rounded-full object-cover"
+                loading="eager"
+                fallback={<span>{((user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "")).toUpperCase()}</span>}
+              />
             </div>
             <div className="min-w-0 flex-1">
               <div className="truncate text-[13px] font-medium text-zinc-800 dark:text-zinc-200">

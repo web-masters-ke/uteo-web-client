@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
 import { api, unwrap, apiGet, apiPost, apiPatch, apiDelete } from "@/lib/api";
+import SmartImg from "@/components/ui/SmartImg";
 
 interface UteoProfile {
   id: string;
@@ -306,11 +307,13 @@ function RecruiterProfilePage() {
             {/* Avatar with upload */}
             <div className="relative shrink-0">
               <div className="w-24 h-24 rounded-2xl ring-4 ring-white dark:ring-gray-900 shadow-md bg-[#F77B0F] flex items-center justify-center text-2xl font-black text-white overflow-hidden">
-                {avatarSrc ? (
-                  <img src={avatarSrc} alt="avatar" className="w-full h-full object-cover" />
-                ) : (
-                  (data.firstName?.[0] ?? "") + (data.lastName?.[0] ?? "")
-                )}
+                <SmartImg
+                  src={avatarSrc}
+                  alt="avatar"
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  fallback={<span>{(data.firstName?.[0] ?? "") + (data.lastName?.[0] ?? "")}</span>}
+                />
               </div>
               <button
                 type="button"
@@ -409,13 +412,16 @@ function RecruiterProfilePage() {
               <>
                 <div className="w-px bg-gray-200 dark:bg-gray-700" />
                 <div className="flex items-center gap-2">
-                  {company.logoUrl ? (
-                    <img src={company.logoUrl} alt={company.name} className="w-6 h-6 rounded object-contain bg-gray-100 dark:bg-gray-700 p-0.5" />
-                  ) : (
-                    <div className="w-6 h-6 rounded bg-[#F77B0F]/20 flex items-center justify-center text-[#F77B0F] text-xs font-bold">
-                      {company.name[0]}
-                    </div>
-                  )}
+                  <SmartImg
+                    src={company.logoUrl}
+                    alt={company.name}
+                    className="w-6 h-6 rounded object-contain bg-gray-100 dark:bg-gray-700 p-0.5"
+                    fallback={
+                      <div className="w-6 h-6 rounded bg-[#F77B0F]/20 flex items-center justify-center text-[#F77B0F] text-xs font-bold">
+                        {company.name[0]}
+                      </div>
+                    }
+                  />
                   <span className="text-xs text-gray-500 dark:text-gray-400">Recruiter at <span className="text-gray-900 dark:text-white font-semibold">{company.name}</span></span>
                 </div>
               </>
@@ -447,17 +453,16 @@ function RecruiterProfilePage() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4">Company</h3>
             <div className="flex items-center gap-4">
-              {company.logoUrl ? (
-                <img
-                  src={company.logoUrl}
-                  alt={company.name}
-                  className="w-14 h-14 rounded-xl object-contain border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-1"
-                />
-              ) : (
-                <div className="w-14 h-14 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 text-xl font-black shrink-0">
-                  {company.name[0]}
-                </div>
-              )}
+              <SmartImg
+                src={company.logoUrl}
+                alt={company.name}
+                className="w-14 h-14 rounded-xl object-contain border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 p-1"
+                fallback={
+                  <div className="w-14 h-14 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 text-xl font-black shrink-0">
+                    {company.name[0]}
+                  </div>
+                }
+              />
               <div>
                 <p className="font-semibold text-gray-900 dark:text-white">{company.name}</p>
                 <p className="text-xs text-[#F77B0F] font-medium mt-0.5">
@@ -532,11 +537,13 @@ function RecruiterProfilePage() {
               {/* Avatar upload inside modal */}
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 rounded-full bg-[#F77B0F] flex items-center justify-center text-lg font-black text-white overflow-hidden shrink-0">
-                  {editAvatar ? (
-                    <img src={editAvatar} alt="preview" className="w-full h-full object-cover" />
-                  ) : (
-                    (editFirstName[0] ?? "") + (editLastName[0] ?? "")
-                  )}
+                  <SmartImg
+                    src={editAvatar}
+                    alt="preview"
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                    fallback={<span>{(editFirstName[0] ?? "") + (editLastName[0] ?? "")}</span>}
+                  />
                 </div>
                 <div>
                   <button
@@ -935,9 +942,13 @@ function JobSeekerProfilePage() {
             {/* Avatar */}
             <div className="relative shrink-0">
               <div className="w-24 h-24 rounded-2xl bg-[#F77B0F] flex items-center justify-center text-3xl font-black text-white overflow-hidden ring-4 ring-white dark:ring-gray-900 shadow-md">
-                {avatarSrc ? (
-                  <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
-                ) : initials}
+                <SmartImg
+                  src={avatarSrc}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  fallback={<span>{initials}</span>}
+                />
               </div>
               <button
                 type="button"
@@ -1233,11 +1244,13 @@ function JobSeekerProfilePage() {
               {/* Avatar */}
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-[#F77B0F] flex items-center justify-center text-xl font-black text-white overflow-hidden shrink-0">
-                  {editAvatar ? (
-                    <img src={editAvatar} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    (editFirstName?.[0] ?? "") + (editLastName?.[0] ?? "")
-                  )}
+                  <SmartImg
+                    src={editAvatar}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                    fallback={<span>{(editFirstName?.[0] ?? "") + (editLastName?.[0] ?? "")}</span>}
+                  />
                 </div>
                 <div>
                   <button
