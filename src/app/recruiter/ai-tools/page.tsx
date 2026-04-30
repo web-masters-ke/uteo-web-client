@@ -99,7 +99,7 @@ function InterviewQuestionsTab() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">Generate tailored interview questions for any role. Claude analyzes the job requirements and candidate context.</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">Generate tailored interview questions for any role. Our AI analyzes the job requirements and candidate context.</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InputField label="Job Title" value={jobTitle} onChange={setJobTitle} placeholder="e.g. Senior Software Engineer" required />
         <InputField label="Skills (comma-separated)" value={skills} onChange={setSkills} placeholder="e.g. React, TypeScript, Node.js" />
@@ -216,7 +216,7 @@ function JobEnhancerTab() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">Paste a draft job description and Claude will rewrite it to be more compelling, inclusive, and specific — and extract skill tags.</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">Paste a draft job description and Our AI will rewrite it to be more compelling, inclusive, and specific — and extract skill tags.</p>
       <InputField label="Job Title" value={title} onChange={setTitle} placeholder="e.g. Backend Engineer (Node.js)" required />
       <TextareaField label="Job Description" value={description} onChange={setDescription} placeholder="Paste your draft job description here..." rows={5} required />
       <div className="flex justify-end">
@@ -225,7 +225,7 @@ function JobEnhancerTab() {
       {result && (
         result.unchanged ? (
           <div className="p-3 rounded-xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 text-sm text-amber-700 dark:text-amber-400">
-            AI enhancement unavailable right now — the description was returned unchanged. The Anthropic API key may need to be configured.
+            AI enhancement unavailable right now — the description was returned unchanged. The AI service API key may need to be configured.
           </div>
         ) : (
           <div className="space-y-3 pt-2">
@@ -293,7 +293,7 @@ function CareerChatTab() {
 
   return (
     <div className="flex flex-col" style={{ minHeight: 400 }}>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Chat with Claude about career paths, hiring strategies, salary benchmarks, or how to attract top talent.</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Chat with our AI about career paths, hiring strategies, salary benchmarks, or how to attract top talent.</p>
       <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-1" style={{ maxHeight: 340 }}>
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-40 text-center">
@@ -302,7 +302,7 @@ function CareerChatTab() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
             </div>
-            <p className="text-sm text-gray-400 dark:text-gray-500">Ask Claude about hiring strategies, salary ranges, or career advice for your candidates.</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">Ask our AI about hiring strategies, salary ranges, or career advice for your candidates.</p>
           </div>
         ) : (
           messages.map((m, i) => {
@@ -338,7 +338,7 @@ function CareerChatTab() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Ask Claude about hiring, careers, or talent…"
+          placeholder="Ask our AI about hiring, careers, or talent…"
           disabled={loading}
           className="flex-1 px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F] disabled:opacity-50"
         />

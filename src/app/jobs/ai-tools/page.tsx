@@ -103,7 +103,7 @@ function CareerChatTab() {
 
   return (
     <div className="flex flex-col" style={{ minHeight: 420 }}>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Ask Claude for career advice — CV tips, interview prep, salary negotiation, and more.</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Ask our AI for career advice — CV tips, interview prep, salary negotiation, and more.</p>
       <div className="flex-1 overflow-y-auto space-y-3 mb-4 pr-1" style={{ maxHeight: 360 }}>
         {messages.length === 0 ? (
           <div className="space-y-3">
@@ -223,7 +223,7 @@ function InterviewPrepTab() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">Practice before your interview. Enter the role you're applying for and Claude will generate realistic questions to prepare with.</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">Practice before your interview. Enter the role you're applying for and Our AI will generate realistic questions to prepare with.</p>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <InputField label="Role You're Applying For" value={jobTitle} onChange={setJobTitle} placeholder="e.g. Product Manager" required />
         <InputField label="Key Skills (comma-separated)" value={skills} onChange={setSkills} placeholder="e.g. SQL, Figma, Agile" />
