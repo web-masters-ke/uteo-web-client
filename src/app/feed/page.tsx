@@ -104,21 +104,14 @@ function ApplyModal({ job, onClose, onSuccess }: { job: Job; onClose: () => void
     setUploading(true);
     setUploadError('');
     try {
-      // Step 1: get presigned PUT URL from backend (auth-gated)
-      const presignRes = await api.post<any>('/media/presign', {
-        fileName: file.name,
-        mimeType: file.type || 'application/octet-stream',
-        folder: 'resumes',
-      });
-      const { uploadUrl, publicUrl } = unwrap(presignRes.data) as { uploadUrl: string; publicUrl: string };
-      // Step 2: upload directly to S3 using presigned URL — no backend proxy
-      const s3Res = await fetch(uploadUrl, {
-        method: 'PUT',
-        body: file,
-        headers: { 'Content-Type': file.type || 'application/octet-stream' },
-      });
-      if (!s3Res.ok) throw new Error(`S3 rejected upload (${s3Res.status})`);
-      setResumeUrl(publicUrl);
+      // Backend-proxied upload: browser → /media/upload → S3 (avoids browser-to-S3 CORS).
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await api.post<any>('/media/upload?folder=resumes', fd);
+      const body = unwrap(res.data) as { url?: string; publicUrl?: string };
+      const url = body.url ?? body.publicUrl;
+      if (!url) throw new Error('Upload returned no URL');
+      setResumeUrl(url);
       setUploadedFileName(file.name);
     } catch (e: any) {
       const msg = e?.response?.data?.message || e?.response?.data?.error || e?.message || 'Unknown error';
