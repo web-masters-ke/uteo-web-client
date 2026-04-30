@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import SmartImg from '@/components/ui/SmartImg';
 import { jobsService } from '@/lib/services/jobs';
 import type { Job, JobType } from '@/lib/uteo-types';
 import { CardSkeleton } from '@/components/ui/LoadingSkeleton';
@@ -60,31 +61,23 @@ function JobCard({ job }: { job: Job }) {
   const showSalary = (job as any).showSalary === true;
   const salary = showSalary ? formatSalary(job.salaryMin, job.salaryMax, job.currency) : null;
   const skills = job.jobSkills?.map((js) => js.skill) ?? [];
-  const posterUrl = (job as any).posterUrl as string | undefined;
-
   return (
     <Link
       href={`/jobs/${job.id}`}
       className="block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-[#192C67] dark:hover:border-[#5b8bc7] hover:shadow-md transition-all group"
     >
-      {posterUrl && (
-        <div className="aspect-[1200/420] w-full overflow-hidden bg-gray-100 dark:bg-gray-900">
-          <img src={posterUrl} alt="" className="w-full h-full object-cover" loading="lazy" />
-        </div>
-      )}
       <div className="p-5">
       <div className="flex items-start gap-3 mb-3">
-        {job.company.logoUrl ? (
-          <img
-            src={job.company.logoUrl}
-            alt={job.company.name}
-            className="w-11 h-11 rounded-xl object-cover flex-shrink-0 border border-gray-100 dark:border-gray-700"
-          />
-        ) : (
-          <div className="w-11 h-11 rounded-xl bg-[#192C67] text-white text-xs font-black flex items-center justify-center flex-shrink-0">
-            {job.company.name.slice(0, 2).toUpperCase()}
-          </div>
-        )}
+        <SmartImg
+          src={job.company.logoUrl}
+          alt={job.company.name}
+          className="w-11 h-11 rounded-xl object-cover flex-shrink-0 border border-gray-100 dark:border-gray-700"
+          fallback={
+            <div className="w-11 h-11 rounded-xl bg-[#192C67] text-white text-xs font-black flex items-center justify-center flex-shrink-0">
+              {job.company.name.slice(0, 2).toUpperCase()}
+            </div>
+          }
+        />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1">
             <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 truncate">{job.company.name}</span>

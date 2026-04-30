@@ -10,6 +10,7 @@ import type { Job } from '@/lib/uteo-types';
 import { useAuth } from '@/lib/auth';
 import { PageSkeleton } from '@/components/ui/LoadingSkeleton';
 import Modal from '@/components/ui/Modal';
+import SmartImg from '@/components/ui/SmartImg';
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -185,13 +186,16 @@ function ApplyModal({
       <div className="flex flex-col" style={{ maxHeight: '88vh' }}>
         {/* Job summary header */}
         <div className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/6 mb-5">
-          {job.company.logoUrl ? (
-            <img src={job.company.logoUrl} alt={job.company.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
-          ) : (
-            <div className="w-12 h-12 rounded-xl bg-[#192C67]/10 dark:bg-white/8 text-[#192C67] dark:text-white text-sm font-black flex items-center justify-center shrink-0">
-              {job.company.name.slice(0, 2).toUpperCase()}
-            </div>
-          )}
+          <SmartImg
+            src={job.company.logoUrl}
+            alt={job.company.name}
+            className="w-12 h-12 rounded-xl object-cover shrink-0"
+            fallback={
+              <div className="w-12 h-12 rounded-xl bg-[#192C67]/10 dark:bg-white/8 text-[#192C67] dark:text-white text-sm font-black flex items-center justify-center shrink-0">
+                {job.company.name.slice(0, 2).toUpperCase()}
+              </div>
+            }
+          />
           <div className="flex-1 min-w-0">
             <p className="font-bold text-gray-900 dark:text-white text-sm truncate">{job.title}</p>
             <p className="text-xs text-gray-500 dark:text-white/50 truncate">
@@ -563,6 +567,14 @@ export default function JobDetailPage() {
   const salary = showSalary ? formatSalary(job.salaryMin, job.salaryMax, job.currency) : null;
   const skills = job.jobSkills?.map((js) => js.skill) ?? [];
 
+  const userRole = (user as any)?.role;
+  const isRecruiterUser = userRole === 'TRAINER' || userRole === 'RECRUITER' || userRole === 'EMPLOYER';
+  const isOwnJobTopLevel = isRecruiterUser && (
+    (user as any)?.id === job.postedById || myCompanyIds.includes(job.company.id)
+  );
+  // Job seekers must not see description/requirements for non-ACTIVE jobs
+  const showContent = (job.status as string) === 'ACTIVE' || isOwnJobTopLevel;
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6">
       {/* Back */}
@@ -582,17 +594,16 @@ export default function JobDetailPage() {
           {/* Header card */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
             <div className="flex items-start gap-4 mb-4">
-              {job.company.logoUrl ? (
-                <img
-                  src={job.company.logoUrl}
-                  alt={job.company.name}
-                  className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-gray-100 dark:border-gray-700"
-                />
-              ) : (
-                <div className="w-16 h-16 rounded-xl bg-[#192C67] text-white text-lg font-black flex items-center justify-center flex-shrink-0">
-                  {job.company.name.slice(0, 2).toUpperCase()}
-                </div>
-              )}
+              <SmartImg
+                src={job.company.logoUrl}
+                alt={job.company.name}
+                className="w-16 h-16 rounded-xl object-cover flex-shrink-0 border border-gray-100 dark:border-gray-700"
+                fallback={
+                  <div className="w-16 h-16 rounded-xl bg-[#192C67] text-white text-lg font-black flex items-center justify-center flex-shrink-0">
+                    {job.company.name.slice(0, 2).toUpperCase()}
+                  </div>
+                }
+              />
               <div className="flex-1 min-w-0">
                 <Link
                   href={`/companies/${job.company.id}`}
@@ -640,7 +651,9 @@ export default function JobDetailPage() {
             <p className="text-xs text-gray-400 dark:text-gray-500">Posted {formatDate(job.createdAt)}</p>
           </div>
 
-          {/* Description */}
+          {/* Description / Requirements / Skills — hidden for job seekers on non-ACTIVE postings */}
+          {showContent ? (
+            <>
           <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Job Description</h2>
             <div className="prose prose-sm dark:prose-invert max-w-none">
@@ -648,7 +661,6 @@ export default function JobDetailPage() {
             </div>
           </div>
 
-          {/* Requirements */}
           {job.requirements && (
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Requirements</h2>
@@ -657,9 +669,15 @@ export default function JobDetailPage() {
               </p>
             </div>
           )}
+            </>
+          ) : (
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">This job posting is not currently active.</p>
+            </div>
+          )}
 
           {/* Skills */}
-          {skills.length > 0 && (
+          {showContent && skills.length > 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Required Skills</h2>
               <div className="flex flex-wrap gap-2">
@@ -712,12 +730,8 @@ export default function JobDetailPage() {
         {/* Sidebar */}
         <aside className="w-full lg:w-80 flex-shrink-0 mt-6 lg:mt-0">
           {(() => {
-            const role = (user as any)?.role;
-            const isRecruiter = role === 'TRAINER' || role === 'RECRUITER' || role === 'EMPLOYER';
-            const isOwnJob = isRecruiter && (
-              ((user as any)?.id === job?.postedById)
-              || (job?.company?.id && myCompanyIds.includes(job.company.id))
-            );
+            const isOwnJob = isOwnJobTopLevel;
+            const isRecruiter = isRecruiterUser;
             return (
           <div className="sticky top-24 space-y-4">
             {/* CTA card */}
@@ -765,7 +779,7 @@ export default function JobDetailPage() {
                     </Link>
                   )}
                 </div>
-              ) : ((job.status as string) === 'CLOSED' || (job.status as string) === 'EXPIRED') ? (
+              ) : ((job.status as string) === 'CLOSED' || (job.status as string) === 'EXPIRED' || (job.status as string) === 'DRAFT') ? (
                 <div className="text-center py-2">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
                     <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -841,13 +855,16 @@ export default function JobDetailPage() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">About the Company</h3>
               <div className="flex items-center gap-3 mb-3">
-                {job.company.logoUrl ? (
-                  <img src={job.company.logoUrl} alt={job.company.name} className="w-10 h-10 rounded-xl object-cover" />
-                ) : (
-                  <div className="w-10 h-10 rounded-xl bg-[#192C67] text-white text-xs font-black flex items-center justify-center">
-                    {job.company.name.slice(0, 2).toUpperCase()}
-                  </div>
-                )}
+                <SmartImg
+                  src={job.company.logoUrl}
+                  alt={job.company.name}
+                  className="w-10 h-10 rounded-xl object-cover"
+                  fallback={
+                    <div className="w-10 h-10 rounded-xl bg-[#192C67] text-white text-xs font-black flex items-center justify-center">
+                      {job.company.name.slice(0, 2).toUpperCase()}
+                    </div>
+                  }
+                />
                 <div>
                   <p className="font-semibold text-sm text-gray-900 dark:text-white">{job.company.name}</p>
                   {job.company.industry && (

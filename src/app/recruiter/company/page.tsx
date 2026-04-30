@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { companiesService } from '@/lib/services/companies';
 import { apiPost, apiPatch, apiDelete } from '@/lib/api';
 import { useToast } from '@/lib/toast';
+import SmartImg from '@/components/ui/SmartImg';
 
 interface Company {
   id: string;
@@ -296,7 +297,7 @@ function CompanyContent() {
           <div className="flex items-center gap-4">
             <div className="w-20 h-20 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 flex items-center justify-center overflow-hidden shrink-0">
               {form.logoUrl ? (
-                <img src={form.logoUrl} alt="Company logo" className="w-full h-full object-cover" />
+                <SmartImg src={form.logoUrl} alt="Company logo" className="w-full h-full object-cover" loading="eager" fallback={<span className="text-xs text-gray-400">Loading…</span>} />
               ) : logoUploading ? (
                 <svg className="w-5 h-5 animate-spin text-gray-400" viewBox="0 0 24 24" fill="none">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />

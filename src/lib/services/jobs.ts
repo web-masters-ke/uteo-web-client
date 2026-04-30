@@ -16,4 +16,8 @@ export const jobsService = {
   feed: (params?: { page?: number; limit?: number }) =>
     apiGet<FeedResponse>('/feed', { params }),
   refreshFeed: () => apiPost('/feed/refresh'),
+  bulkClose: (ids: string[]) =>
+    apiPost<{ closed: number; skipped: number }>('/jobs/bulk-close', { ids }),
+  bulkCreate: (jobs: any[]) =>
+    apiPost<{ created: number; failed: { index: number; error: string }[] }>('/jobs/bulk', { jobs }),
 };
