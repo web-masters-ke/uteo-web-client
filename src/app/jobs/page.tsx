@@ -64,72 +64,85 @@ function JobCard({ job }: { job: Job }) {
   return (
     <Link
       href={`/jobs/${job.id}`}
-      className="block bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:border-[#192C67] dark:hover:border-[#5b8bc7] hover:shadow-md transition-all group"
+      className="block rounded-2xl overflow-hidden transition-all duration-200 group hover:-translate-y-1.5 hover:shadow-[0_16px_40px_rgba(25,44,103,0.16),0_4px_12px_rgba(0,0,0,0.08)]"
+      style={{
+        background: 'linear-gradient(160deg,#ffffff 0%,#f6f8ff 100%)',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.07),0 4px 14px rgba(25,44,103,0.07),0 0 0 1px rgba(0,0,0,0.055)',
+      }}
     >
+      {/* top-light edge — gives the card a "face catching light" feel */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/90 to-transparent" />
+
       <div className="p-5">
-      <div className="flex items-start gap-3 mb-3">
-        <SmartImg
-          src={job.company.logoUrl}
-          alt={job.company.name}
-          className="w-11 h-11 rounded-xl object-cover flex-shrink-0 border border-gray-100 dark:border-gray-700"
-          fallback={
-            <div className="w-11 h-11 rounded-xl bg-[#192C67] text-white text-xs font-black flex items-center justify-center flex-shrink-0">
-              {job.company.name.slice(0, 2).toUpperCase()}
-            </div>
-          }
-        />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-1">
-            <span className="text-xs font-semibold text-gray-600 dark:text-gray-300 truncate">{job.company.name}</span>
-            {job.company.isVerified && (
-              <svg className="w-3.5 h-3.5 text-[#192C67] dark:text-white/70 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-            )}
+        <div className="flex items-start gap-3 mb-3">
+          {/* Logo with its own subtle shadow so it pops off the card */}
+          <div className="shrink-0 rounded-xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+            <SmartImg
+              src={job.company.logoUrl}
+              alt={job.company.name}
+              className="w-11 h-11 object-cover"
+              fallback={
+                <div className="w-11 h-11 bg-[#192C67] text-white text-xs font-black flex items-center justify-center">
+                  {job.company.name.slice(0, 2).toUpperCase()}
+                </div>
+              }
+            />
           </div>
-          <h3 className="font-bold text-gray-900 dark:text-white group-hover:text-[#192C67] dark:group-hover:text-[#5b8bc7] transition-colors line-clamp-1 mt-0.5">
-            {job.title}
-          </h3>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1">
+              <span className="text-xs font-semibold text-gray-500 truncate">{job.company.name}</span>
+              {job.company.isVerified && (
+                <svg className="w-3.5 h-3.5 text-[#192C67] flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              )}
+            </div>
+            <h3 className="font-bold text-gray-900 group-hover:text-[#192C67] transition-colors line-clamp-1 mt-0.5">
+              {job.title}
+            </h3>
+          </div>
+          <span className="text-[10px] text-gray-400 flex-shrink-0">{timeAgo(job.createdAt)}</span>
         </div>
-        <span className="text-[10px] text-gray-400 dark:text-gray-500 flex-shrink-0">{timeAgo(job.createdAt)}</span>
-      </div>
 
-      <div className="flex flex-wrap gap-2 mb-3">
-        {job.location && (
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            </svg>
-            {job.location}
-          </span>
-        )}
-        <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${jobTypeColor(job.jobType)}`}>
-          {jobTypeLabel(job.jobType)}
-        </span>
-        {salary && (
-          <span className="px-2 py-0.5 rounded-full text-xs font-semibold text-[#F77B0F]">
-            {salary}
-          </span>
-        )}
-      </div>
-
-      {skills.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {skills.slice(0, 4).map((skill) => (
-            <span
-              key={skill.id}
-              className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#192C67]/8 dark:bg-[#192C67]/20 text-[#192C67] dark:text-white/70"
-              style={{ backgroundColor: 'rgba(25,44,103,0.08)' }}
-            >
-              {skill.name}
+        <div className="flex flex-wrap gap-2 mb-3">
+          {job.location && (
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-gray-100/80 text-gray-600 shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)]">
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              </svg>
+              {job.location}
             </span>
-          ))}
-          {skills.length > 4 && (
-            <span className="px-2 py-0.5 rounded-full text-[10px] text-gray-400">+{skills.length - 4}</span>
+          )}
+          <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)] ${jobTypeColor(job.jobType)}`}>
+            {jobTypeLabel(job.jobType)}
+          </span>
+          {salary && (
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold text-[#F77B0F] bg-[#F77B0F]/8 shadow-[inset_0_1px_2px_rgba(247,123,15,0.12)]" style={{ backgroundColor: 'rgba(247,123,15,0.08)' }}>
+              {salary}
+            </span>
           )}
         </div>
-      )}
+
+        {skills.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {skills.slice(0, 4).map((skill) => (
+              <span
+                key={skill.id}
+                className="px-2 py-0.5 rounded-full text-[10px] font-semibold text-[#192C67] shadow-[inset_0_1px_2px_rgba(25,44,103,0.1)]"
+                style={{ backgroundColor: 'rgba(25,44,103,0.07)' }}
+              >
+                {skill.name}
+              </span>
+            ))}
+            {skills.length > 4 && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] text-gray-400">+{skills.length - 4}</span>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* bottom edge shadow line — gives the "card has thickness" feel */}
+      <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-[#192C67]/10 to-transparent" />
     </Link>
   );
 }
