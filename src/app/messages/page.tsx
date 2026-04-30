@@ -422,8 +422,11 @@ export default function MessagesPage() {
   const myId = useMemo(() => user?.id ?? 'me', [user]);
 
   // ── load conversations ─────────────────────────────────────────
+  const initialLoadDone = useRef(false);
   const load = useCallback(async () => {
-    setLoading(true);
+    // First load shows the spinner; subsequent polls don't toggle loading
+    // (toggling on every poll caused a brief skeleton flash every 10s).
+    if (!initialLoadDone.current) setLoading(true);
     try {
       const data = await apiGet<Conversation[]>('/conversations');
       const convs = extractItems<any>(data).map((c: any) => ({
@@ -443,10 +446,37 @@ export default function MessagesPage() {
         lastMessageAt: c.messages?.[0]?.createdAt ?? c.lastMessageAt ?? c.updatedAt,
         unread: c.unread ?? c.unreadCount ?? 0,
       }));
-      setConversations(convs);
+      // Only update state if conversation content actually changed. The
+      // 10-second poll otherwise creates a new array reference on every
+      // tick and causes the entire chat panel to re-render — the visible
+      // "shaking" the user reported.
+      setConversations((prev) => {
+        if (prev.length === convs.length) {
+          let identical = true;
+          for (let i = 0; i < convs.length; i++) {
+            const a = prev[i];
+            const b = convs[i];
+            if (
+              !a || a.id !== b.id ||
+              a.lastMessage !== b.lastMessage ||
+              a.lastMessageAt !== b.lastMessageAt ||
+              a.unread !== b.unread ||
+              a.title !== b.title
+            ) { identical = false; break; }
+          }
+          if (identical) return prev;
+        }
+        return convs;
+      });
     } catch {
-      addToast('error', 'Failed to load conversations');
-    } finally { setLoading(false); }
+      // Don't toast on every failed poll — only the first load surfaces an error
+      if (!initialLoadDone.current) addToast('error', 'Failed to load conversations');
+    } finally {
+      if (!initialLoadDone.current) {
+        setLoading(false);
+        initialLoadDone.current = true;
+      }
+    }
   }, [addToast]);
 
   useEffect(() => { load(); }, [load]);
