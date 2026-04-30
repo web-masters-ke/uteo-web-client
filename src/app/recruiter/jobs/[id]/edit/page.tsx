@@ -6,7 +6,8 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { useToast } from '@/lib/toast';
 import { jobsService } from '@/lib/services/jobs';
-import { apiGet, apiPost } from '@/lib/api';
+import { apiGet, apiPost, api } from '@/lib/api';
+import { unwrap } from '@/lib/api';
 
 interface Skill { id: string; name: string; }
 
@@ -34,6 +35,8 @@ export default function EditJobPage() {
   const [skillSearch, setSkillSearch] = useState('');
   const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
   const [addingSkill, setAddingSkill] = useState(false);
+  const [posterUrl, setPosterUrl] = useState<string>('');
+  const [posterUploading, setPosterUploading] = useState(false);
   const [form, setForm] = useState({
     title: '',
     description: '',
@@ -73,6 +76,7 @@ export default function EditJobPage() {
       });
       const skills: Skill[] = (j.jobSkills ?? []).map((js: any) => js.skill).filter(Boolean);
       setSelectedSkills(skills);
+      setPosterUrl(j.posterUrl ?? '');
     } catch (e: any) {
       addToast('error', e?.message ?? 'Could not load job');
       router.replace('/recruiter/jobs');
@@ -134,6 +138,7 @@ export default function EditJobPage() {
       if (form.salaryMax) payload.salaryMax = Number(form.salaryMax);
       if (form.expiresAt) payload.expiresAt = form.expiresAt;
       if (form.vacancies) payload.vacancies = Number(form.vacancies);
+      payload.posterUrl = posterUrl || null;
       payload.skillIds = selectedSkills.map((s) => s.id);
 
       await jobsService.update(id, payload);
@@ -170,6 +175,96 @@ export default function EditJobPage() {
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Job</h1>
         <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">Update the role, change status, or refresh required skills.</p>
+      </div>
+
+      {/* Cover image */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-3">
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-white">Cover image</h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Shown on the job listing card and the public job page. PNG, JPG or WebP, up to 8MB.</p>
+        </div>
+        {posterUrl ? (
+          <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+            <img src={posterUrl} alt="Job cover" className="w-full max-h-72 object-cover" />
+            <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900/40">
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">Cover ready</p>
+              <div className="flex items-center gap-3">
+                <label className="text-xs font-semibold text-[#F77B0F] hover:underline cursor-pointer">
+                  Replace
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="hidden"
+                    disabled={posterUploading}
+                    onChange={async (e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      if (f.size > 8 * 1024 * 1024) { addToast('error', 'Cover must be 8MB or smaller'); e.target.value = ''; return; }
+                      setPosterUploading(true);
+                      try {
+                        const fd = new FormData();
+                        fd.append('file', f);
+                        const r = await api.post<any>('/media/upload?folder=job-posters', fd);
+                        const body = unwrap<any>(r.data) as { url?: string };
+                        if (!body?.url) throw new Error('Upload returned no URL');
+                        setPosterUrl(body.url);
+                      } catch (err: any) {
+                        addToast('error', err?.message ?? 'Cover upload failed');
+                      } finally {
+                        setPosterUploading(false);
+                        e.target.value = '';
+                      }
+                    }}
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setPosterUrl('')}
+                  className="text-xs font-semibold text-red-600 hover:underline"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <label className="flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 hover:border-[#F77B0F] hover:bg-[#F77B0F]/5 transition-colors p-10 cursor-pointer">
+            {posterUploading ? (
+              <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#F77B0F] border-t-transparent" />
+            ) : (
+              <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              </svg>
+            )}
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">Click to upload a cover</p>
+            <p className="text-xs text-gray-400">PNG, JPG or WebP, max 8MB · 1200×630 looks best</p>
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="hidden"
+              disabled={posterUploading}
+              onChange={async (e) => {
+                const f = e.target.files?.[0];
+                if (!f) return;
+                if (f.size > 8 * 1024 * 1024) { addToast('error', 'Cover must be 8MB or smaller'); e.target.value = ''; return; }
+                setPosterUploading(true);
+                try {
+                  const fd = new FormData();
+                  fd.append('file', f);
+                  const r = await api.post<any>('/media/upload?folder=job-posters', fd);
+                  const body = unwrap<any>(r.data) as { url?: string };
+                  if (!body?.url) throw new Error('Upload returned no URL');
+                  setPosterUrl(body.url);
+                } catch (err: any) {
+                  addToast('error', err?.message ?? 'Cover upload failed');
+                } finally {
+                  setPosterUploading(false);
+                  e.target.value = '';
+                }
+              }}
+            />
+          </label>
+        )}
       </div>
 
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-5">
