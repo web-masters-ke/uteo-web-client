@@ -50,6 +50,21 @@ function formatDate(dateStr: string) {
 const inputCls = "w-full rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 text-gray-900 dark:text-white px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#F77B0F]/30 focus:border-[#F77B0F] placeholder:text-gray-400 dark:placeholder:text-white/30 transition-all";
 const labelCls = "block text-xs font-semibold text-gray-500 dark:text-white/50 uppercase tracking-wider mb-1.5";
 
+/** Renders an error string that may carry an embedded ::link::href::label:: marker. */
+function ErrorBlock({ raw }: { raw: string }) {
+  const m = raw.match(/^(.*?)\s*::link::([^:]+)::([^:]+)::\s*$/);
+  return (
+    <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-xl border border-red-200 dark:border-red-800">
+      <span>{m ? m[1] : raw}</span>
+      {m && (
+        <a href={m[2]} className="ml-2 font-semibold underline decoration-dotted hover:text-red-700">
+          {m[3]} →
+        </a>
+      )}
+    </div>
+  );
+}
+
 function ApplyModal({
   job,
   onClose,
@@ -142,14 +157,21 @@ function ApplyModal({
       onSuccess();
     } catch (e: any) {
       const status = e?.response?.status;
-      const msg = e?.response?.data?.error?.message
-        || e?.response?.data?.message
+      const data = e?.response?.data;
+      const errBlock = data?.error;
+      const existingId: string | undefined =
+        errBlock?.applicationId ?? errBlock?.message?.applicationId ?? data?.applicationId;
+      const rawMsg = (typeof errBlock?.message === 'string' && errBlock.message)
+        || (typeof errBlock?.message?.message === 'string' && errBlock.message.message)
+        || data?.message
         || e?.message
         || 'Failed to submit application.';
-      if (status === 409) {
-        setError(`${msg} Open My Applications to update or withdraw your existing application.`);
+      if (status === 409 && existingId) {
+        setError(`${rawMsg} ::link::/applications/${existingId}::View your application::`);
+      } else if (status === 409) {
+        setError(`${rawMsg} ::link::/applications::Open My Applications::`);
       } else {
-        setError(msg);
+        setError(rawMsg);
       }
     } finally {
       setSubmitting(false);
@@ -395,9 +417,7 @@ function ApplyModal({
                 />
                 <p className="text-[11px] text-gray-400 dark:text-white/30 mt-1">{coverLetter.length} characters · Aim for 200–500 words</p>
               </div>
-              {error && (
-                <p className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-3 py-2 rounded-xl border border-red-200 dark:border-red-800">{error}</p>
-              )}
+              {error && <ErrorBlock raw={error} />}
             </>
           )}
         </div>
