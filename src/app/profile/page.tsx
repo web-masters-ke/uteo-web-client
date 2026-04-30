@@ -231,13 +231,14 @@ function RecruiterProfilePage() {
     if (!file) return;
     setAvatarUploading(true);
     try {
-      const presignRes = await api.post("/media/presign", {
-        fileName: file.name,
-        mimeType: file.type,
-        folder: "avatars",
-      });
-      const { uploadUrl, publicUrl } = unwrap<{ uploadUrl: string; publicUrl: string }>(presignRes);
-      await fetch(uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+      // Backend-proxied upload: browser → /media/upload → MinIO. Avoids the
+      // browser-to-S3 CORS round-trip that was failing on the presigned PUT.
+      const fd = new FormData();
+      fd.append("file", file);
+      const upRes = await api.post<any>("/media/upload?folder=avatars", fd);
+      const body = unwrap<any>(upRes.data) as { url?: string; publicUrl?: string };
+      const publicUrl = body.url ?? body.publicUrl ?? "";
+      if (!publicUrl) throw new Error("Upload returned no URL");
       await apiPatch("/profile/me", { avatar: publicUrl });
       const fresh = await apiGet<RecruiterProfileData>("/profile/me");
       setData(fresh);
@@ -719,13 +720,14 @@ function JobSeekerProfilePage() {
     if (!file) return;
     setAvatarUploading(true);
     try {
-      const presignRes = await api.post("/media/presign", {
-        fileName: file.name,
-        mimeType: file.type,
-        folder: "avatars",
-      });
-      const { uploadUrl, publicUrl } = unwrap<{ uploadUrl: string; publicUrl: string }>(presignRes);
-      await fetch(uploadUrl, { method: "PUT", body: file, headers: { "Content-Type": file.type } });
+      // Backend-proxied upload: browser → /media/upload → MinIO. Avoids the
+      // browser-to-S3 CORS round-trip that was failing on the presigned PUT.
+      const fd = new FormData();
+      fd.append("file", file);
+      const upRes = await api.post<any>("/media/upload?folder=avatars", fd);
+      const body = unwrap<any>(upRes.data) as { url?: string; publicUrl?: string };
+      const publicUrl = body.url ?? body.publicUrl ?? "";
+      if (!publicUrl) throw new Error("Upload returned no URL");
       await apiPatch("/profile/me", { avatar: publicUrl });
       const fresh = normalizeProfile(await apiGet<any>("/profile/me"));
       setProfile(fresh);
