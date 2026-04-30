@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { applicationsService } from '@/lib/services/applications';
+import { api, unwrap } from '@/lib/api';
+import { openSignedFile } from '@/lib/s3-url';
 import type { Application, ApplicationStatus } from '@/lib/uteo-types';
 import { PageSkeleton } from '@/components/ui/LoadingSkeleton';
 
@@ -144,6 +146,9 @@ export default function ApplicationDetailPage() {
   const [error, setError] = useState('');
   const [withdrawing, setWithdrawing] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [openingResume, setOpeningResume] = useState(false);
+  const [updatingResume, setUpdatingResume] = useState(false);
+  const resumeInputRef = useRef<HTMLInputElement | null>(null);
 
   // Auth guard
   useEffect(() => {
@@ -162,6 +167,45 @@ export default function ApplicationDetailPage() {
   const showToast = (type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
     setTimeout(() => setToast(null), 3500);
+  };
+
+  const handleViewResume = async () => {
+    if (!application?.resumeUrl) return;
+    setOpeningResume(true);
+    try {
+      const ok = await openSignedFile(application.resumeUrl);
+      if (!ok) showToast('error', 'Could not open resume — try again or re-upload it.');
+    } finally {
+      setOpeningResume(false);
+    }
+  };
+
+  const handleResumeChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      showToast('error', 'File too large — max 10MB.');
+      e.target.value = '';
+      return;
+    }
+    setUpdatingResume(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await api.post<any>('/media/upload?folder=resumes', fd);
+      const body = unwrap(res.data) as { url?: string; publicUrl?: string };
+      const url = body.url ?? body.publicUrl;
+      if (!url) throw new Error('Upload returned no URL');
+      const updated = await applicationsService.updateResume(id, url);
+      setApplication(updated as Application);
+      showToast('success', 'Resume updated.');
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Resume update failed';
+      showToast('error', msg);
+    } finally {
+      setUpdatingResume(false);
+      if (resumeInputRef.current) resumeInputRef.current.value = '';
+    }
   };
 
   const handleWithdraw = async () => {
@@ -293,23 +337,53 @@ export default function ApplicationDetailPage() {
             </div>
           )}
 
-          {/* Resume link */}
-          {application.resumeUrl && (
-            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
-              <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-3">Resume</h2>
-              <a
-                href={application.resumeUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-[#192C67] dark:text-white/70 font-medium hover:underline"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-                View Resume
-              </a>
+          {/* Resume — view (signed URL) + update */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-5">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white mb-3">Resume</h2>
+            <div className="flex flex-wrap items-center gap-3">
+              {application.resumeUrl ? (
+                <button
+                  type="button"
+                  onClick={handleViewResume}
+                  disabled={openingResume}
+                  className="inline-flex items-center gap-2 text-sm text-[#192C67] dark:text-white/70 font-medium hover:underline disabled:opacity-50"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                  {openingResume ? 'Opening…' : 'View Resume'}
+                </button>
+              ) : (
+                <span className="text-sm text-gray-500 dark:text-gray-400">No resume on this application yet.</span>
+              )}
+
+              {canWithdraw && (
+                <>
+                  <input
+                    ref={resumeInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    onChange={handleResumeChange}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => resumeInputRef.current?.click()}
+                    disabled={updatingResume}
+                    className="inline-flex items-center gap-2 text-sm text-[#F77B0F] font-medium hover:underline disabled:opacity-50"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5-5m0 0l5 5m-5-5v12" />
+                    </svg>
+                    {updatingResume ? 'Uploading…' : (application.resumeUrl ? 'Update Resume' : 'Add Resume')}
+                  </button>
+                </>
+              )}
             </div>
-          )}
+            <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+              PDF or Word (.pdf, .doc, .docx), max 10MB. Updates aren't allowed once you're hired or rejected.
+            </p>
+          </div>
 
           {/* Withdraw */}
           {canWithdraw && (

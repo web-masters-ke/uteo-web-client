@@ -85,6 +85,16 @@ function RecruiterApplicationsContent() {
     fetchApplications();
   }, [isAuthenticated, isRecruiter, filterJobId, filterStatus]);
 
+  // Auto-refresh every 30s so brand-new applications surface without a full reload.
+  useEffect(() => {
+    if (!isAuthenticated || !isRecruiter) return;
+    const id = window.setInterval(() => {
+      // skip the auto-refresh while a status update is in-flight to avoid jitter
+      if (!updatingId) fetchApplications();
+    }, 30_000);
+    return () => window.clearInterval(id);
+  }, [isAuthenticated, isRecruiter, filterJobId, filterStatus, updatingId]);
+
   async function fetchJobs() {
     try {
       const data = await jobsService.list({ limit: 100 });
@@ -149,15 +159,29 @@ function RecruiterApplicationsContent() {
             {filterJobId || filterStatus ? ' (filtered)' : ' total'}
           </p>
         </div>
-        <Link
-          href="/recruiter"
-          className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
-          Dashboard
-        </Link>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => fetchApplications()}
+            disabled={loading}
+            className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-[#F77B0F] disabled:opacity-50"
+            title="Refresh — new applications come in real-time but you can also force-pull"
+          >
+            <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            Refresh
+          </button>
+          <Link
+            href="/recruiter"
+            className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Dashboard
+          </Link>
+        </div>
       </div>
 
       {/* Status summary chips */}

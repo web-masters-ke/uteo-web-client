@@ -143,7 +143,16 @@ function ApplyModal({ job, onClose, onSuccess }: { job: Job; onClose: () => void
       });
       onSuccess();
     } catch (e: any) {
-      setError(e?.response?.data?.message || e?.message || 'Failed to submit application.');
+      const status = e?.response?.status;
+      const msg = e?.response?.data?.error?.message
+        || e?.response?.data?.message
+        || e?.message
+        || 'Failed to submit application.';
+      if (status === 409) {
+        setError(`${msg} Open My Applications to update or withdraw your existing application.`);
+      } else {
+        setError(msg);
+      }
     } finally {
       setSubmitting(false);
     }

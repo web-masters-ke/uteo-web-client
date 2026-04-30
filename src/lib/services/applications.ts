@@ -10,4 +10,6 @@ export const applicationsService = {
   withdraw: (id: string) => apiDelete(`/applications/${id}`),
   updateStatus: (id: string, status: string, notes?: string) =>
     apiPatch(`/applications/${id}/status`, { status, notes }),
+  updateResume: (id: string, resumeUrl: string) =>
+    apiPatch<Application>(`/applications/${id}/resume`, { resumeUrl }),
 };

@@ -22,6 +22,16 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (error: AxiosError) => {
+    // Normalize backend's wrapped error envelope so every catch site sees a real
+    // message in error.message. Backend shape: { success:false, error:{ code, message, details } }
+    const data: any = error.response?.data;
+    const wrapped = data?.error?.message
+      || data?.message
+      || (Array.isArray(data?.error?.details) ? data.error.details.join(", ") : null);
+    if (wrapped && typeof wrapped === "string") {
+      error.message = wrapped;
+    }
+
     if (typeof window === "undefined") return Promise.reject(error);
     const url = error.config?.url || "";
     const isAuthEndpoint = url.includes("/auth/");
