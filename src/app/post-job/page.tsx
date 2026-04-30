@@ -44,22 +44,47 @@ function PostedSuccess({
   jobUrl,
   copied,
   onCopy,
+  recruiterFirstName,
 }: {
   job: { id: string; title: string; companyName: string };
   jobUrl: string;
   copied: boolean;
   onCopy: () => void;
+  recruiterFirstName?: string;
 }) {
+  // Template style: "Personal" puts the recruiter's name first ("Sarah is hiring..."),
+  // "Company" leads with the company ("WebMasters is hiring..."). Default to Company
+  // when there's a real company, else Personal.
+  const [tone, setTone] = useState<'company' | 'personal'>(job.companyName ? 'company' : 'personal');
+  const [textCopied, setTextCopied] = useState(false);
+
+  const company = job.companyName?.trim() || '';
+  const fname = recruiterFirstName?.trim() || 'I';
+
+  const announcement =
+    tone === 'company' && company
+      ? `${company} is hiring for a ${job.title}.\n\nApply here: ${jobUrl}`
+      : `${fname} is hiring${company ? ` for ${company}` : ''} — looking for a ${job.title}.\n\nApply here: ${jobUrl}`;
+
   const encodedUrl = encodeURIComponent(jobUrl);
-  const shareText = `We're hiring! ${job.title}${job.companyName ? ` at ${job.companyName}` : ''}. Apply now`;
-  const encodedText = encodeURIComponent(shareText);
+  const encodedAnnouncement = encodeURIComponent(announcement);
 
   const platforms = [
-    { name: 'LinkedIn', color: 'text-[#0A66C2]', href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}` },
-    { name: 'X / Twitter', color: 'text-gray-900 dark:text-white', href: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}` },
-    { name: 'WhatsApp', color: 'text-[#25D366]', href: `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + jobUrl)}` },
-    { name: 'Facebook', color: 'text-[#1877F2]', href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` },
+    { name: 'LinkedIn', color: 'text-[#0A66C2]', href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&summary=${encodedAnnouncement}` },
+    { name: 'X / Twitter', color: 'text-gray-900 dark:text-white', href: `https://twitter.com/intent/tweet?text=${encodedAnnouncement}` },
+    { name: 'WhatsApp', color: 'text-[#25D366]', href: `https://wa.me/?text=${encodedAnnouncement}` },
+    { name: 'Facebook', color: 'text-[#1877F2]', href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedAnnouncement}` },
   ];
+
+  const copyAnnouncement = async () => {
+    try {
+      await navigator.clipboard.writeText(announcement);
+      setTextCopied(true);
+      setTimeout(() => setTextCopied(false), 2000);
+    } catch {
+      /* noop */
+    }
+  };
 
   return (
     <div className="max-w-lg mx-auto py-16 px-4 space-y-8">
@@ -68,8 +93,48 @@ function PostedSuccess({
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Job posted!</h1>
         <p className="text-gray-500 dark:text-gray-400">
           <span className="font-medium text-gray-900 dark:text-white">{job.title}</span>
-          {job.companyName && <span> &middot; {job.companyName}</span>}
+          {company && <span> &middot; {company}</span>}
         </p>
+      </div>
+
+      {/* Announcement template — copyable + tone toggle */}
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Announcement</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Copy and post anywhere.</p>
+          </div>
+          {company && (
+            <div className="inline-flex rounded-full bg-gray-100 dark:bg-gray-700 p-0.5 text-[11px] font-bold uppercase tracking-widest">
+              <button
+                type="button"
+                onClick={() => setTone('company')}
+                className={`px-3 py-1.5 rounded-full transition-colors ${tone === 'company' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+              >
+                Company
+              </button>
+              <button
+                type="button"
+                onClick={() => setTone('personal')}
+                className={`px-3 py-1.5 rounded-full transition-colors ${tone === 'personal' ? 'bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}`}
+              >
+                Personal
+              </button>
+            </div>
+          )}
+        </div>
+
+        <pre className="whitespace-pre-wrap break-words text-sm text-gray-800 dark:text-gray-200 leading-relaxed font-sans bg-gray-50 dark:bg-gray-900 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+{announcement}
+        </pre>
+
+        <button
+          type="button"
+          onClick={copyAnnouncement}
+          className="w-full text-sm font-bold text-[#F77B0F] border border-[#F77B0F]/30 hover:bg-[#F77B0F]/5 rounded-xl py-2.5 transition-colors"
+        >
+          {textCopied ? 'Copied to clipboard ✓' : 'Copy announcement'}
+        </button>
       </div>
 
       <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-5">
@@ -305,6 +370,7 @@ function PostJobContent() {
         jobUrl={jobUrl}
         copied={copied}
         onCopy={copyLink}
+        recruiterFirstName={(user as any)?.firstName}
       />
     );
   }
