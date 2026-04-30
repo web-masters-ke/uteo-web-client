@@ -87,6 +87,11 @@ function CompanyContent() {
     size: '',
     location: '',
     logoUrl: '',
+    linkedinHandle: '',
+    linkedinPageUrl: '',
+    twitterHandle: '',
+    facebookPageUrl: '',
+    instagramHandle: '',
   });
   const [logoUploading, setLogoUploading] = useState(false);
 
@@ -119,6 +124,11 @@ function CompanyContent() {
           size: full.size ?? '',
           location: full.location ?? '',
           logoUrl: full.logoUrl ?? '',
+          linkedinHandle: (full as any).linkedinHandle ?? '',
+          linkedinPageUrl: (full as any).linkedinPageUrl ?? '',
+          twitterHandle: (full as any).twitterHandle ?? '',
+          facebookPageUrl: (full as any).facebookPageUrl ?? '',
+          instagramHandle: (full as any).instagramHandle ?? '',
         });
       }
     } catch {
@@ -131,6 +141,13 @@ function CompanyContent() {
   async function saveCompany() {
     setSaving(true);
     try {
+      const socialPayload = {
+        linkedinHandle: form.linkedinHandle.trim() || undefined,
+        linkedinPageUrl: form.linkedinPageUrl.trim() || undefined,
+        twitterHandle: form.twitterHandle.trim() || undefined,
+        facebookPageUrl: form.facebookPageUrl.trim() || undefined,
+        instagramHandle: form.instagramHandle.trim() || undefined,
+      };
       if (company) {
         await companiesService.update(company.id, {
           name: form.name.trim(),
@@ -140,6 +157,7 @@ function CompanyContent() {
           size: form.size || undefined,
           location: form.location.trim() || undefined,
           logoUrl: form.logoUrl || undefined,
+          ...socialPayload,
         });
         addToast('success', 'Company profile updated');
         loadCompany();
@@ -153,6 +171,7 @@ function CompanyContent() {
           size: form.size || undefined,
           location: form.location.trim() || undefined,
           logoUrl: form.logoUrl || undefined,
+          ...socialPayload,
         });
         setCompany(created as Company);
         addToast('success', 'Company created!');
@@ -420,6 +439,80 @@ function CompanyContent() {
           </button>
         </div>
       </div>
+
+      {/* Social accounts — used to brand share links from job posts */}
+      {company && (
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 space-y-5">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">Social Accounts</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              When recruiters share a job post, the share text mentions these handles so the post is branded as your company.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">LinkedIn handle</label>
+              <input
+                type="text"
+                value={form.linkedinHandle}
+                onChange={(e) => setForm((f) => ({ ...f, linkedinHandle: e.target.value }))}
+                placeholder="webmasters (no @)"
+                className={inputCls}
+              />
+              <p className="text-[11px] text-gray-400 mt-1">Your /company/ slug on LinkedIn</p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">LinkedIn page URL</label>
+              <input
+                type="url"
+                value={form.linkedinPageUrl}
+                onChange={(e) => setForm((f) => ({ ...f, linkedinPageUrl: e.target.value }))}
+                placeholder="https://linkedin.com/company/webmasters"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">X / Twitter handle</label>
+              <input
+                type="text"
+                value={form.twitterHandle}
+                onChange={(e) => setForm((f) => ({ ...f, twitterHandle: e.target.value }))}
+                placeholder="webmasters (no @)"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Facebook page URL</label>
+              <input
+                type="url"
+                value={form.facebookPageUrl}
+                onChange={(e) => setForm((f) => ({ ...f, facebookPageUrl: e.target.value }))}
+                placeholder="https://facebook.com/webmasters"
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Instagram handle</label>
+              <input
+                type="text"
+                value={form.instagramHandle}
+                onChange={(e) => setForm((f) => ({ ...f, instagramHandle: e.target.value }))}
+                placeholder="webmasters (no @)"
+                className={inputCls}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <button
+              onClick={saveCompany}
+              disabled={saving}
+              className="text-sm font-semibold text-[#F77B0F] hover:underline disabled:opacity-50"
+            >
+              {saving ? 'Saving…' : 'Save Social Accounts'}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Team Members — only if company exists */}
       {company && (

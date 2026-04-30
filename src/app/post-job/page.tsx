@@ -45,12 +45,20 @@ function PostedSuccess({
   copied,
   onCopy,
   recruiterFirstName,
+  companySocial,
 }: {
   job: { id: string; title: string; companyName: string };
   jobUrl: string;
   copied: boolean;
   onCopy: () => void;
   recruiterFirstName?: string;
+  companySocial?: {
+    linkedinHandle?: string | null;
+    linkedinPageUrl?: string | null;
+    twitterHandle?: string | null;
+    facebookPageUrl?: string | null;
+    instagramHandle?: string | null;
+  } | null;
 }) {
   // Template style: "Personal" puts the recruiter's name first ("Sarah is hiring..."),
   // "Company" leads with the company ("WebMasters is hiring..."). Default to Company
@@ -61,21 +69,51 @@ function PostedSuccess({
   const company = job.companyName?.trim() || '';
   const fname = recruiterFirstName?.trim() || 'I';
 
-  const announcement =
+  // Strip leading @ from handles so we control the formatting per platform
+  const liHandle = companySocial?.linkedinHandle?.replace(/^@/, '').trim();
+  const xHandle = companySocial?.twitterHandle?.replace(/^@/, '').trim();
+
+  // Per-platform announcement: include the right handle so the post is branded
+  // even when the user copies the text manually.
+  const baseAnnouncement =
     tone === 'company' && company
-      ? `${company} is hiring for a ${job.title}.\n\nApply here: ${jobUrl}`
-      : `${fname} is hiring${company ? ` for ${company}` : ''} — looking for a ${job.title}.\n\nApply here: ${jobUrl}`;
+      ? `${company} is hiring for a ${job.title}.`
+      : `${fname} is hiring${company ? ` at ${company}` : ''} — looking for a ${job.title}.`;
+
+  const linkedinText = liHandle
+    ? `${baseAnnouncement.replace(company, `${company} (linkedin.com/company/${liHandle})`)}\n\nApply here: ${jobUrl}`
+    : `${baseAnnouncement}\n\nApply here: ${jobUrl}`;
+
+  const twitterText = xHandle
+    ? `${baseAnnouncement.replace(company, `@${xHandle}`)}\n\n${jobUrl}`
+    : `${baseAnnouncement}\n\n${jobUrl}`;
+
+  const genericText = `${baseAnnouncement}\n\nApply here: ${jobUrl}`;
 
   const encodedUrl = encodeURIComponent(jobUrl);
-  const encodedAnnouncement = encodeURIComponent(announcement);
+  const announcement = genericText; // for clipboard copy
 
   const platforms = [
-    // Modern LinkedIn share-with-text URL — pre-fills the text box on the feed dialog.
-    // (Legacy ?summary= on share-offsite is ignored.)
-    { name: 'LinkedIn', color: 'text-[#0A66C2]', href: `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(announcement + '\n\n' + jobUrl)}` },
-    { name: 'X / Twitter', color: 'text-gray-900 dark:text-white', href: `https://twitter.com/intent/tweet?text=${encodedAnnouncement}` },
-    { name: 'WhatsApp', color: 'text-[#25D366]', href: `https://wa.me/?text=${encodedAnnouncement}` },
-    { name: 'Facebook', color: 'text-[#1877F2]', href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedAnnouncement}` },
+    {
+      name: 'LinkedIn',
+      color: 'text-[#0A66C2]',
+      href: `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(linkedinText)}`,
+    },
+    {
+      name: 'X / Twitter',
+      color: 'text-gray-900 dark:text-white',
+      href: `https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}`,
+    },
+    {
+      name: 'WhatsApp',
+      color: 'text-[#25D366]',
+      href: `https://wa.me/?text=${encodeURIComponent(genericText)}`,
+    },
+    {
+      name: 'Facebook',
+      color: 'text-[#1877F2]',
+      href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodeURIComponent(genericText)}`,
+    },
   ];
 
   const copyAnnouncement = async () => {
@@ -212,7 +250,18 @@ function PostJobContent() {
   const [posterUrl, setPosterUrl] = useState<string>('');
   const [posterUploading, setPosterUploading] = useState(false);
   const [addingSkill, setAddingSkill] = useState(false);
-  const [postedJob, setPostedJob] = useState<{ id: string; title: string; companyName: string } | null>(null);
+  const [postedJob, setPostedJob] = useState<{
+    id: string;
+    title: string;
+    companyName: string;
+    companySocial?: {
+      linkedinHandle?: string | null;
+      linkedinPageUrl?: string | null;
+      twitterHandle?: string | null;
+      facebookPageUrl?: string | null;
+      instagramHandle?: string | null;
+    } | null;
+  } | null>(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -341,8 +390,20 @@ function PostJobContent() {
       const jobId = (job as any)?.id ?? (job as any)?.data?.id;
       const jobTitle = (job as any)?.title ?? form.title;
       const jobCompany = (job as any)?.company?.name ?? newCompanyName ?? '';
+      const jobCompanyObj = (job as any)?.company ?? {};
       if (jobId) {
-        setPostedJob({ id: jobId, title: jobTitle, companyName: jobCompany });
+        setPostedJob({
+          id: jobId,
+          title: jobTitle,
+          companyName: jobCompany,
+          companySocial: {
+            linkedinHandle: jobCompanyObj.linkedinHandle,
+            linkedinPageUrl: jobCompanyObj.linkedinPageUrl,
+            twitterHandle: jobCompanyObj.twitterHandle,
+            facebookPageUrl: jobCompanyObj.facebookPageUrl,
+            instagramHandle: jobCompanyObj.instagramHandle,
+          },
+        });
       } else {
         router.push('/recruiter');
       }
@@ -381,6 +442,7 @@ function PostJobContent() {
         copied={copied}
         onCopy={copyLink}
         recruiterFirstName={(user as any)?.firstName}
+        companySocial={postedJob.companySocial}
       />
     );
   }
