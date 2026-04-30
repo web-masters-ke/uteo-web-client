@@ -4,7 +4,7 @@ import { useEffect, useState, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { companiesService } from '@/lib/services/companies';
-import { apiPost } from '@/lib/api';
+import { apiPost, apiPatch, apiDelete } from '@/lib/api';
 import { useToast } from '@/lib/toast';
 
 interface Company {
@@ -21,9 +21,35 @@ interface Company {
   recruiters?: Array<{
     id: string;
     title?: string;
+    role?: RecruiterRole;
     user: { id: string; firstName: string; lastName: string; email: string; avatar?: string };
   }>;
 }
+
+type RecruiterRole = 'OWNER' | 'ADMIN' | 'HIRING_MANAGER' | 'REVIEWER' | 'VIEWER';
+
+const ROLE_OPTIONS: { value: RecruiterRole; label: string; desc: string }[] = [
+  { value: 'ADMIN',          label: 'Admin',          desc: 'Manage team, post jobs, review applications, send offers' },
+  { value: 'HIRING_MANAGER', label: 'Hiring Manager', desc: 'Post jobs, review applications, schedule interviews, send offers' },
+  { value: 'REVIEWER',       label: 'Reviewer',       desc: 'Review applications and shortlist — cannot post jobs or send offers' },
+  { value: 'VIEWER',         label: 'Viewer',         desc: 'Read-only access to jobs and applications' },
+];
+
+const ROLE_LABEL: Record<RecruiterRole, string> = {
+  OWNER: 'Owner',
+  ADMIN: 'Admin',
+  HIRING_MANAGER: 'Hiring Manager',
+  REVIEWER: 'Reviewer',
+  VIEWER: 'Viewer',
+};
+
+const ROLE_BADGE_CLASS: Record<RecruiterRole, string> = {
+  OWNER:          'bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300',
+  ADMIN:          'bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300',
+  HIRING_MANAGER: 'bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300',
+  REVIEWER:       'bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300',
+  VIEWER:         'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',
+};
 
 const inputCls = "w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F] text-sm";
 
@@ -48,7 +74,10 @@ function CompanyContent() {
   const [inviting, setInviting] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteTitle, setInviteTitle] = useState('');
+  const [inviteRole, setInviteRole] = useState<RecruiterRole>('HIRING_MANAGER');
   const [showInviteForm, setShowInviteForm] = useState(false);
+  const [editingMemberId, setEditingMemberId] = useState<string | null>(null);
+  const [savingMember, setSavingMember] = useState(false);
 
   const [form, setForm] = useState({
     name: '',
@@ -144,16 +173,45 @@ function CompanyContent() {
       await apiPost(`/companies/${company.id}/recruiters`, {
         email: inviteEmail.trim(),
         title: inviteTitle.trim() || undefined,
+        role: inviteRole,
       });
       addToast('success', 'Team member added');
       setInviteEmail('');
       setInviteTitle('');
+      setInviteRole('HIRING_MANAGER');
       setShowInviteForm(false);
       loadCompany();
     } catch (e: any) {
       addToast('error', e?.message ?? 'Failed to add team member');
     } finally {
       setInviting(false);
+    }
+  }
+
+  async function updateMember(targetUserId: string, role: RecruiterRole, title?: string) {
+    if (!company) return;
+    setSavingMember(true);
+    try {
+      await apiPatch(`/companies/${company.id}/recruiters/${targetUserId}`, { role, title });
+      addToast('success', 'Role updated');
+      setEditingMemberId(null);
+      loadCompany();
+    } catch (e: any) {
+      addToast('error', e?.message ?? 'Failed to update role');
+    } finally {
+      setSavingMember(false);
+    }
+  }
+
+  async function removeMember(targetUserId: string, name: string) {
+    if (!company) return;
+    if (!window.confirm(`Remove ${name} from the team?`)) return;
+    try {
+      await apiDelete(`/companies/${company.id}/recruiters/${targetUserId}`);
+      addToast('success', 'Removed from team');
+      loadCompany();
+    } catch (e: any) {
+      addToast('error', e?.message ?? 'Failed to remove team member');
     }
   }
 
@@ -370,7 +428,7 @@ function CompanyContent() {
             <div>
               <h2 className="text-base font-semibold text-gray-900 dark:text-white">Team Members</h2>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                Everyone on your team can post jobs and review applications
+                Roles control what each member can do — post jobs, review applications, send offers, or just view
               </p>
             </div>
             <button
@@ -383,7 +441,7 @@ function CompanyContent() {
           </div>
 
           {showInviteForm && (
-            <div className="rounded-xl border border-[#F77B0F]/30 bg-[#F77B0F]/5 dark:bg-[#F77B0F]/10 p-4 space-y-3">
+            <div className="rounded-xl border border-[#F77B0F]/30 bg-[#F77B0F]/5 dark:bg-[#F77B0F]/10 p-4 space-y-4">
               <p className="text-xs font-semibold text-[#F77B0F]">Invite Team Member</p>
               <div className="grid grid-cols-2 gap-3">
                 <input
@@ -397,11 +455,41 @@ function CompanyContent() {
                   type="text"
                   value={inviteTitle}
                   onChange={(e) => setInviteTitle(e.target.value)}
-                  placeholder="Role (e.g. HR Manager)"
+                  placeholder="Job title (e.g. HR Manager)"
                   className={inputCls}
                 />
               </div>
-              <div className="flex gap-2">
+
+              <div>
+                <p className="text-xs font-semibold text-gray-700 dark:text-gray-200 mb-2">Permission level</p>
+                <div className="space-y-2">
+                  {ROLE_OPTIONS.map((opt) => (
+                    <label
+                      key={opt.value}
+                      className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
+                        inviteRole === opt.value
+                          ? 'border-[#F77B0F] bg-white dark:bg-gray-800'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="invite-role"
+                        value={opt.value}
+                        checked={inviteRole === opt.value}
+                        onChange={() => setInviteRole(opt.value)}
+                        className="mt-0.5 accent-[#F77B0F]"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 dark:text-white">{opt.label}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{opt.desc}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-2 justify-end">
                 <button
                   onClick={() => setShowInviteForm(false)}
                   className="px-4 py-2 rounded-lg text-xs text-gray-500 hover:text-gray-700 transition-colors"
@@ -420,29 +508,92 @@ function CompanyContent() {
           )}
 
           <div className="space-y-3">
-            {(company.recruiters ?? []).map((r) => (
-              <div key={r.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-xs overflow-hidden shrink-0">
-                  {r.user.avatar ? (
-                    <img src={r.user.avatar} alt="" className="w-9 h-9 rounded-full object-cover" />
-                  ) : (
-                    (r.user.firstName[0] + r.user.lastName[0]).toUpperCase()
+            {(company.recruiters ?? []).map((r) => {
+              const role: RecruiterRole = (r.role ?? 'HIRING_MANAGER') as RecruiterRole;
+              const isMe = r.user.id === (user as any)?.id;
+              const isEditing = editingMemberId === r.user.id;
+              const myRecord = (company.recruiters ?? []).find((x) => x.user.id === (user as any)?.id);
+              const myRole: RecruiterRole = (myRecord?.role ?? 'HIRING_MANAGER') as RecruiterRole;
+              const canManage = myRole === 'OWNER' || myRole === 'ADMIN';
+              const canEditThis = canManage && role !== 'OWNER' && !isMe;
+
+              return (
+                <div key={r.id} className="p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 font-bold text-xs overflow-hidden shrink-0">
+                      {r.user.avatar ? (
+                        <img src={r.user.avatar} alt="" className="w-9 h-9 rounded-full object-cover" />
+                      ) : (
+                        ((r.user.firstName?.[0] ?? '') + (r.user.lastName?.[0] ?? '')).toUpperCase() || (r.user.email?.[0] ?? '?').toUpperCase()
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2 flex-wrap">
+                        <span>{r.user.firstName} {r.user.lastName}</span>
+                        {isMe && (
+                          <span className="px-1.5 py-0.5 rounded bg-[#F77B0F]/10 text-[#F77B0F] text-[10px] font-semibold">You</span>
+                        )}
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wide ${ROLE_BADGE_CLASS[role]}`}>{ROLE_LABEL[role]}</span>
+                      </div>
+                      <div className="text-xs text-gray-400 dark:text-gray-500">{r.user.email}{r.title ? ` · ${r.title}` : ''}</div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {canEditThis && !isEditing && (
+                        <button
+                          onClick={() => setEditingMemberId(r.user.id)}
+                          className="text-xs text-gray-500 hover:text-[#F77B0F] transition-colors"
+                        >
+                          Change role
+                        </button>
+                      )}
+                      {canEditThis && (
+                        <button
+                          onClick={() => removeMember(r.user.id, `${r.user.firstName} ${r.user.lastName}`.trim() || r.user.email)}
+                          className="text-xs text-gray-400 hover:text-red-600 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {isEditing && (
+                    <div className="mt-3 pl-12 space-y-2">
+                      {ROLE_OPTIONS.map((opt) => (
+                        <label
+                          key={opt.value}
+                          className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                            role === opt.value
+                              ? 'border-[#F77B0F] bg-[#F77B0F]/5'
+                              : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name={`role-${r.id}`}
+                            value={opt.value}
+                            defaultChecked={role === opt.value}
+                            onChange={() => updateMember(r.user.id, opt.value, r.title)}
+                            disabled={savingMember}
+                            className="mt-0.5 accent-[#F77B0F]"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white">{opt.label}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{opt.desc}</p>
+                          </div>
+                        </label>
+                      ))}
+                      <button
+                        onClick={() => setEditingMemberId(null)}
+                        className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900 dark:text-white">
-                    {r.user.firstName} {r.user.lastName}
-                    {r.user.id === (user as any)?.id && (
-                      <span className="ml-2 px-1.5 py-0.5 rounded bg-[#F77B0F]/10 text-[#F77B0F] text-[10px] font-semibold">You</span>
-                    )}
-                  </div>
-                  <div className="text-xs text-gray-400 dark:text-gray-500">{r.user.email}</div>
-                </div>
-                {r.title && (
-                  <span className="px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-[11px]">{r.title}</span>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

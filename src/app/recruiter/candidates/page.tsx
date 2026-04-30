@@ -471,6 +471,10 @@ function CandidatesContent() {
                       <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
                       Message
                     </a>
+                    <a href={`/recruiter/candidates/${c.id}`} className="flex items-center gap-1 text-xs font-semibold text-[#192C67] dark:text-blue-400 hover:underline">
+                      View profile
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                    </a>
                     <div className="ml-auto text-[10px] text-gray-400 dark:text-gray-500 flex items-center gap-2">
                       <span>Skills: {c.scoreBreakdown.skillScore}</span>
                       <span>·</span>

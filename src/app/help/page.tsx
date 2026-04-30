@@ -1,7 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { apiPost } from "@/lib/api";
+import { FormEvent, useEffect, useState, useCallback } from "react";
+import { apiGet, apiPost, apiPatch } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
 
@@ -34,13 +34,23 @@ const GENERAL_FAQ = [
   { q: "Who do I contact for support?", a: "Raise a support ticket below, or email hello@uteo.ai, or call +254 700 000 000 (Mon–Fri 8am–5pm EAT)." },
 ];
 
+interface TicketReply {
+  id: string;
+  body: string;
+  isStaff: boolean;
+  createdAt: string;
+  author?: { firstName?: string; lastName?: string; avatar?: string };
+}
+
 interface Ticket {
   id: string;
   subject: string;
   priority: string;
   status: string;
-  description: string;
+  description?: string | null;
   createdAt: string;
+  replies?: TicketReply[];
+  _count?: { replies: number };
 }
 
 export default function HelpPage() {
@@ -60,27 +70,47 @@ export default function HelpPage() {
   const roleFaqs = isRecruiter ? FAQ_RECRUITERS : FAQ_SEEKERS;
   const activeFaqs = faqSection === "role" ? roleFaqs : GENERAL_FAQ;
 
+  const loadTickets = useCallback(async () => {
+    try {
+      const list = await apiGet<Ticket[]>("/support/tickets");
+      setTickets(Array.isArray(list) ? list : []);
+    } catch {
+      // not fatal — show empty list
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    loadTickets();
+  }, [user, loadTickets]);
+
   const submitTicket = async (e: FormEvent) => {
     e.preventDefault();
     if (!subject.trim()) { addToast("error", "Subject is required"); return; }
     setSubmitting(true);
     try {
-      await apiPost("/support/tickets", { subject, priority, description });
-    } catch { /* best effort */ }
-    const tk: Ticket = {
-      id: `tk-${Date.now()}`,
-      subject,
-      priority,
-      status: "OPEN",
-      description,
-      createdAt: new Date().toISOString(),
-    };
-    setTickets((prev) => [tk, ...prev]);
-    setShowNew(false);
-    setSubject("");
-    setDescription("");
-    addToast("success", "Support ticket submitted");
-    setSubmitting(false);
+      const created = await apiPost<Ticket>("/support/tickets", { subject, priority, description });
+      setTickets((prev) => [created, ...prev]);
+      setShowNew(false);
+      setSubject("");
+      setDescription("");
+      addToast("success", "Support ticket submitted");
+    } catch (err: any) {
+      addToast("error", err?.message ?? "Could not submit ticket");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const closeTicket = async (id: string) => {
+    if (!window.confirm("Close this ticket?")) return;
+    try {
+      await apiPatch(`/support/tickets/${id}`, { status: "CLOSED" });
+      addToast("success", "Ticket closed");
+      loadTickets();
+    } catch {
+      addToast("error", "Could not close ticket");
+    }
   };
 
   const ic = "w-full rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#0f1724] px-4 py-2.5 text-sm text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-[#F77B0F] focus:border-[#F77B0F] transition-colors";
@@ -195,22 +225,47 @@ export default function HelpPage() {
           </div>
         ) : (
           <div className="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden divide-y divide-gray-200 dark:divide-gray-700">
-            {tickets.map((t) => (
-              <div key={t.id} className="flex items-center justify-between px-5 py-4 bg-white dark:bg-[#0f1724]">
-                <div>
-                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{t.subject}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{new Date(t.createdAt).toLocaleDateString()}</p>
+            {tickets.map((t) => {
+              const statusClass =
+                t.status === "OPEN"          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" :
+                t.status === "IN_PROGRESS"   ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" :
+                t.status === "WAITING_USER"  ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" :
+                t.status === "RESOLVED"      ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" :
+                                               "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400";
+              const isClosed = t.status === "CLOSED" || t.status === "RESOLVED";
+              return (
+                <div key={t.id} className="px-5 py-4 bg-white dark:bg-[#0f1724]">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">{t.subject}</p>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        {new Date(t.createdAt).toLocaleDateString()}
+                        {t._count?.replies ? ` · ${t._count.replies} ${t._count.replies === 1 ? "reply" : "replies"}` : ""}
+                      </p>
+                      {t.description && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5 line-clamp-2">{t.description}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        t.priority === "HIGH" ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" :
+                        t.priority === "MEDIUM" ? "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400" :
+                        "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
+                      }`}>{t.priority}</span>
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusClass}`}>{t.status.replace("_", " ")}</span>
+                      {!isClosed && (
+                        <button
+                          onClick={() => closeTicket(t.id)}
+                          className="text-xs text-gray-400 hover:text-red-600 transition-colors"
+                        >
+                          Close
+                        </button>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                    t.priority === "HIGH" ? "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400" :
-                    t.priority === "MEDIUM" ? "bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400" :
-                    "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400"
-                  }`}>{t.priority}</span>
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">{t.status}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

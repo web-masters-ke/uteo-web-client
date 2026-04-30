@@ -242,19 +242,20 @@ function InterviewWizard({
           const formatLabel = sessionType === 'VIRTUAL' ? 'Video Call' : sessionType === 'PHONE' ? 'Phone Call' : 'In-Person';
           const durationLabel = duration >= 60 ? `${duration / 60}h${duration % 60 ? ` ${duration % 60}m` : ''}` : `${duration} min`;
           const lines = [
-            `Hi ${app.user.firstName} 👋 Your interview for the **${app.job?.title}** role has been scheduled!`,
+            `Hi ${app.user.firstName}, your interview for the **${app.job?.title}** role has been scheduled.`,
             ``,
-            `📅  ${format(selectedDate, 'EEEE, MMMM d yyyy')}`,
-            `🕐  ${fmtTime(selectedTime)} (${timezone.replace(/_/g, ' ')})`,
-            `⏱  ${durationLabel} · ${formatLabel}`,
-            sessionType === 'IN_PERSON' && location ? `📍  ${location}` : null,
-            videoUrl ? `🔗  Join here: ${videoUrl}` : null,
-            agenda ? `\n📋  Agenda: ${agenda}` : null,
+            `Date: ${format(selectedDate, 'EEEE, MMMM d yyyy')}`,
+            `Time: ${fmtTime(selectedTime)} (${timezone.replace(/_/g, ' ')})`,
+            `Duration: ${durationLabel}`,
+            `Format: ${formatLabel}`,
+            sessionType === 'IN_PERSON' && location ? `Location: ${location}` : null,
+            videoUrl ? `Join here: ${videoUrl}` : null,
+            agenda ? `\nAgenda: ${agenda}` : null,
             ``,
             sessionType === 'VIRTUAL'
-              ? `You can join the link above at any time — just wait in the room and the interviewer will join shortly.`
+              ? `You can join the link above at any time. Wait in the room and the interviewer will join shortly.`
               : null,
-            `Good luck! 🎉`,
+            `Best of luck.`,
           ].filter((l) => l !== null).join('\n');
 
           await apiPost(`/conversations/${convId}/messages`, {

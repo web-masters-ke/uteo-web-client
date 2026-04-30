@@ -10,6 +10,27 @@ interface ChatMessage { role: 'user' | 'assistant'; content: string; }
 const TABS = ['Interview Questions', 'Candidate Insight', 'Job Enhancer', 'Career Chat'] as const;
 type Tab = typeof TABS[number];
 
+// Persists state in sessionStorage so tab inputs/outputs survive navigation away and back.
+function useStickyState<T>(key: string, initial: T): [T, (v: T | ((prev: T) => T)) => void] {
+  const storageKey = `uteo:ai-tools:${key}`;
+  const [state, setState] = useState<T>(() => {
+    if (typeof window === 'undefined') return initial;
+    try {
+      const raw = sessionStorage.getItem(storageKey);
+      return raw != null ? (JSON.parse(raw) as T) : initial;
+    } catch {
+      return initial;
+    }
+  });
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      sessionStorage.setItem(storageKey, JSON.stringify(state));
+    } catch { /* quota or serialization failure — ignore */ }
+  }, [storageKey, state]);
+  return [state, setState];
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function InputField({ label, value, onChange, placeholder, required }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; required?: boolean }) {
   return (
@@ -64,11 +85,11 @@ function RunButton({ onClick, loading, disabled, label = 'Run' }: { onClick: () 
 
 // ── Interview Questions Tab ───────────────────────────────────────────────────
 function InterviewQuestionsTab() {
-  const [jobTitle, setJobTitle] = useState('');
-  const [skills, setSkills] = useState('');
-  const [notes, setNotes] = useState('');
+  const [jobTitle, setJobTitle] = useStickyState('iq.jobTitle', '');
+  const [skills, setSkills] = useStickyState('iq.skills', '');
+  const [notes, setNotes] = useStickyState('iq.notes', '');
   const [loading, setLoading] = useState(false);
-  const [questions, setQuestions] = useState<string[]>([]);
+  const [questions, setQuestions] = useStickyState<string[]>('iq.questions', []);
   const [error, setError] = useState('');
 
   const run = async () => {
@@ -125,24 +146,123 @@ function InterviewQuestionsTab() {
 }
 
 // ── Candidate Insight Tab ─────────────────────────────────────────────────────
+interface CandidateLite {
+  id: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  avatar?: string | null;
+  headline?: string | null;
+  skills: { id: string; name: string }[];
+}
+interface JobLite {
+  id: string;
+  title: string;
+  jobSkills?: { skill: { id: string; name: string } }[];
+}
+
 function CandidateInsightTab() {
-  const [candidateName, setCandidateName] = useState('');
-  const [jobTitle, setJobTitle] = useState('');
-  const [skills, setSkills] = useState('');
-  const [matchedSkills, setMatchedSkills] = useState('');
+  const [candidates, setCandidates] = useState<CandidateLite[]>([]);
+  const [jobs, setJobs] = useState<JobLite[]>([]);
+  const [loadingLists, setLoadingLists] = useState(true);
+  const [candidateId, setCandidateId] = useStickyState('ci.candidateId', '');
+  const [jobId, setJobId] = useStickyState('ci.jobId', '');
+  const [candidateQuery, setCandidateQuery] = useStickyState('ci.candidateQuery', '');
+  const [jobQuery, setJobQuery] = useStickyState('ci.jobQuery', '');
+  const [jobSkills, setJobSkills] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [insight, setInsight] = useState('');
-  const [ran, setRan] = useState(false);
+  const [insight, setInsight] = useStickyState('ci.insight', '');
+  const [ran, setRan] = useStickyState('ci.ran', false);
+  const [error, setError] = useState('');
+
+  // Load real candidates + jobs from the recruiter's actual data
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      try {
+        const [cRes, jRes] = await Promise.all([
+          api.get('/jobs/mine/candidates'),
+          api.get('/jobs/mine'),
+        ]);
+        if (!alive) return;
+        const cList: CandidateLite[] = (cRes.data?.data?.items ?? cRes.data?.items ?? []).map((c: any) => ({
+          id: c.id,
+          firstName: c.firstName,
+          lastName: c.lastName,
+          email: c.email,
+          avatar: c.avatar,
+          headline: c.headline,
+          skills: Array.isArray(c.skills) ? c.skills : [],
+        }));
+        const jList: JobLite[] = (jRes.data?.data?.items ?? jRes.data?.items ?? []).map((j: any) => ({
+          id: j.id,
+          title: j.title,
+        }));
+        setCandidates(cList);
+        setJobs(jList);
+      } catch {
+        setError('Could not load your candidates and jobs. Try refreshing.');
+      } finally {
+        if (alive) setLoadingLists(false);
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+
+  // When a job is picked, fetch its required skills
+  useEffect(() => {
+    if (!jobId) { setJobSkills([]); return; }
+    let alive = true;
+    (async () => {
+      try {
+        const res = await api.get(`/jobs/${jobId}`);
+        const job = res.data?.data ?? res.data;
+        const names: string[] = Array.isArray(job?.jobSkills)
+          ? job.jobSkills.map((js: any) => js?.skill?.name).filter(Boolean)
+          : [];
+        if (alive) setJobSkills(names);
+      } catch {
+        if (alive) setJobSkills([]);
+      }
+    })();
+    return () => { alive = false; };
+  }, [jobId]);
+
+  const candidate = candidates.find((c) => c.id === candidateId) || null;
+  const job = jobs.find((j) => j.id === jobId) || null;
+
+  const filteredCandidates = candidateQuery.trim()
+    ? candidates.filter((c) => {
+        const name = `${c.firstName ?? ''} ${c.lastName ?? ''} ${c.email ?? ''}`.toLowerCase();
+        return name.includes(candidateQuery.toLowerCase());
+      }).slice(0, 8)
+    : candidates.slice(0, 8);
+
+  const filteredJobs = jobQuery.trim()
+    ? jobs.filter((j) => j.title.toLowerCase().includes(jobQuery.toLowerCase())).slice(0, 8)
+    : jobs.slice(0, 8);
+
+  // Compute matched skills locally from real data so the user sees what we'll send
+  const candidateSkillNames = candidate?.skills.map((s) => s.name) ?? [];
+  const matched = candidateSkillNames.filter((s) =>
+    jobSkills.some((js) => js.toLowerCase() === s.toLowerCase()),
+  );
 
   const run = async () => {
-    if (!candidateName.trim() || !jobTitle.trim()) return;
+    if (!candidate || !job) return;
     setLoading(true);
     setInsight('');
     setRan(false);
+    setError('');
     try {
-      const payload: any = { candidateName: candidateName.trim(), jobTitle: jobTitle.trim() };
-      if (skills.trim()) payload.skills = skills.split(',').map((s) => s.trim()).filter(Boolean);
-      if (matchedSkills.trim()) payload.matchedSkills = matchedSkills.split(',').map((s) => s.trim()).filter(Boolean);
+      const candidateName = `${candidate.firstName ?? ''} ${candidate.lastName ?? ''}`.trim() || candidate.email || 'Candidate';
+      const payload = {
+        candidateName,
+        headline: candidate.headline ?? null,
+        jobTitle: job.title,
+        skills: candidateSkillNames,
+        matchedSkills: matched,
+      };
       const res = await api.post('/ai/candidate-insight', payload);
       const raw = res.data?.data ?? res.data;
       const text = typeof raw === 'string' ? raw : (raw?.insight ?? raw?.text ?? raw?.message ?? (raw ? JSON.stringify(raw) : ''));
@@ -155,25 +275,159 @@ function CandidateInsightTab() {
     }
   };
 
+  if (loadingLists) {
+    return (
+      <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+        <Spinner /> Loading your candidates and jobs…
+      </div>
+    );
+  }
+
+  if (candidates.length === 0) {
+    return (
+      <div className="p-4 rounded-xl border border-amber-200 dark:border-amber-700 bg-amber-50 dark:bg-amber-900/20 text-sm text-amber-700 dark:text-amber-400">
+        You have no candidates yet. Once people apply to your jobs they will show up here for AI insight scoring.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500 dark:text-gray-400">Get a one-line AI summary of a candidate's fit for a specific role — useful when shortlisting.</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">Pick a real candidate and one of your jobs. We pull their skills from the system, compute the overlap, and ask the AI for a one-line fit summary.</p>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <InputField label="Candidate Name" value={candidateName} onChange={setCandidateName} placeholder="e.g. Jane Doe" required />
-        <InputField label="Job Title" value={jobTitle} onChange={setJobTitle} placeholder="e.g. Product Manager" required />
-        <InputField label="Candidate Skills (comma-separated)" value={skills} onChange={setSkills} placeholder="e.g. SQL, Python, Strategy" />
-        <InputField label="Matched Skills (comma-separated)" value={matchedSkills} onChange={setMatchedSkills} placeholder="Skills that match this role" />
+        {/* Candidate picker */}
+        <div>
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Candidate <span className="text-red-500 ml-0.5">*</span></label>
+          <input
+            value={candidateQuery}
+            onChange={(e) => { setCandidateQuery(e.target.value); setCandidateId(''); }}
+            placeholder="Search your candidates by name or email"
+            className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
+          />
+          {!candidate && (
+            <div className="mt-1 max-h-44 overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+              {filteredCandidates.length === 0 ? (
+                <p className="px-3 py-2 text-xs text-gray-400">No matches</p>
+              ) : filteredCandidates.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => {
+                    setCandidateId(c.id);
+                    setCandidateQuery(`${c.firstName ?? ''} ${c.lastName ?? ''}`.trim() || c.email || '');
+                  }}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800/60 flex flex-col"
+                >
+                  <span className="font-medium text-gray-900 dark:text-white">{`${c.firstName ?? ''} ${c.lastName ?? ''}`.trim() || c.email}</span>
+                  {c.headline && <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{c.headline}</span>}
+                </button>
+              ))}
+            </div>
+          )}
+          {candidate && (
+            <button
+              type="button"
+              onClick={() => { setCandidateId(''); setCandidateQuery(''); }}
+              className="mt-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {/* Job picker */}
+        <div>
+          <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Job <span className="text-red-500 ml-0.5">*</span></label>
+          <input
+            value={jobQuery}
+            onChange={(e) => { setJobQuery(e.target.value); setJobId(''); }}
+            placeholder="Search your job posts"
+            className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:border-[#F77B0F] focus:ring-1 focus:ring-[#F77B0F]"
+          />
+          {!job && (
+            <div className="mt-1 max-h-44 overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-700 divide-y divide-gray-100 dark:divide-gray-700">
+              {filteredJobs.length === 0 ? (
+                <p className="px-3 py-2 text-xs text-gray-400">No matches</p>
+              ) : filteredJobs.map((j) => (
+                <button
+                  key={j.id}
+                  type="button"
+                  onClick={() => { setJobId(j.id); setJobQuery(j.title); }}
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-800/60"
+                >
+                  {j.title}
+                </button>
+              ))}
+            </div>
+          )}
+          {job && (
+            <button
+              type="button"
+              onClick={() => { setJobId(''); setJobQuery(''); }}
+              className="mt-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              Clear
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Real, system-loaded context */}
+      {(candidate || job) && (
+        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50/60 dark:bg-gray-800/40 p-4 space-y-3">
+          {candidate && (
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Candidate skills (from profile)</p>
+              {candidateSkillNames.length === 0 ? (
+                <p className="text-xs text-gray-500">This candidate has no skills listed on their profile.</p>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {candidateSkillNames.map((s) => (
+                    <span key={s} className="px-2 py-0.5 rounded-full bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 text-xs border border-gray-200 dark:border-gray-600">{s}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          {job && (
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Job required skills</p>
+              {jobSkills.length === 0 ? (
+                <p className="text-xs text-gray-500">This job has no required skills set.</p>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {jobSkills.map((s) => {
+                    const isMatch = matched.some((m) => m.toLowerCase() === s.toLowerCase());
+                    return (
+                      <span key={s} className={`px-2 py-0.5 rounded-full text-xs border ${isMatch ? 'bg-emerald-50 dark:bg-emerald-500/15 border-emerald-200 dark:border-emerald-500/40 text-emerald-700 dark:text-emerald-300' : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200'}`}>{s}</span>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+          {candidate && job && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 pt-1 border-t border-gray-200 dark:border-gray-700">
+              Match: <span className="font-semibold text-gray-700 dark:text-gray-200">{matched.length}</span> of <span className="font-semibold text-gray-700 dark:text-gray-200">{jobSkills.length || 0}</span> required skills
+            </p>
+          )}
+        </div>
+      )}
+
+      {error && <p className="text-sm text-red-500">{error}</p>}
+
       <div className="flex justify-end">
-        <RunButton onClick={run} loading={loading} disabled={!candidateName.trim() || !jobTitle.trim()} label="Generate Insight" />
+        <RunButton onClick={run} loading={loading} disabled={!candidate || !job} label="Generate Insight" />
       </div>
-      {ran && (
+
+      {ran && candidate && job && (
         <div className="p-4 rounded-xl border border-[#F77B0F]/25 bg-[#F77B0F]/5">
           <div className="flex items-center gap-2 mb-2">
             <svg className="w-4 h-4 text-[#F77B0F]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m1.636 6.364l.707-.707M6.343 6.343l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            <span className="text-xs font-semibold text-[#F77B0F]">AI Insight — {candidateName} for {jobTitle}</span>
+            <span className="text-xs font-semibold text-[#F77B0F]">AI Insight — {`${candidate.firstName ?? ''} ${candidate.lastName ?? ''}`.trim() || candidate.email} for {job.title}</span>
           </div>
           <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{insight}</p>
         </div>
@@ -184,10 +438,10 @@ function CandidateInsightTab() {
 
 // ── Job Enhancer Tab ──────────────────────────────────────────────────────────
 function JobEnhancerTab() {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useStickyState('je.title', '');
+  const [description, setDescription] = useStickyState('je.description', '');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ title?: string; description?: string; tags?: string[]; unchanged?: boolean } | null>(null);
+  const [result, setResult] = useStickyState<{ title?: string; description?: string; tags?: string[]; unchanged?: boolean } | null>('je.result', null);
 
   const run = async () => {
     if (!title.trim() || !description.trim()) return;
@@ -260,8 +514,8 @@ function JobEnhancerTab() {
 
 // ── Career Chat Tab ───────────────────────────────────────────────────────────
 function CareerChatTab() {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState('');
+  const [messages, setMessages] = useStickyState<ChatMessage[]>('cc.messages', []);
+  const [input, setInput] = useStickyState('cc.input', '');
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -368,7 +622,7 @@ export default function RecruiterAiToolsPage() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const isRecruiter = (user as any)?.role === 'TRAINER' || (user as any)?.role === 'RECRUITER' || (user as any)?.role === 'EMPLOYER';
-  const [activeTab, setActiveTab] = useState<Tab>('Interview Questions');
+  const [activeTab, setActiveTab] = useStickyState<Tab>('activeTab', 'Interview Questions');
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) { router.replace('/login?redirect=/recruiter/ai-tools'); return; }
