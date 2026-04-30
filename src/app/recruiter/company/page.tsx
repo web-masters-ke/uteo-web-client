@@ -88,6 +88,7 @@ function CompanyContent() {
     size: '',
     location: '',
     logoUrl: '',
+    coverImageUrl: '',
     linkedinHandle: '',
     linkedinPageUrl: '',
     twitterHandle: '',
@@ -95,6 +96,7 @@ function CompanyContent() {
     instagramHandle: '',
   });
   const [logoUploading, setLogoUploading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) { router.replace('/login?redirect=/recruiter/company'); return; }
@@ -125,6 +127,7 @@ function CompanyContent() {
           size: full.size ?? '',
           location: full.location ?? '',
           logoUrl: full.logoUrl ?? '',
+          coverImageUrl: (full as any).coverImageUrl ?? '',
           linkedinHandle: (full as any).linkedinHandle ?? '',
           linkedinPageUrl: (full as any).linkedinPageUrl ?? '',
           twitterHandle: (full as any).twitterHandle ?? '',
@@ -158,6 +161,7 @@ function CompanyContent() {
           size: form.size || undefined,
           location: form.location.trim() || undefined,
           logoUrl: form.logoUrl || undefined,
+          coverImageUrl: form.coverImageUrl || undefined,
           ...socialPayload,
         });
         addToast('success', 'Company profile updated');
@@ -172,6 +176,7 @@ function CompanyContent() {
           size: form.size || undefined,
           location: form.location.trim() || undefined,
           logoUrl: form.logoUrl || undefined,
+          coverImageUrl: form.coverImageUrl || undefined,
           ...socialPayload,
         });
         setCompany(created as Company);
@@ -297,27 +302,62 @@ function CompanyContent() {
         className="rounded-3xl overflow-hidden shadow-[0_4px_24px_rgba(25,44,103,0.12),0_1px_4px_rgba(0,0,0,0.06)]"
         style={{ boxShadow: '0 4px 24px rgba(25,44,103,0.12),0 1px 4px rgba(0,0,0,0.06)' }}
       >
-        {/* Banner — proper hero splash */}
-        <div className="h-48 relative overflow-hidden" style={{
-          background: 'linear-gradient(135deg, #0f1c4d 0%, #192C67 35%, #1e3580 60%, #0d1f5c 100%)',
-        }}>
-          {/* Large blurred orange glow — bottom-left accent */}
-          <div className="absolute -bottom-10 -left-10 w-72 h-72 rounded-full opacity-25" style={{ background: 'radial-gradient(circle, #F77B0F 0%, transparent 70%)', filter: 'blur(40px)' }} />
-          {/* Smaller orange glow top-right */}
-          <div className="absolute -top-8 right-16 w-40 h-40 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #F77B0F 0%, transparent 70%)', filter: 'blur(30px)' }} />
-          {/* Blue highlight top-left */}
-          <div className="absolute -top-6 -left-6 w-56 h-56 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #4a7cdc 0%, transparent 65%)', filter: 'blur(35px)' }} />
-          {/* Decorative grid lines */}
-          <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="hero-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#hero-grid)" />
-          </svg>
-          {/* Diagonal accent line */}
-          <div className="absolute inset-0 opacity-10" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(247,123,15,0.4) 50%, transparent 60%)' }} />
+        {/* Banner — cover photo or gradient fallback */}
+        <div className="h-48 relative overflow-hidden group/banner">
+          {form.coverImageUrl ? (
+            <SmartImg src={form.coverImageUrl} alt="Cover" className="w-full h-full object-cover" loading="eager" />
+          ) : (
+            <>
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #0f1c4d 0%, #192C67 35%, #1e3580 60%, #0d1f5c 100%)' }} />
+              <div className="absolute -bottom-10 -left-10 w-72 h-72 rounded-full opacity-25" style={{ background: 'radial-gradient(circle, #F77B0F 0%, transparent 70%)', filter: 'blur(40px)' }} />
+              <div className="absolute -top-8 right-16 w-40 h-40 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #F77B0F 0%, transparent 70%)', filter: 'blur(30px)' }} />
+              <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="hero-grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/></pattern></defs><rect width="100%" height="100%" fill="url(#hero-grid)" /></svg>
+              <div className="absolute inset-0 opacity-10" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(247,123,15,0.4) 50%, transparent 60%)' }} />
+            </>
+          )}
+
+          {/* Cover photo upload button — bottom right, always visible */}
+          <label className="absolute bottom-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-all bg-black/40 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold hover:bg-black/60">
+            {coverUploading
+              ? <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>
+              : <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            }
+            {form.coverImageUrl ? 'Change cover' : 'Upload cover photo'}
+            <input type="file" accept="image/png,image/jpeg,image/webp" className="hidden" disabled={coverUploading}
+              onChange={async (e) => {
+                const f = e.target.files?.[0];
+                if (!f) return;
+                if (f.size > 10 * 1024 * 1024) { addToast('error', 'Cover photo must be 10MB or smaller'); return; }
+                setCoverUploading(true);
+                try {
+                  const fd = new FormData();
+                  fd.append('file', f);
+                  const r = await apiPost<{ url: string }>('/media/upload?folder=cover-images', fd);
+                  const url = (r as any)?.url ?? (r as any)?.data?.url ?? '';
+                  if (!url) throw new Error('Upload returned no URL');
+                  setForm((s) => ({ ...s, coverImageUrl: url }));
+                  // Auto-save immediately so it persists
+                  if (company) {
+                    await companiesService.update(company.id, { coverImageUrl: url });
+                    addToast('success', 'Cover photo updated');
+                  }
+                } catch (err: any) {
+                  addToast('error', err?.message ?? 'Cover upload failed');
+                } finally {
+                  setCoverUploading(false);
+                  e.target.value = '';
+                }
+              }}
+            />
+          </label>
+
+          {form.coverImageUrl && (
+            <button type="button" onClick={() => setForm((s) => ({ ...s, coverImageUrl: '' }))}
+              className="absolute bottom-3 right-52 flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-black/40 backdrop-blur-sm border border-white/20 text-white text-xs font-medium hover:bg-red-600/60 transition-colors">
+              Remove
+            </button>
+          )}
+
           {company?.isVerified && (
             <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold">
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
