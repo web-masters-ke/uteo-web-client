@@ -248,7 +248,7 @@ function CompanyContent() {
   }
 
   const logoUploadNode = (
-    <label className="group/logo relative cursor-pointer block w-24 h-24 rounded-2xl overflow-hidden shrink-0 shadow-[0_4px_16px_rgba(0,0,0,0.18)]">
+    <label className="group/logo relative cursor-pointer block w-28 h-28 rounded-2xl overflow-hidden shrink-0 shadow-[0_8px_24px_rgba(0,0,0,0.22)]">
       {form.logoUrl ? (
         <SmartImg src={form.logoUrl} alt="Company logo" className="w-full h-full object-cover" loading="eager"
           fallback={<div className="w-full h-full bg-[#192C67] flex items-center justify-center text-white text-2xl font-black">{form.name.slice(0,2).toUpperCase()||'CO'}</div>}
@@ -297,12 +297,29 @@ function CompanyContent() {
         className="rounded-3xl overflow-hidden shadow-[0_4px_24px_rgba(25,44,103,0.12),0_1px_4px_rgba(0,0,0,0.06)]"
         style={{ boxShadow: '0 4px 24px rgba(25,44,103,0.12),0 1px 4px rgba(0,0,0,0.06)' }}
       >
-        {/* Banner */}
-        <div className="h-32 relative" style={{ background: 'linear-gradient(135deg,#192C67 0%,#2d4a9e 50%,#1e3a8a 100%)' }}>
-          {/* subtle pattern overlay */}
-          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, white 1px, transparent 1px), radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+        {/* Banner — proper hero splash */}
+        <div className="h-48 relative overflow-hidden" style={{
+          background: 'linear-gradient(135deg, #0f1c4d 0%, #192C67 35%, #1e3580 60%, #0d1f5c 100%)',
+        }}>
+          {/* Large blurred orange glow — bottom-left accent */}
+          <div className="absolute -bottom-10 -left-10 w-72 h-72 rounded-full opacity-25" style={{ background: 'radial-gradient(circle, #F77B0F 0%, transparent 70%)', filter: 'blur(40px)' }} />
+          {/* Smaller orange glow top-right */}
+          <div className="absolute -top-8 right-16 w-40 h-40 rounded-full opacity-15" style={{ background: 'radial-gradient(circle, #F77B0F 0%, transparent 70%)', filter: 'blur(30px)' }} />
+          {/* Blue highlight top-left */}
+          <div className="absolute -top-6 -left-6 w-56 h-56 rounded-full opacity-20" style={{ background: 'radial-gradient(circle, #4a7cdc 0%, transparent 65%)', filter: 'blur(35px)' }} />
+          {/* Decorative grid lines */}
+          <svg className="absolute inset-0 w-full h-full opacity-[0.06]" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="hero-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#hero-grid)" />
+          </svg>
+          {/* Diagonal accent line */}
+          <div className="absolute inset-0 opacity-10" style={{ background: 'linear-gradient(105deg, transparent 40%, rgba(247,123,15,0.4) 50%, transparent 60%)' }} />
           {company?.isVerified && (
-            <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs font-semibold">
+            <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-xs font-semibold">
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
               Verified
             </div>
@@ -311,9 +328,9 @@ function CompanyContent() {
 
         {/* Identity row */}
         <div className="bg-white dark:bg-gray-800 px-6 pb-6">
-          <div className="flex items-end gap-4 -mt-12 mb-4">
+          <div className="flex items-end gap-5 -mt-14 mb-5">
             {logoUploadNode}
-            <div className="flex-1 min-w-0 pt-14">
+            <div className="flex-1 min-w-0 pt-16">
               <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate">
                 {form.name || (company ? company.name : 'Your Company')}
               </h1>
