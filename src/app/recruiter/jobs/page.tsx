@@ -398,11 +398,14 @@ export default function RecruiterMyJobsPage() {
   async function pauseOrResume(id: string, currentStatus: string) {
     const next = currentStatus === 'PAUSED' ? 'ACTIVE' : 'PAUSED';
     setBusyId(id);
+    // optimistic update
+    setJobs((prev) => prev.map((j) => j.id === id ? { ...j, status: next } : j));
     try {
       await jobsService.update(id, { status: next });
       addToast('success', next === 'ACTIVE' ? 'Job resumed' : 'Job paused');
-      load();
     } catch (e: any) {
+      // roll back on failure
+      setJobs((prev) => prev.map((j) => j.id === id ? { ...j, status: currentStatus } : j));
       addToast('error', e?.message ?? 'Failed to update job');
     } finally {
       setBusyId(null);
@@ -412,11 +415,15 @@ export default function RecruiterMyJobsPage() {
   async function closeJob(job: MyJob) {
     if (!window.confirm(`Close "${job.title}"? It will stop accepting new applications.`)) return;
     setBusyId(job.id);
+    // optimistic remove
+    setJobs((prev) => prev.filter((j) => j.id !== job.id));
+    setSelected((prev) => { const next = new Set(prev); next.delete(job.id); return next; });
     try {
       await jobsService.remove(job.id);
       addToast('success', 'Job closed');
-      load();
     } catch (e: any) {
+      // roll back — re-fetch to restore state
+      load();
       addToast('error', e?.message ?? 'Failed to close job');
     } finally {
       setBusyId(null);
@@ -428,13 +435,15 @@ export default function RecruiterMyJobsPage() {
     if (!ids.length) return;
     if (!window.confirm(`Close ${ids.length} selected job${ids.length === 1 ? '' : 's'}? They will stop accepting new applications.`)) return;
     setBulkClosing(true);
+    // optimistic remove all selected
+    setJobs((prev) => prev.filter((j) => !ids.includes(j.id)));
+    setSelected(new Set());
     try {
       const res = await jobsService.bulkClose(ids);
       const r = res as any;
       addToast('success', `${r?.closed ?? ids.length} job${ids.length === 1 ? '' : 's'} closed`);
-      setSelected(new Set());
-      load();
     } catch (e: any) {
+      load(); // roll back
       addToast('error', e?.message ?? 'Bulk close failed');
     } finally {
       setBulkClosing(false);
