@@ -579,6 +579,7 @@ export default function JobDetailPage() {
   const [similarJobs, setSimilarJobs] = useState<Job[]>([]);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [myCompanyIds, setMyCompanyIds] = useState<string[]>([]);
+  const [myCompanyLoading, setMyCompanyLoading] = useState(true);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
@@ -605,6 +606,7 @@ export default function JobDetailPage() {
     // Fetch the recruiter's company memberships so any HR teammate at the
     // same company (not just the literal postedById) sees Edit / View
     // Applicants on this page.
+    setMyCompanyLoading(true);
     if (user) {
       import('@/lib/api').then(({ apiGet }) => {
         apiGet<any>('/companies/mine')
@@ -612,8 +614,11 @@ export default function JobDetailPage() {
             const cid = c?.id;
             if (cid) setMyCompanyIds([cid]);
           })
-          .catch(() => null);
+          .catch(() => null)
+          .finally(() => setMyCompanyLoading(false));
       });
+    } else {
+      setMyCompanyLoading(false);
     }
   }, [id]);
 
@@ -660,8 +665,12 @@ export default function JobDetailPage() {
 
   const userRole = (user as any)?.role;
   const isRecruiterUser = userRole === 'TRAINER' || userRole === 'RECRUITER' || userRole === 'EMPLOYER';
+  // While we're still resolving the company membership, optimistically treat as own job for recruiters
+  // so the sidebar never flashes "Posted by another company" before the API call resolves.
   const isOwnJobTopLevel = isRecruiterUser && (
-    (user as any)?.id === job.postedById || myCompanyIds.includes(job.company.id)
+    myCompanyLoading ||
+    (user as any)?.id === job.postedById ||
+    myCompanyIds.includes(job.company.id)
   );
   // Job seekers must not see description/requirements for non-ACTIVE jobs
   const showContent = (job.status as string) === 'ACTIVE' || isOwnJobTopLevel;

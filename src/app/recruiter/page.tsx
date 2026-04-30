@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
 import { jobsService } from '@/lib/services/jobs';
+import { companiesService } from '@/lib/services/companies';
 import { applicationsService } from '@/lib/services/applications';
 import type { Job, Application } from '@/lib/uteo-types';
 
@@ -32,6 +33,8 @@ function RecruiterDashboardContent() {
   const isRecruiter = (user as any)?.role === 'TRAINER' || (user as any)?.role === 'RECRUITER' || (user as any)?.role === 'EMPLOYER';
 
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [totalJobs, setTotalJobs] = useState(0);
+  const [totalActive, setTotalActive] = useState(0);
   const [recentApplications, setRecentApplications] = useState<Application[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
   const [loadingApps, setLoadingApps] = useState(true);
@@ -56,8 +59,31 @@ function RecruiterDashboardContent() {
   async function fetchJobs() {
     setLoadingJobs(true);
     try {
-      const data = await jobsService.list({ limit: 50 });
-      setJobs((data as any)?.items ?? []);
+      // Scope to this recruiter's company for accurate counts
+      let companyId: string | undefined;
+      try {
+        const mine = await companiesService.mine();
+        companyId = (mine as any)?.id;
+      } catch { /* no company yet */ }
+
+      const params: Record<string, any> = { limit: 50 };
+      if (companyId) params.companyId = companyId;
+
+      const data = await jobsService.list(params);
+      const items: Job[] = (data as any)?.items ?? [];
+      setJobs(items);
+
+      // Use the real total from pagination metadata, not capped item count
+      const realTotal = (data as any)?.total ?? items.length;
+      setTotalJobs(realTotal);
+
+      // Fetch active count separately if more than 50 jobs
+      if (companyId) {
+        const activeData = await jobsService.list({ companyId, limit: 1, status: 'ACTIVE' });
+        setTotalActive((activeData as any)?.total ?? items.filter((j) => j.status === 'ACTIVE').length);
+      } else {
+        setTotalActive(items.filter((j) => j.status === 'ACTIVE').length);
+      }
     } catch (e: any) {
       setError(e?.message ?? 'Failed to load jobs');
     } finally {
@@ -85,7 +111,6 @@ function RecruiterDashboardContent() {
     );
   }
 
-  const activeJobs = jobs.filter((j) => j.status === 'ACTIVE');
   const totalApplications = jobs.reduce((sum, j) => sum + (j._count?.applications ?? 0), 0);
   const pendingReview = recentApplications.filter((a) => a.status === 'SUBMITTED').length;
 
@@ -114,7 +139,7 @@ function RecruiterDashboardContent() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <StatCard
           label="Active Listings"
-          value={loadingJobs ? '—' : String(activeJobs.length)}
+          value={loadingJobs ? '—' : String(totalActive)}
           icon={
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -144,7 +169,7 @@ function RecruiterDashboardContent() {
         />
         <StatCard
           label="Total Jobs Posted"
-          value={loadingJobs ? '—' : String(jobs.length)}
+          value={loadingJobs ? '—' : String(totalJobs)}
           icon={
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
