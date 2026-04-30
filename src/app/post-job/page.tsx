@@ -70,7 +70,9 @@ function PostedSuccess({
   const encodedAnnouncement = encodeURIComponent(announcement);
 
   const platforms = [
-    { name: 'LinkedIn', color: 'text-[#0A66C2]', href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}&summary=${encodedAnnouncement}` },
+    // Modern LinkedIn share-with-text URL — pre-fills the text box on the feed dialog.
+    // (Legacy ?summary= on share-offsite is ignored.)
+    { name: 'LinkedIn', color: 'text-[#0A66C2]', href: `https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(announcement + '\n\n' + jobUrl)}` },
     { name: 'X / Twitter', color: 'text-gray-900 dark:text-white', href: `https://twitter.com/intent/tweet?text=${encodedAnnouncement}` },
     { name: 'WhatsApp', color: 'text-[#25D366]', href: `https://wa.me/?text=${encodedAnnouncement}` },
     { name: 'Facebook', color: 'text-[#1877F2]', href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}&quote=${encodedAnnouncement}` },
