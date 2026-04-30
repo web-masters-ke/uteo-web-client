@@ -740,6 +740,36 @@ export default function JobDetailPage() {
                     </Link>
                   )}
                 </div>
+              ) : ((job.status as string) === 'CLOSED' || (job.status as string) === 'EXPIRED') ? (
+                <div className="text-center py-2">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728" />
+                    </svg>
+                  </div>
+                  <p className="font-semibold text-gray-900 dark:text-white mb-1">No longer available</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                    This role is no longer accepting applications. Check the feed for similar openings.
+                  </p>
+                  <Link
+                    href="/feed"
+                    className="block w-full py-2.5 border border-[#192C67] text-[#192C67] dark:text-white/70 dark:border-[#F77B0F]/50 font-semibold rounded-xl hover:bg-[#192C67]/5 transition-colors text-center text-sm"
+                  >
+                    Browse similar jobs
+                  </Link>
+                </div>
+              ) : (job.status as string) === 'PAUSED' ? (
+                <div className="text-center py-2">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <p className="font-semibold text-gray-900 dark:text-white mb-1">Applications paused</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                    The recruiter has temporarily paused this posting. Save it and check back later.
+                  </p>
+                </div>
               ) : applied ? (
                 <div className="text-center py-2">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">

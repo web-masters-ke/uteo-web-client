@@ -322,12 +322,20 @@ function JobRow({ job }: { job: Job }) {
         <span className="text-xs text-gray-500 dark:text-gray-400">
           <span className="font-medium text-gray-700 dark:text-gray-300">{job._count?.applications ?? 0}</span> application{(job._count?.applications ?? 0) !== 1 ? 's' : ''}
         </span>
-        <Link
-          href={`/recruiter/applications?jobId=${job.id}`}
-          className="text-xs font-medium text-[#F77B0F] hover:underline"
-        >
-          View applications →
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/recruiter/jobs/${job.id}/edit`}
+            className="text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-[#F77B0F]"
+          >
+            Edit
+          </Link>
+          <Link
+            href={`/recruiter/applications?jobId=${job.id}`}
+            className="text-xs font-medium text-[#F77B0F] hover:underline"
+          >
+            View applications →
+          </Link>
+        </div>
       </div>
     </div>
   );

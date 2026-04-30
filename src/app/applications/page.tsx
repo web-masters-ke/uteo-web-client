@@ -71,7 +71,7 @@ function ApplicationRow({ app }: { app: Application }) {
         <p className="font-semibold text-sm text-gray-900 dark:text-white group-hover:text-[#192C67] dark:group-hover:text-[#5b8bc7] truncate">
           {app.job?.title ?? 'Unknown Position'}
         </p>
-        <div className="flex items-center gap-2 mt-0.5">
+        <div className="flex items-center gap-2 mt-0.5 flex-wrap">
           <span className="text-xs text-gray-500 dark:text-gray-400 truncate">
             {app.job?.company?.name ?? ''}
           </span>
@@ -80,6 +80,11 @@ function ApplicationRow({ app }: { app: Application }) {
               <span className="text-gray-300 dark:text-gray-600">·</span>
               <span className="text-xs text-gray-400 dark:text-gray-500">{jobTypeLabel(app.job.jobType)}</span>
             </>
+          )}
+          {((app.job as any)?.status === 'CLOSED' || (app.job as any)?.status === 'EXPIRED') && (
+            <span className="px-1.5 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wide">
+              No longer available
+            </span>
           )}
         </div>
       </div>

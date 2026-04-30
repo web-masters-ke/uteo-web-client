@@ -4,9 +4,11 @@ import type { Job, FeedResponse } from '../uteo-types';
 export const jobsService = {
   list: (params?: Record<string, any>) =>
     apiGet<{ items: Job[]; total: number }>('/jobs', { params }),
+  mine: () => apiGet<{ items: Job[]; total: number }>('/jobs/mine'),
   get: (id: string) => apiGet<Job>(`/jobs/${id}`),
   create: (data: any) => apiPost<Job>('/jobs', data),
   update: (id: string, data: any) => apiPatch<Job>(`/jobs/${id}`, data),
+  remove: (id: string) => apiDelete<{ message: string }>(`/jobs/${id}`),
   save: (id: string) => apiPost(`/jobs/${id}/save`),
   unsave: (id: string) => apiDelete(`/jobs/${id}/save`),
   saved: () => apiGet<{ items: Job[] }>('/jobs/saved'),
