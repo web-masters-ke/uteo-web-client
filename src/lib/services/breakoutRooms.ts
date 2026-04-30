@@ -97,7 +97,7 @@ export const breakoutRoomsService = {
 };
 
 /**
- * Build a JaaS / Jitsi meet URL for a given room.
+ * Build a secure video meeting URL for a given room.
  * When a signed JWT is supplied the user's moderator flag comes from the token,
  * preventing clients from joining as hosts.
  */

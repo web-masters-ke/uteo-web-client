@@ -736,10 +736,10 @@ export default function BookingWizard({ preselectedTrainer, onClose, onSuccess, 
               type="url"
               value={meetingLink}
               onChange={(e) => setMeetingLink(e.target.value)}
-              placeholder="https://meet.jitsi.si/... or Zoom/Google Meet link"
+              placeholder="Optional Zoom or Google Meet link"
               className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-100 dark:focus:ring-primary-900/30 transition placeholder-gray-400"
             />
-            <p className="text-xs text-gray-400 mt-1">A Jitsi meeting room will be generated automatically if not provided.</p>
+            <p className="text-xs text-gray-400 mt-1">A secure meeting room is generated automatically if you don't paste one.</p>
           </div>
         )}
 

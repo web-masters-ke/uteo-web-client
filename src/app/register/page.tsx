@@ -366,7 +366,7 @@ function RegisterPageInner() {
               </div>
               <div className="flex items-center gap-2.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#F77B0F]" />
-                <span className="text-xs text-slate-400">Video interview via Jitsi</span>
+                <span className="text-xs text-slate-400">Video interview via secure meeting room</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#F77B0F]" />

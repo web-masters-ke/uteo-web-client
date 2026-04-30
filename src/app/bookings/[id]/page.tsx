@@ -607,7 +607,7 @@ export default function BookingDetailPage() {
                 const myBreakout = breakouts.find((r: any) => Array.isArray(r.participants) && r.participants.includes(user?.id));
                 const myRoom = myBreakout || mainRoom;
 
-                // Navigate to the in-app session hopper (Jitsi iframe + rooms drawer).
+                // Navigate to the in-app session hopper (video iframe + rooms drawer).
                 // Falls back to a popup if no VideoSessionRoom records exist yet (legacy bookings).
                 const openRoom = (room?: any) => {
                   if (room?.id) {
@@ -615,7 +615,7 @@ export default function BookingDetailPage() {
                   } else if (mainRoom?.id) {
                     router.push(`/bookings/${booking.id}/session?room=${mainRoom.id}`);
                   } else {
-                    // No DB rooms yet (booking created before this feature) — open Jitsi directly
+                    // No DB rooms yet (booking created before this feature) — open the meeting directly
                     const fallbackName = `uteo-session-${booking.id.slice(0, 8)}`;
                     const dn = encodeURIComponent(displayName);
                     const url = `https://8x8.vc/vpaas-magic-cookie-315e6ce2ff244da49ecbd19f303846d7/${fallbackName}#userInfo.displayName="${dn}"`;
