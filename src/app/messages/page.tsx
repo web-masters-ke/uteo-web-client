@@ -93,30 +93,56 @@ function EmojiPicker({ onSelect, onClose }: { onSelect: (e: string) => void; onC
   );
 }
 
-// ─── message body with link parsing ────────────────────────────────
-function MessageBody({ text, isMe }: { text: string; isMe: boolean }) {
-  const URL_RE = /(https?:\/\/[^\s]+)/g;
-  const parts = text.split(URL_RE);
+// ─── message body with link + minimal-HTML rendering ───────────────
+// Notifications send messages containing simple <b>/<strong>/<i>/<em> tags
+// (intended for email HTML). Render them as styled spans, leave everything else as text.
+function renderInline(text: string, isMe: boolean): React.ReactNode[] {
+  // 1. Split on simple inline tags. Capture tag + content.
+  const TAG_RE = /<(b|strong|i|em)>([\s\S]*?)<\/\1>/gi;
+  const URL_RE = /(https?:\/\/[^\s<]+)/g;
 
-  return (
-    <div>
-      {parts.map((part, i) =>
-        URL_RE.test(part) ? (
+  const out: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let key = 0;
+
+  const pushText = (s: string) => {
+    if (!s) return;
+    // Within a plain text run, also split on URLs
+    const subParts = s.split(URL_RE);
+    for (const p of subParts) {
+      if (URL_RE.test(p)) {
+        out.push(
           <a
-            key={i}
-            href={part}
+            key={key++}
+            href={p}
             target="_blank"
             rel="noopener noreferrer"
             className={isMe ? 'underline text-white/90 hover:text-white' : 'underline text-[#F77B0F] hover:text-[#F77B0F] dark:text-[#F77B0F]/80'}
           >
-            {part}
-          </a>
-        ) : (
-          <span key={i}>{part}</span>
-        ),
-      )}
-    </div>
-  );
+            {p}
+          </a>,
+        );
+      } else if (p) {
+        out.push(<span key={key++}>{p}</span>);
+      }
+    }
+  };
+
+  let m: RegExpExecArray | null;
+  while ((m = TAG_RE.exec(text)) !== null) {
+    pushText(text.slice(lastIndex, m.index));
+    const tag = m[1].toLowerCase();
+    const inner = m[2];
+    const Cmp = tag === 'i' || tag === 'em' ? 'em' : 'strong';
+    out.push(<Cmp key={key++} className="font-semibold">{inner}</Cmp>);
+    lastIndex = m.index + m[0].length;
+  }
+  pushText(text.slice(lastIndex));
+  return out;
+}
+
+function MessageBody({ text, isMe }: { text: string; isMe: boolean }) {
+  return <div>{renderInline(text, isMe)}</div>;
 }
 
 // ─── new conversation modal ────────────────────────────────────────

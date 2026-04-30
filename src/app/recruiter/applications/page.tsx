@@ -357,6 +357,17 @@ function ApplicationCard({
             </span>
 
             <div className="flex items-center gap-2">
+              {/* Open full application detail */}
+              <Link
+                href={`/recruiter/applications/${application.id}`}
+                className="flex items-center gap-1 px-3 py-1 text-xs font-semibold text-[#F77B0F] border border-[#F77B0F]/50 rounded-lg hover:bg-[#F77B0F]/10 transition-colors"
+              >
+                View details
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+
               {/* Resume link */}
               {application.resumeUrl && (
                 <a
