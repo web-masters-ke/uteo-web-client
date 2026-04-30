@@ -673,10 +673,52 @@ export default function JobDetailPage() {
 
         {/* Sidebar */}
         <aside className="w-full lg:w-80 flex-shrink-0 mt-6 lg:mt-0">
+          {(() => {
+            const role = (user as any)?.role;
+            const isRecruiter = role === 'TRAINER' || role === 'RECRUITER' || role === 'EMPLOYER';
+            const isOwnJob = isRecruiter && job?.postedById && (user as any)?.id === job.postedById;
+            return (
           <div className="sticky top-24 space-y-4">
             {/* CTA card */}
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
-              {applied ? (
+              {isRecruiter ? (
+                <div className="text-center py-2">
+                  <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[#192C67]/10 dark:bg-[#192C67]/20 flex items-center justify-center">
+                    <svg className="w-6 h-6 text-[#192C67] dark:text-[#5b8bc7]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                  </div>
+                  <p className="font-semibold text-gray-900 dark:text-white mb-1">
+                    {isOwnJob ? 'Your job posting' : 'Posted by another company'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+                    {isOwnJob ? 'View applications, edit details, or manage the hiring pipeline.' : 'Recruiters can view but not apply to other companies\' jobs.'}
+                  </p>
+                  {isOwnJob ? (
+                    <>
+                      <Link
+                        href={`/recruiter/jobs/${job.id}/candidates`}
+                        className="block w-full py-3 bg-[#192C67] text-white font-semibold rounded-xl hover:bg-[#14234f] transition-colors text-center mb-3"
+                      >
+                        View Applicants
+                      </Link>
+                      <Link
+                        href="/recruiter"
+                        className="block w-full py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center text-sm"
+                      >
+                        Recruiter Dashboard
+                      </Link>
+                    </>
+                  ) : (
+                    <Link
+                      href="/recruiter"
+                      className="block w-full py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors text-center text-sm"
+                    >
+                      Back to Dashboard
+                    </Link>
+                  )}
+                </div>
+              ) : applied ? (
                 <div className="text-center py-2">
                   <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                     <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
@@ -774,6 +816,8 @@ export default function JobDetailPage() {
               </Link>
             </div>
           </div>
+            );
+          })()}
         </aside>
       </div>
 

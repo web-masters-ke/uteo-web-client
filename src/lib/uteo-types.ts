@@ -21,6 +21,7 @@ export interface Job {
   title: string;
   description: string;
   requirements?: string;
+  posterUrl?: string;
   location?: string;
   jobType: JobType;
   salaryMin?: number;
@@ -28,6 +29,7 @@ export interface Job {
   currency: string;
   status: JobStatus;
   createdAt: string;
+  postedById?: string;
   company: Company;
   jobSkills?: { skill: { id: string; name: string } }[];
   matchScore?: number;
