@@ -116,6 +116,8 @@ export default function ApplicationsPage() {
 
   const [applications, setApplications] = useState<Application[]>([]);
   const [total, setTotal] = useState(0);
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [statsTotal, setStatsTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabKey>('ALL');
 
@@ -144,6 +146,20 @@ export default function ApplicationsPage() {
     if (!authLoading && user) fetchApplications();
   }, [authLoading, user, fetchApplications]);
 
+  // Per-tab counts from the backend (accurate, independent of the active tab).
+  const fetchStats = useCallback(async () => {
+    if (!user) return;
+    try {
+      const s = await applicationsService.stats();
+      setCounts((s as any)?.byStatus ?? {});
+      setStatsTotal((s as any)?.total ?? 0);
+    } catch { /* non-critical */ }
+  }, [user]);
+
+  useEffect(() => {
+    if (!authLoading && user) fetchStats();
+  }, [authLoading, user, fetchStats, total]);
+
   if (authLoading) return null;
 
   return (
@@ -169,6 +185,10 @@ export default function ApplicationsPage() {
             }`}
           >
             {tab.label}
+            {(() => {
+              const c = tab.key === 'ALL' ? statsTotal : (counts[tab.key] ?? 0);
+              return c > 0 ? <span className="ml-1.5 opacity-70">{c}</span> : null;
+            })()}
           </button>
         ))}
       </div>

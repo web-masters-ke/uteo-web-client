@@ -4,6 +4,9 @@ import type { Application } from '../uteo-types';
 export const applicationsService = {
   list: (params?: Record<string, any>) =>
     apiGet<{ items: Application[]; total: number }>('/applications', { params }),
+  // Accurate status breakdown for chips/tabs — independent of the status filter.
+  stats: (params?: Record<string, any>) =>
+    apiGet<{ total: number; byStatus: Record<string, number> }>('/applications/stats', { params }),
   get: (id: string) => apiGet<Application>(`/applications/${id}`),
   apply: (data: { jobId: string; coverLetter?: string; resumeUrl?: string }) =>
     apiPost<Application>('/applications', data),

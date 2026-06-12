@@ -57,6 +57,7 @@ function RecruiterApplicationsContent() {
 
   const [applications, setApplications] = useState<Application[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [stats, setStats] = useState<{ total: number; byStatus: Record<string, number> }>({ total: 0, byStatus: {} });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -85,22 +86,43 @@ function RecruiterApplicationsContent() {
     fetchApplications();
   }, [isAuthenticated, isRecruiter, filterJobId, filterStatus]);
 
+  // Status chip counts come from the backend and intentionally ignore the
+  // status filter, so selecting one chip doesn't zero out the others. They
+  // still respect the job filter. Refetched only when the job scope changes.
+  useEffect(() => {
+    if (!isAuthenticated || !isRecruiter) return;
+    fetchStats();
+  }, [isAuthenticated, isRecruiter, filterJobId]);
+
   // Auto-refresh every 30s so brand-new applications surface without a full reload.
   useEffect(() => {
     if (!isAuthenticated || !isRecruiter) return;
     const id = window.setInterval(() => {
       // skip the auto-refresh while a status update is in-flight to avoid jitter
-      if (!updatingId) fetchApplications();
+      if (!updatingId) { fetchApplications(); fetchStats(); }
     }, 30_000);
     return () => window.clearInterval(id);
   }, [isAuthenticated, isRecruiter, filterJobId, filterStatus, updatingId]);
 
   async function fetchJobs() {
     try {
-      const data = await jobsService.list({ limit: 100 });
+      // The recruiter's OWN jobs (every status), not the public ACTIVE-only
+      // listing — so the filter dropdown matches the jobs they actually posted.
+      const data = await jobsService.mine();
       setJobs((data as any)?.items ?? []);
     } catch {
       // non-critical
+    }
+  }
+
+  async function fetchStats() {
+    try {
+      const params: Record<string, any> = {};
+      if (filterJobId) params.jobId = filterJobId;
+      const data = await applicationsService.stats(params);
+      setStats({ total: (data as any)?.total ?? 0, byStatus: (data as any)?.byStatus ?? {} });
+    } catch {
+      // non-critical — chips just won't render
     }
   }
 
@@ -108,11 +130,21 @@ function RecruiterApplicationsContent() {
     setLoading(true);
     setError(null);
     try {
-      const params: Record<string, any> = { limit: 50 };
-      if (filterJobId) params.jobId = filterJobId;
-      if (filterStatus) params.status = filterStatus;
-      const data = await applicationsService.list(params);
-      setApplications((data as any)?.items ?? []);
+      // Page through ALL matching applications (the API caps limit at 100), so
+      // "all of them" really means all — nothing silently dropped behind a cap.
+      const base: Record<string, any> = { limit: 100 };
+      if (filterJobId) base.jobId = filterJobId;
+      if (filterStatus) base.status = filterStatus;
+
+      const first = await applicationsService.list({ ...base, page: 1 });
+      const items = [...((first as any)?.items ?? [])];
+      const totalCount = (first as any)?.total ?? items.length;
+      const pages = Math.ceil(totalCount / 100);
+      for (let pg = 2; pg <= pages; pg++) {
+        const more = await applicationsService.list({ ...base, page: pg });
+        items.push(...((more as any)?.items ?? []));
+      }
+      setApplications(items);
     } catch (e: any) {
       setError(e?.message ?? 'Failed to load applications');
     } finally {
@@ -127,6 +159,7 @@ function RecruiterApplicationsContent() {
       setApplications((prev) =>
         prev.map((a) => (a.id === appId ? { ...a, status } : a)),
       );
+      fetchStats(); // counts shifted between statuses — keep chips accurate
     } catch {
       // silently fail — status stays unchanged
     } finally {
@@ -142,11 +175,9 @@ function RecruiterApplicationsContent() {
     );
   }
 
-  // Status summary counts
-  const counts = ALL_STATUSES.reduce<Record<string, number>>((acc, s) => {
-    acc[s] = applications.filter((a) => a.status === s).length;
-    return acc;
-  }, {});
+  // Status summary counts come from the backend (accurate + filter-independent),
+  // not from the currently-loaded/filtered rows.
+  const counts = stats.byStatus;
 
   return (
     <div className="max-w-6xl mx-auto space-y-6">
@@ -155,8 +186,11 @@ function RecruiterApplicationsContent() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Applications</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">
-            {loading ? 'Loading...' : `${applications.length} application${applications.length !== 1 ? 's' : ''}`}
-            {filterJobId || filterStatus ? ' (filtered)' : ' total'}
+            {loading
+              ? 'Loading...'
+              : (filterJobId || filterStatus)
+                ? `${applications.length} application${applications.length !== 1 ? 's' : ''} (filtered)`
+                : `${stats.total} application${stats.total !== 1 ? 's' : ''} total`}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -185,7 +219,7 @@ function RecruiterApplicationsContent() {
       </div>
 
       {/* Status summary chips */}
-      {!loading && applications.length > 0 && (
+      {stats.total > 0 && (
         <div className="flex flex-wrap gap-2">
           {ALL_STATUSES.map((s) => (
             counts[s] > 0 && (
