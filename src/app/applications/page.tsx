@@ -12,11 +12,12 @@ import EmptyState from '@/components/ui/EmptyState';
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
 const ALL_STATUSES: ApplicationStatus[] = [
-  'SUBMITTED', 'REVIEWED', 'SHORTLISTED', 'INTERVIEW', 'HIRED', 'REJECTED',
+  'SUBMITTED', 'ASSESSMENT', 'REVIEWED', 'SHORTLISTED', 'INTERVIEW', 'HIRED', 'REJECTED',
 ];
 
 const STATUS_CONFIG: Record<ApplicationStatus, { label: string; color: string; dot: string }> = {
   SUBMITTED:   { label: 'Submitted',   color: 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300',       dot: 'bg-gray-400' },
+  ASSESSMENT:  { label: 'Assessment',  color: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400', dot: 'bg-orange-500' },
   REVIEWED:    { label: 'Reviewed',    color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',     dot: 'bg-blue-500' },
   SHORTLISTED: { label: 'Shortlisted', color: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300', dot: 'bg-purple-500' },
   INTERVIEW:   { label: 'Interview',   color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300', dot: 'bg-amber-500' },

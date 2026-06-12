@@ -23,6 +23,12 @@ const STATUS_CONFIG: Record<ApplicationStatus, { label: string; description: str
     color: 'text-gray-600 dark:text-gray-300',
     bg: 'bg-gray-200 dark:bg-gray-600',
   },
+  ASSESSMENT:  {
+    label: 'Assessment',
+    description: 'Complete the screening assessment sent to your email to move forward.',
+    color: 'text-orange-600 dark:text-orange-400',
+    bg: 'bg-orange-500',
+  },
   REVIEWED:    {
     label: 'Reviewed',
     description: 'The employer has viewed your application.',

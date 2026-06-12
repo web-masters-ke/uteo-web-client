@@ -1,7 +1,7 @@
 // Uteo recruitment types
 export type JobType = 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERNSHIP' | 'REMOTE' | 'HYBRID';
 export type JobStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'CLOSED' | 'EXPIRED';
-export type ApplicationStatus = 'SUBMITTED' | 'REVIEWED' | 'SHORTLISTED' | 'INTERVIEW' | 'HIRED' | 'REJECTED';
+export type ApplicationStatus = 'SUBMITTED' | 'ASSESSMENT' | 'REVIEWED' | 'SHORTLISTED' | 'INTERVIEW' | 'HIRED' | 'REJECTED';
 
 export interface Company {
   id: string;

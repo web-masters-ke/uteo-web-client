@@ -9,11 +9,12 @@ import { jobsService } from '@/lib/services/jobs';
 import type { Application, Job, ApplicationStatus } from '@/lib/uteo-types';
 
 const ALL_STATUSES: ApplicationStatus[] = [
-  'SUBMITTED', 'REVIEWED', 'SHORTLISTED', 'INTERVIEW', 'HIRED', 'REJECTED',
+  'SUBMITTED', 'ASSESSMENT', 'REVIEWED', 'SHORTLISTED', 'INTERVIEW', 'HIRED', 'REJECTED',
 ];
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   SUBMITTED: 'Submitted',
+  ASSESSMENT: 'Assessment',
   REVIEWED: 'Reviewed',
   SHORTLISTED: 'Shortlisted',
   INTERVIEW: 'Interview',
@@ -23,6 +24,7 @@ const STATUS_LABELS: Record<ApplicationStatus, string> = {
 
 const STATUS_COLORS: Record<ApplicationStatus, string> = {
   SUBMITTED: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  ASSESSMENT: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
   REVIEWED: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
   SHORTLISTED: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
   INTERVIEW: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
