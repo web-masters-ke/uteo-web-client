@@ -7,6 +7,7 @@ import { jobsService } from '@/lib/services/jobs';
 import { applicationsService } from '@/lib/services/applications';
 import { api, unwrap } from '@/lib/api';
 import type { Job } from '@/lib/uteo-types';
+import { jobIdFromSlug } from '@/lib/utils';
 import { useAuth } from '@/lib/auth';
 import { PageSkeleton } from '@/components/ui/LoadingSkeleton';
 import Modal from '@/components/ui/Modal';
@@ -565,7 +566,10 @@ function ApplyModal({
 // ─── Job Detail Page ───────────────────────────────────────────────────────────
 
 export default function JobDetailPage() {
-  const { id } = useParams<{ id: string }>();
+  const { id: idParam } = useParams<{ id: string }>();
+  // URLs may be a human-readable `slug-id` (e.g. /jobs/senior-react-developer-cmq7...).
+  // The job id is the trailing cuid; bare-id links still resolve unchanged.
+  const id = jobIdFromSlug(idParam);
   const router = useRouter();
   const { user } = useAuth();
 

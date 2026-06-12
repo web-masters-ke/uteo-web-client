@@ -7,6 +7,7 @@ import { jobsService } from '@/lib/services/jobs';
 import { companiesService } from '@/lib/services/companies';
 import { apiGet, apiPost } from '@/lib/api';
 import type { Company } from '@/lib/uteo-types';
+import { jobSlug } from '@/lib/utils';
 
 interface Skill { id: string; name: string; }
 
@@ -208,7 +209,7 @@ function PostedSuccess({
 
       <div className="flex items-center justify-between text-sm">
         <a href="/recruiter" className="text-gray-500 dark:text-gray-400 hover:underline">&#x2190; Back to dashboard</a>
-        <a href={`/jobs/${job.id}`} className="font-semibold text-[#F77B0F] hover:underline">View job listing &#x2192;</a>
+        <a href={`/jobs/${jobSlug(job.title, job.id)}`} className="font-semibold text-[#F77B0F] hover:underline">View job listing &#x2192;</a>
       </div>
     </div>
   );
@@ -423,7 +424,7 @@ function PostJobContent() {
   }
 
   const jobUrl = postedJob
-    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/jobs/${postedJob.id}`
+    ? `${typeof window !== 'undefined' ? window.location.origin : ''}/jobs/${jobSlug(postedJob.title, postedJob.id)}`
     : '';
 
   const copyLink = async () => {

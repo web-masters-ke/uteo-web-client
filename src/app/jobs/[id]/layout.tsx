@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { jobIdFromSlug, jobSlug } from '@/lib/utils';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.uteo.ai/api/v1';
 const SITE_URL = process.env.NEXT_PUBLIC_CLIENT_URL || 'https://uteo.ai';
@@ -40,7 +41,7 @@ export async function generateMetadata({
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const job = await fetchJob(params.id);
+  const job = await fetchJob(jobIdFromSlug(params.id));
   if (!job) return { title: 'Job · Uteo' };
 
   const company = job.company?.name || 'A company';
@@ -52,7 +53,7 @@ export async function generateMetadata({
   // Prefer the per-job poster, fall back to company logo, then site default
   const ogImage = job.posterUrl || job.company?.logoUrl || `${SITE_URL}/og-default.png`;
 
-  const url = `${SITE_URL}/jobs/${job.id}`;
+  const url = `${SITE_URL}/jobs/${jobSlug(job.title, job.id)}`;
 
   return {
     title,

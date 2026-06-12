@@ -9,3 +9,23 @@ export function getInitials(firstName?: string | null, lastName?: string | null)
 export function cn(...classes: (string | boolean | undefined | null)[]): string { return classes.filter(Boolean).join(' '); }
 export function truncate(str: string, length: number): string { return str.length <= length ? str : str.slice(0, length) + '...'; }
 export const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+// Job share URLs read better with the title in them, e.g.
+//   /jobs/senior-react-developer-cmq7ut26p0003d03cm1w8kfl1
+// The trailing cuid still uniquely identifies the job. cuids contain no
+// dashes, so the slug stays human-readable and the id is recoverable by
+// taking the segment after the final dash (see jobIdFromSlug).
+export function jobSlug(title: string | undefined, id: string): string {
+  const slug = (title || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 60)
+    .replace(/-+$/g, '');
+  return slug ? `${slug}-${id}` : id;
+}
+
+// Recovers the job id from either a bare id or a `slug-id` path segment.
+export function jobIdFromSlug(param: string): string {
+  return param.split('-').pop() || param;
+}
