@@ -175,9 +175,17 @@ export default function EditJobPage() {
         <span className="text-gray-700 dark:text-gray-200">Edit</span>
       </div>
 
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Job</h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">Update the role, change status, or refresh required skills.</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Edit Job</h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">Update the role, change status, or refresh required skills.</p>
+        </div>
+        <Link
+          href={`/recruiter/jobs/${id}/assessment`}
+          className="shrink-0 text-sm px-4 py-2 rounded-xl border border-[#F77B0F] text-[#F77B0F] font-medium hover:bg-[#F77B0F]/5"
+        >
+          Screening assessment →
+        </Link>
       </div>
 
       {/* Cover image */}
