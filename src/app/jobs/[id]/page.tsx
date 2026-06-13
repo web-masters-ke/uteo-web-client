@@ -265,6 +265,10 @@ function ApplyModal({
         setError(`${rawMsg} ::link::/applications::Open My Applications::`);
       } else {
         setError(rawMsg);
+        // Safety net: a resume-related rejection means they skipped the upload —
+        // send them back to the Documents step so the fix is obvious (this was
+        // the "had to apply twice" friction).
+        if (/resume/i.test(rawMsg)) setStep(2);
       }
     } finally {
       setSubmitting(false);
@@ -382,7 +386,7 @@ function ApplyModal({
           {step === 2 && (
             <>
               <div>
-                <label className={labelCls}>Resume / CV</label>
+                <label className={labelCls}>Resume / CV <span className="text-[#F77B0F]">*</span></label>
                 {resumeUrl && uploadedFileName ? (
                   <div className="flex items-center gap-3 p-3 rounded-xl border border-[#F77B0F]/30 bg-[#F77B0F]/5">
                     <svg className="w-5 h-5 text-[#F77B0F] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -534,7 +538,12 @@ function ApplyModal({
               <button onClick={() => setStep(1)} className="px-5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                 ← Back
               </button>
-              <button onClick={() => setStep(3)} className="px-6 py-2.5 rounded-xl border-2 border-[#F77B0F] text-[#F77B0F] text-sm font-semibold hover:bg-[#F77B0F]/5 transition-colors">
+              <button
+                onClick={() => setStep(3)}
+                disabled={!resumeUrl}
+                title={!resumeUrl ? 'Add your resume to continue' : undefined}
+                className="px-6 py-2.5 rounded-xl border-2 border-[#F77B0F] text-[#F77B0F] text-sm font-semibold hover:bg-[#F77B0F]/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
                 Next — Your Pitch →
               </button>
             </>
@@ -545,7 +554,7 @@ function ApplyModal({
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={submitting || !whyRole.trim()}
+                disabled={submitting || !whyRole.trim() || !resumeUrl}
                 className="px-6 py-2.5 rounded-xl border-2 border-[#192C67] dark:border-white/20 text-[#192C67] dark:text-white text-sm font-semibold hover:bg-[#192C67]/5 dark:hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 {submitting ? (
