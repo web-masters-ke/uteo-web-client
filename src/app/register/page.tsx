@@ -32,9 +32,17 @@ function passwordScore(pw: string): { score: 0 | 1 | 2 | 3 | 4; label: string; c
  * Pan-African phone validation — accepts +CC (7-15 digits) or 0XX (10 digits).
  * Returns null if the format is acceptable, error string otherwise.
  */
+// Strip spaces, dashes, parens and dots so what we VALIDATE matches what we
+// SEND. The backend phone regex (/^(\+|00)?\d{7,15}$/) rejects any formatting,
+// so submitting the raw input (e.g. "+254 712 345 678") fails "Validation
+// failed" even though the form looked valid. Always send the normalized value.
+function normalizePhone(phone: string): string {
+  return phone.replace(/[\s\-()\.]/g, "");
+}
+
 function validatePhone(phone: string): string | null {
   if (!phone.trim()) return "Phone number is required";
-  const cleaned = phone.replace(/[\s\-()\.]/g, "");
+  const cleaned = normalizePhone(phone);
   if (!/^(\+|00)?\d{7,15}$/.test(cleaned)) {
     return "Use international format, e.g. +254712345678";
   }
@@ -148,7 +156,7 @@ function RegisterPageInner() {
     setPhoneAvail("checking");
     phoneDebounce.current = setTimeout(async () => {
       try {
-        const r = await apiPost<{ phone?: { available: boolean } }>("/auth/check-availability", { phone: account.phone });
+        const r = await apiPost<{ phone?: { available: boolean } }>("/auth/check-availability", { phone: normalizePhone(account.phone) });
         setPhoneAvail(r?.phone?.available ? "available" : "taken");
       } catch { setPhoneAvail("idle"); }
     }, 450);
@@ -211,7 +219,7 @@ function RegisterPageInner() {
         firstName: account.firstName,
         lastName: account.lastName,
         email: account.email,
-        phone: account.phone,
+        phone: normalizePhone(account.phone),
         password: account.password,
         role: authRole,
       });
