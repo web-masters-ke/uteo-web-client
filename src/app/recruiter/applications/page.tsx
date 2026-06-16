@@ -63,6 +63,7 @@ function RecruiterApplicationsContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   // Filters
   const [filterJobId, setFilterJobId] = useState(searchParams.get('jobId') ?? '');
@@ -125,6 +126,25 @@ function RecruiterApplicationsContent() {
       setStats({ total: (data as any)?.total ?? 0, byStatus: (data as any)?.byStatus ?? {} });
     } catch {
       // non-critical — chips just won't render
+    }
+  }
+
+  async function handleDownload() {
+    setDownloading(true);
+    try {
+      // Respects the active filters: a job filter → that job's report, otherwise
+      // a consolidated report of every applicant across the recruiter's jobs.
+      const params: Record<string, any> = {};
+      if (filterJobId) params.jobId = filterJobId;
+      if (filterStatus) params.status = filterStatus;
+      const jobTitle = jobs.find((j) => j.id === filterJobId)?.title;
+      const scope = (jobTitle || 'all-jobs').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+      const date = new Date().toISOString().slice(0, 10);
+      await applicationsService.downloadReport(params, `applicants-${scope}-${date}.xlsx`);
+    } catch {
+      setError('Could not generate the report. Please try again.');
+    } finally {
+      setDownloading(false);
     }
   }
 
@@ -196,6 +216,20 @@ function RecruiterApplicationsContent() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={downloading || stats.total === 0}
+            className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg bg-[#F77B0F] text-white font-medium hover:bg-[#e06d00] disabled:opacity-50"
+            title={filterJobId ? 'Download applicants for this job (Excel)' : 'Download all applicants (Excel)'}
+          >
+            <svg className={`w-4 h-4 ${downloading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              {downloading
+                ? <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                : <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />}
+            </svg>
+            {downloading ? 'Preparing…' : 'Download report'}
+          </button>
           <button
             type="button"
             onClick={() => fetchApplications()}
