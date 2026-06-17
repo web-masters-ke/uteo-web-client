@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut } from '../api';
+import { apiGet, apiPost, apiPut, apiPatch } from '../api';
 
 export type AssessmentQuestionType = 'MCQ' | 'MULTI' | 'TRUE_FALSE' | 'FREE_TEXT';
 
@@ -39,6 +39,29 @@ export interface TakeAssessment {
 
 export interface SubmitAnswer { questionId: string; optionIds?: string[]; text?: string }
 
+export interface AssessmentResultQuestion {
+  id: string;
+  type: AssessmentQuestionType;
+  prompt: string;
+  options?: AssessmentOption[];
+  correct: string[];
+  rubric?: string | null;
+  points: number;
+  response: { optionIds: string[]; text: string };
+  isCorrect: boolean | null;
+  aiFeedback?: { points: number; feedback: string } | null;
+}
+
+export interface AssessmentResult {
+  applicationId: string;
+  status: string;
+  score: number | null;
+  passed: boolean | null;
+  passThreshold: number;
+  submittedAt: string | null;
+  questions: AssessmentResultQuestion[];
+}
+
 export const assessmentsService = {
   // Recruiter
   getForJob: (jobId: string) => apiGet<Assessment | null>(`/assessments/job/${jobId}`),
@@ -46,6 +69,16 @@ export const assessmentsService = {
     apiPut<Assessment>(`/assessments/job/${jobId}`, body),
   draft: (jobId: string, count?: number) =>
     apiPost<{ questions: AssessmentQuestion[] }>(`/assessments/job/${jobId}/draft`, { count }),
+  // Paste questions → AI structures them + generates the answers/rubrics
+  importQuestions: (jobId: string, text: string) =>
+    apiPost<{ questions: AssessmentQuestion[] }>(`/assessments/job/${jobId}/import`, { text }),
+
+  // Review a candidate's recorded responses + grading
+  result: (applicationId: string) =>
+    apiGet<AssessmentResult | null>(`/assessments/application/${applicationId}/result`),
+  // Manually override a candidate's score
+  overrideScore: (applicationId: string, score: number, passed?: boolean) =>
+    apiPatch<{ score: number; passed: boolean }>(`/assessments/application/${applicationId}/score`, { score, passed }),
 
   // Candidate (token-gated)
   take: (token: string) => apiGet<TakeAssessment>(`/assessments/take/${token}`),

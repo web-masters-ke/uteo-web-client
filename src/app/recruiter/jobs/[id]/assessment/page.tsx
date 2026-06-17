@@ -26,6 +26,9 @@ export default function AssessmentBuilderPage() {
   const [questions, setQuestions] = useState<AssessmentQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [drafting, setDrafting] = useState(false);
+  const [importText, setImportText] = useState('');
+  const [importing, setImporting] = useState(false);
+  const [showImport, setShowImport] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,6 +63,26 @@ export default function AssessmentBuilderPage() {
       setError(e?.message ?? 'AI draft failed.');
     } finally {
       setDrafting(false);
+    }
+  }
+
+  async function importPasted() {
+    if (!importText.trim()) return;
+    setImporting(true);
+    setError(null);
+    try {
+      const { questions: imported } = await assessmentsService.importQuestions(jobId, importText);
+      if (imported?.length) {
+        setQuestions((prev) => [...prev, ...imported]);
+        setImportText('');
+        setShowImport(false);
+      } else {
+        setError('Could not read any questions from that text. Try clearer phrasing.');
+      }
+    } catch (e: any) {
+      setError(e?.message ?? 'Import failed.');
+    } finally {
+      setImporting(false);
     }
   }
 
@@ -148,12 +171,41 @@ export default function AssessmentBuilderPage() {
             className="text-sm px-3 py-1.5 rounded-lg border border-[#F77B0F] text-[#F77B0F] hover:bg-[#F77B0F]/5 disabled:opacity-50">
             {drafting ? 'Generating…' : '✨ Draft with AI'}
           </button>
+          <button onClick={() => setShowImport((s) => !s)}
+            className="text-sm px-3 py-1.5 rounded-lg border border-[#F77B0F] text-[#F77B0F] hover:bg-[#F77B0F]/5">
+            ⬆ Paste questions
+          </button>
           <button onClick={() => setQuestions((qs) => [...qs, blankQuestion()])}
             className="text-sm px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:border-gray-300">
             + Add
           </button>
         </div>
       </div>
+
+      {showImport && (
+        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-[#F77B0F]/30 p-4 space-y-3">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Paste your questions (one per line, or numbered). The AI fills in the options, marks the correct
+            answer, and writes a grading rubric for open-ended ones — so the system can mark them. You can edit
+            everything afterwards.
+          </p>
+          <textarea
+            value={importText}
+            onChange={(e) => setImportText(e.target.value)}
+            rows={6}
+            placeholder={"e.g.\n1. What does REST stand for?\n2. Describe a time you handled an angry customer.\n3. True or false: Node.js is single-threaded."}
+            className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 p-3 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#F77B0F]"
+          />
+          <div className="flex items-center gap-2">
+            <button onClick={importPasted} disabled={importing || !importText.trim()}
+              className="text-sm px-4 py-2 rounded-lg bg-[#F77B0F] text-white font-medium hover:bg-[#e06d00] disabled:opacity-50">
+              {importing ? 'Generating answers…' : 'Generate answers & add'}
+            </button>
+            <button onClick={() => { setShowImport(false); setImportText(''); }}
+              className="text-sm px-3 py-2 rounded-lg text-gray-500 hover:text-gray-700">Cancel</button>
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         {questions.map((q, i) => (

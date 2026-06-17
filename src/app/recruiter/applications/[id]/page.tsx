@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth';
 import { useToast } from '@/lib/toast';
 import { applicationsService } from '@/lib/services/applications';
 import { offersService } from '@/lib/services/offers';
+import { assessmentsService, type AssessmentResult } from '@/lib/services/assessments';
 import { openSignedFile } from '@/lib/s3-url';
 import type { Application, ApplicationStatus } from '@/lib/uteo-types';
 
@@ -24,6 +25,99 @@ const STATUS_COLORS: Record<string, string> = {
 function fmtDate(d?: string | null) {
   if (!d) return '—';
   return new Date(d).toLocaleString('en-KE', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+// Shows the candidate's recorded assessment responses + grading, with a manual
+// score override for the recruiter.
+function AssessmentResultSection({ applicationId }: { applicationId: string }) {
+  const { addToast } = useToast();
+  const [result, setResult] = useState<AssessmentResult | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [scoreInput, setScoreInput] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const r = await assessmentsService.result(applicationId);
+      setResult(r);
+      if (r?.score != null) setScoreInput(String(r.score));
+    } catch { setResult(null); }
+    finally { setLoading(false); }
+  }, [applicationId]);
+
+  useEffect(() => { load(); }, [load]);
+
+  if (loading || !result) return null; // no assessment taken → nothing to show
+
+  async function saveScore() {
+    const score = Number(scoreInput);
+    if (!Number.isFinite(score) || score < 0 || score > 100) { addToast('error', 'Score must be 0–100'); return; }
+    setSaving(true);
+    try {
+      const res = await assessmentsService.overrideScore(applicationId, score);
+      setResult((r) => (r ? { ...r, score: res.score, passed: res.passed } : r));
+      addToast('success', `Score updated to ${res.score}% (${res.passed ? 'pass' : 'fail'})`);
+    } catch (e: any) {
+      addToast('error', e?.response?.data?.message ?? 'Could not update score');
+    } finally { setSaving(false); }
+  }
+
+  return (
+    <div className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 lg:p-8">
+      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Assessment responses</h2>
+        <div className="flex items-center gap-3">
+          {result.score != null && (
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${result.passed ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'}`}>
+              {result.score}% · {result.passed ? 'Pass' : 'Below'} (mark {result.passThreshold}%)
+            </span>
+          )}
+          <div className="flex items-center gap-1">
+            <input type="number" min={0} max={100} value={scoreInput} onChange={(e) => setScoreInput(e.target.value)}
+              className="w-16 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-2 py-1 text-sm text-gray-900 dark:text-white" />
+            <button onClick={saveScore} disabled={saving}
+              className="text-xs px-3 py-1.5 rounded-lg border border-[#F77B0F] text-[#F77B0F] hover:bg-[#F77B0F]/5 disabled:opacity-50">
+              {saving ? 'Saving…' : 'Override'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {result.questions.map((q, i) => (
+          <div key={q.id} className="rounded-2xl border border-gray-100 dark:border-gray-700 p-4">
+            <div className="flex items-start justify-between gap-2">
+              <p className="text-sm font-medium text-gray-900 dark:text-white">{i + 1}. {q.prompt}</p>
+              {q.isCorrect === true && <span className="text-xs text-emerald-600 shrink-0">✓ Correct</span>}
+              {q.isCorrect === false && <span className="text-xs text-red-500 shrink-0">✗ Incorrect</span>}
+              {q.isCorrect === null && <span className="text-xs text-gray-400 shrink-0">AI-graded</span>}
+            </div>
+            {q.type === 'FREE_TEXT' ? (
+              <div className="mt-2">
+                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">{q.response.text || <span className="italic text-gray-400">No answer</span>}</p>
+                {q.aiFeedback && <p className="mt-1 text-xs text-gray-500 italic">AI: {q.aiFeedback.feedback} ({q.aiFeedback.points}/{q.points})</p>}
+              </div>
+            ) : (
+              <div className="mt-2 space-y-1">
+                {(q.options ?? []).map((opt) => {
+                  const chosen = q.response.optionIds.includes(opt.id);
+                  const isAnswer = q.correct.includes(opt.id);
+                  return (
+                    <div key={opt.id} className={`text-sm px-3 py-1.5 rounded-lg flex items-center gap-2 ${chosen ? 'bg-[#F77B0F]/10' : ''}`}>
+                      <span className={`text-xs ${isAnswer ? 'text-emerald-600' : 'text-gray-300'}`}>{isAnswer ? '✓' : '○'}</span>
+                      <span className={`${chosen ? 'font-medium text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>{opt.text}</span>
+                      {chosen && <span className="text-[10px] text-[#F77B0F] ml-auto">their answer</span>}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default function RecruiterApplicationDetail() {
@@ -243,6 +337,9 @@ export default function RecruiterApplicationDetail() {
           <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{(app as any).notes}</p>
         </div>
       )}
+
+      {/* Assessment responses + score override */}
+      <AssessmentResultSection applicationId={id} />
 
       {/* Quick links */}
       <div className="flex flex-wrap items-center gap-3">
