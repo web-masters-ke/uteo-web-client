@@ -12,6 +12,10 @@ const ALL_STATUSES: ApplicationStatus[] = [
   'SUBMITTED', 'ASSESSMENT', 'REVIEWED', 'SHORTLISTED', 'INTERVIEW', 'HIRED', 'REJECTED',
 ];
 
+// Linear hiring pipeline order (REJECTED/WITHDRAWN are off-pipeline outcomes).
+// Used to offer HR "move back" steps to any earlier stage.
+const PIPELINE: ApplicationStatus[] = ['SUBMITTED', 'ASSESSMENT', 'REVIEWED', 'SHORTLISTED', 'INTERVIEW', 'HIRED'];
+
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   SUBMITTED: 'Submitted',
   ASSESSMENT: 'Assessment',
@@ -384,6 +388,15 @@ function ApplicationCard({
   const [showActions, setShowActions] = useState(false);
   const actions = NEXT_ACTIONS[application.status] ?? [];
 
+  // "Move back" options: every pipeline stage earlier than the current one,
+  // nearest first. Lets HR reverse a step — e.g. pull a candidate back from
+  // Interview to Assessment to be tested first. Moving to Assessment re-sends
+  // the test automatically (handled server-side).
+  const curIdx = PIPELINE.indexOf(application.status);
+  const backStages: ApplicationStatus[] = curIdx > 0 ? PIPELINE.slice(0, curIdx).reverse() : [];
+  const backLabel = (s: ApplicationStatus) =>
+    s === 'ASSESSMENT' ? 'Send assessment / re-test' : `Move back to ${STATUS_LABELS[s]}`;
+
   const candidateName =
     (application as any)?.user?.firstName
       ? `${(application as any).user.firstName} ${(application as any).user.lastName ?? ''}`
@@ -478,7 +491,7 @@ function ApplicationCard({
               )}
 
               {/* Status actions */}
-              {actions.length > 0 && (
+              {(actions.length > 0 || backStages.length > 0) && (
                 <div className="relative">
                   <button
                     onClick={() => setShowActions((o) => !o)}
@@ -492,7 +505,7 @@ function ApplicationCard({
                   </button>
 
                   {showActions && (
-                    <div className="absolute right-0 top-8 z-20 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg py-1 min-w-[160px]">
+                    <div className="absolute right-0 top-8 z-20 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg py-1 min-w-[190px]">
                       {actions.map((action) => (
                         <button
                           key={action.status}
@@ -505,6 +518,26 @@ function ApplicationCard({
                           {action.label}
                         </button>
                       ))}
+
+                      {backStages.length > 0 && (
+                        <>
+                          <div className="mt-1 mb-0.5 px-4 pt-1.5 border-t border-gray-100 dark:border-gray-700 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                            Step back
+                          </div>
+                          {backStages.map((s) => (
+                            <button
+                              key={s}
+                              onClick={() => {
+                                onStatusChange(s);
+                                setShowActions(false);
+                              }}
+                              className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium text-gray-600 dark:text-gray-300"
+                            >
+                              {s === 'ASSESSMENT' ? '✨ ' : '↩ '}{backLabel(s)}
+                            </button>
+                          ))}
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
