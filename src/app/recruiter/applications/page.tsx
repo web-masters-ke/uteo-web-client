@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { applicationsService } from '@/lib/services/applications';
 import { jobsService } from '@/lib/services/jobs';
+import { assessmentsService } from '@/lib/services/assessments';
 import type { Application, Job, ApplicationStatus } from '@/lib/uteo-types';
 
 const ALL_STATUSES: ApplicationStatus[] = [
@@ -179,6 +180,24 @@ function RecruiterApplicationsContent() {
   }
 
   async function updateStatus(appId: string, status: ApplicationStatus) {
+    // Sending someone to ASSESSMENT only works if the job has an active test.
+    // If it doesn't, route HR straight to the builder to set one up first
+    // (instead of silently sending nothing).
+    if (status === 'ASSESSMENT') {
+      const jobId = applications.find((a) => a.id === appId)?.jobId;
+      if (jobId) {
+        try {
+          const a = await assessmentsService.getForJob(jobId);
+          const ready = !!a && a.isActive && (a.questions?.length ?? 0) > 0;
+          if (!ready) {
+            router.push(`/recruiter/jobs/${jobId}/assessment?setup=1`);
+            return;
+          }
+        } catch {
+          /* check failed — fall through and let the backend decide */
+        }
+      }
+    }
     setUpdatingId(appId);
     try {
       await applicationsService.updateStatus(appId, status);

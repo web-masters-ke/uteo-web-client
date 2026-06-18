@@ -32,6 +32,13 @@ export default function AssessmentBuilderPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [setupHint, setSetupHint] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('setup') === '1') {
+      setSetupHint(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) router.replace(`/login?redirect=/recruiter/jobs/${jobId}/assessment`);
@@ -136,6 +143,14 @@ export default function AssessmentBuilderPage() {
         </div>
         <Link href={`/recruiter/jobs/${jobId}/edit`} className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400">← Job</Link>
       </div>
+
+      {setupHint && (
+        <div className="rounded-2xl border border-[#F77B0F]/40 bg-[#F77B0F]/5 p-4 text-sm text-gray-700 dark:text-gray-200">
+          This job has no active assessment yet. Add questions below (paste them, draft with AI, or add manually),
+          set the pass mark, tick <strong>Active</strong>, and Save — then go back to the candidate and choose
+          <strong> “✨ Send assessment / re-test.”</strong>
+        </div>
+      )}
 
       {/* Settings */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 space-y-4">
