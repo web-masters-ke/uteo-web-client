@@ -259,7 +259,9 @@ export default function ApplicationDetailPage() {
 
   const job = application.job;
   const att = application.assessmentAttempt;
-  const assessmentPending = !!att && (att.status === 'SENT' || att.status === 'STARTED');
+  // Only prompt while the application is genuinely in ASSESSMENT — moving the
+  // candidate out (or a withdrawal) removes the prompt right away.
+  const assessmentPending = !!att && (att.status === 'SENT' || att.status === 'STARTED') && application.status === 'ASSESSMENT';
   const assessmentDone = !!att && (att.status === 'GRADED' || att.status === 'SUBMITTED');
   const cfg = STATUS_CONFIG[application.status] ?? STATUS_CONFIG.SUBMITTED;
   const canWithdraw = !['HIRED', 'REJECTED'].includes(application.status);

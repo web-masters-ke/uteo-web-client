@@ -51,7 +51,9 @@ function ApplicationRow({ app }: { app: Application }) {
   const cfg = STATUS_CONFIG[app.status] ?? STATUS_CONFIG.SUBMITTED;
   const router = useRouter();
   const attempt = app.assessmentAttempt;
-  const pending = !!attempt && (attempt.status === 'SENT' || attempt.status === 'STARTED');
+  // Only prompt while the application is actually in ASSESSMENT — so re-assigning
+  // shows it instantly, and moving them out (interview, withdraw, etc.) removes it.
+  const pending = !!attempt && (attempt.status === 'SENT' || attempt.status === 'STARTED') && app.status === 'ASSESSMENT';
   const done = !!attempt && (attempt.status === 'GRADED' || attempt.status === 'SUBMITTED');
   const [going, setGoing] = useState(false);
 
