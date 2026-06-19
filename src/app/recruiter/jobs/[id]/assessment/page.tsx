@@ -229,7 +229,8 @@ export default function AssessmentBuilderPage() {
               <span className="text-[#F77B0F] font-semibold">{i + 1}.</span>
               <select value={q.type} onChange={(e) => updateQ(i, { type: e.target.value as any })}
                 className="text-xs rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-2 py-1 text-gray-700 dark:text-gray-300">
-                <option value="MCQ">Multiple choice</option>
+                <option value="MCQ">Multiple choice (one answer)</option>
+                <option value="MULTI">Multiple answers (select all)</option>
                 <option value="TRUE_FALSE">True / False</option>
                 <option value="FREE_TEXT">Free text (AI-graded)</option>
               </select>
@@ -250,8 +251,19 @@ export default function AssessmentBuilderPage() {
               <div className="space-y-2">
                 {(q.options ?? []).map((opt, oi) => (
                   <div key={oi} className="flex items-center gap-2">
-                    <input type="radio" name={`correct-${i}`} checked={(q.correct ?? []).includes(opt.id)}
-                      onChange={() => updateQ(i, { correct: [opt.id] })} className="accent-[#F77B0F]" title="Mark correct" />
+                    <input
+                      type={q.type === 'MULTI' ? 'checkbox' : 'radio'}
+                      name={`correct-${i}`}
+                      checked={(q.correct ?? []).includes(opt.id)}
+                      onChange={() => {
+                        if (q.type === 'MULTI') {
+                          const cur = q.correct ?? [];
+                          updateQ(i, { correct: cur.includes(opt.id) ? cur.filter((c) => c !== opt.id) : [...cur, opt.id] });
+                        } else {
+                          updateQ(i, { correct: [opt.id] });
+                        }
+                      }}
+                      className="accent-[#F77B0F]" title="Mark correct" />
                     <input value={opt.text}
                       onChange={(e) => updateQ(i, { options: (q.options ?? []).map((o, x) => x === oi ? { ...o, text: e.target.value } : o) })}
                       placeholder={`Option ${opt.id.toUpperCase()}`}
@@ -265,7 +277,7 @@ export default function AssessmentBuilderPage() {
                     updateQ(i, { options: [...(q.options ?? []), { id: next, text: '' }] });
                   }}
                   className="text-xs text-[#F77B0F] hover:underline">+ Add option</button>
-                <p className="text-xs text-gray-400">Select the radio next to the correct option.</p>
+                <p className="text-xs text-gray-400">{q.type === 'MULTI' ? 'Tick every correct option.' : 'Select the correct option.'}</p>
               </div>
             )}
           </div>

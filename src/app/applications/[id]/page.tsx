@@ -83,7 +83,7 @@ function jobTypeLabel(type: string) {
 
 // ─── Application Status Timeline ──────────────────────────────────────────────
 
-function StatusTimeline({ status }: { status: ApplicationStatus }) {
+function StatusTimeline({ status, assessmentDone }: { status: ApplicationStatus; assessmentDone?: boolean }) {
   const isRejected = status === 'REJECTED';
   const currentIdx = isRejected
     ? STATUS_ORDER.length // Past "Interview" in rejected state
@@ -125,7 +125,11 @@ function StatusTimeline({ status }: { status: ApplicationStatus }) {
                   {cfg.label}
                 </p>
                 {isCurrent && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{cfg.description}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    {step === 'ASSESSMENT' && assessmentDone
+                      ? 'Assessment completed — under review by the hiring team.'
+                      : cfg.description}
+                  </p>
                 )}
               </div>
 
@@ -254,6 +258,9 @@ export default function ApplicationDetailPage() {
   );
 
   const job = application.job;
+  const att = application.assessmentAttempt;
+  const assessmentPending = !!att && (att.status === 'SENT' || att.status === 'STARTED');
+  const assessmentDone = !!att && (att.status === 'GRADED' || att.status === 'SUBMITTED');
   const cfg = STATUS_CONFIG[application.status] ?? STATUS_CONFIG.SUBMITTED;
   const canWithdraw = !['HIRED', 'REJECTED'].includes(application.status);
 
@@ -270,7 +277,7 @@ export default function ApplicationDetailPage() {
         Back to Applications
       </Link>
 
-      {application.status === 'ASSESSMENT' && (
+      {assessmentPending && (
         <div className="mb-6 rounded-2xl border border-[#F77B0F]/40 bg-[#F77B0F]/5 p-5 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
           <div>
             <p className="font-semibold text-gray-900 dark:text-white">A screening assessment is waiting for you</p>
@@ -283,6 +290,15 @@ export default function ApplicationDetailPage() {
           >
             {goingToTest ? 'Opening…' : '📝 Take assessment now'}
           </button>
+        </div>
+      )}
+
+      {assessmentDone && (
+        <div className="mb-6 rounded-2xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 p-5">
+          <p className="font-semibold text-emerald-800 dark:text-emerald-300">✓ Assessment completed</p>
+          <p className="text-sm text-emerald-700/80 dark:text-emerald-400/80 mt-0.5">
+            Thanks — your responses are in{att?.score != null ? ` (you scored ${att.score}%)` : ''}. The hiring team will review and be in touch.
+          </p>
         </div>
       )}
 
@@ -445,7 +461,7 @@ export default function ApplicationDetailPage() {
           <div className="sticky top-24">
             <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-6">Application Timeline</h3>
-              <StatusTimeline status={application.status} />
+              <StatusTimeline status={application.status} assessmentDone={assessmentDone} />
             </div>
 
             {/* View job button */}

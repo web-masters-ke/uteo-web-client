@@ -46,6 +46,11 @@ export interface Application {
   appliedAt: string;
   updatedAt: string;
   job: Job;
+  assessmentAttempt?: {
+    status: 'SENT' | 'STARTED' | 'SUBMITTED' | 'GRADED' | 'EXPIRED';
+    score: number | null;
+    passed: boolean | null;
+  } | null;
 }
 
 export interface FeedResponse {

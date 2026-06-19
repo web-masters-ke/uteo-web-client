@@ -50,7 +50,9 @@ const TABS: { key: TabKey; label: string }[] = [
 function ApplicationRow({ app }: { app: Application }) {
   const cfg = STATUS_CONFIG[app.status] ?? STATUS_CONFIG.SUBMITTED;
   const router = useRouter();
-  const isAssessment = app.status === 'ASSESSMENT';
+  const attempt = app.assessmentAttempt;
+  const pending = !!attempt && (attempt.status === 'SENT' || attempt.status === 'STARTED');
+  const done = !!attempt && (attempt.status === 'GRADED' || attempt.status === 'SUBMITTED');
   const [going, setGoing] = useState(false);
 
   const takeAssessment = async () => {
@@ -68,7 +70,7 @@ function ApplicationRow({ app }: { app: Application }) {
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-xl border transition-all ${isAssessment ? 'border-[#F77B0F]/40' : 'border-gray-200 dark:border-gray-700'}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-xl border transition-all ${pending ? 'border-[#F77B0F]/40' : 'border-gray-200 dark:border-gray-700'}`}>
     <Link
       href={`/applications/${app.id}`}
       className="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 rounded-xl transition-all group"
@@ -126,7 +128,7 @@ function ApplicationRow({ app }: { app: Application }) {
       </svg>
     </Link>
 
-    {isAssessment && (
+    {pending && (
       <div className="px-4 pb-4 -mt-1">
         <button
           onClick={takeAssessment}
@@ -136,6 +138,13 @@ function ApplicationRow({ app }: { app: Application }) {
           {going ? 'Opening…' : '📝 Take assessment now'}
         </button>
         <p className="text-center text-[11px] text-gray-400 mt-1.5">A short test is required for this application. You can do it right here.</p>
+      </div>
+    )}
+    {done && (
+      <div className="px-4 pb-4 -mt-1">
+        <div className="w-full flex items-center justify-center gap-2 bg-gray-50 dark:bg-gray-700/40 text-gray-600 dark:text-gray-300 py-2.5 rounded-xl text-sm font-medium">
+          ✓ Assessment completed{attempt?.score != null ? ` — scored ${attempt.score}%` : ''}
+        </div>
       </div>
     )}
     </div>

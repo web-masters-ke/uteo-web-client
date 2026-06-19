@@ -24,8 +24,14 @@ export default function AssessmentTakePage() {
     return () => { alive = false; };
   }, [token]);
 
-  const setOption = (qid: string, optId: string) =>
-    setAnswers((a) => ({ ...a, [qid]: { optionIds: [optId] } }));
+  // Single-select for MCQ/true-false; multi-select toggle for MULTI.
+  const setOption = (qid: string, optId: string, multi = false) =>
+    setAnswers((a) => {
+      if (!multi) return { ...a, [qid]: { optionIds: [optId] } };
+      const cur = a[qid]?.optionIds ?? [];
+      const next = cur.includes(optId) ? cur.filter((x) => x !== optId) : [...cur, optId];
+      return { ...a, [qid]: { optionIds: next } };
+    });
   const setText = (qid: string, text: string) =>
     setAnswers((a) => ({ ...a, [qid]: { text } }));
 
@@ -128,20 +134,22 @@ export default function AssessmentTakePage() {
                 />
               ) : (
                 <div className="mt-3 space-y-2">
+                  {q.type === 'MULTI' && <p className="text-xs text-gray-400 mb-1">Select all that apply</p>}
                   {(q.options ?? []).map((opt) => {
+                    const isMulti = q.type === 'MULTI';
                     const selected = answers[q.id]?.optionIds?.includes(opt.id);
                     return (
                       <button
                         key={opt.id}
                         type="button"
-                        onClick={() => setOption(q.id, opt.id)}
+                        onClick={() => setOption(q.id, opt.id, isMulti)}
                         className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition-colors ${
                           selected
                             ? 'border-[#F77B0F] bg-[#F77B0F]/5 text-gray-900 dark:text-white'
                             : 'border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-[#F77B0F]/50'
                         }`}
                       >
-                        <span className={`inline-block h-4 w-4 rounded-full border mr-3 align-middle ${selected ? 'border-[#F77B0F] bg-[#F77B0F]' : 'border-gray-300'}`} />
+                        <span className={`inline-block h-4 w-4 border mr-3 align-middle ${isMulti ? 'rounded' : 'rounded-full'} ${selected ? 'border-[#F77B0F] bg-[#F77B0F]' : 'border-gray-300'}`} />
                         {opt.text}
                       </button>
                     );

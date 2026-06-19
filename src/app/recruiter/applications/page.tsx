@@ -466,6 +466,17 @@ function ApplicationCard({
                   {application.job?.title ?? 'this job'}
                 </Link>
               </p>
+              {(() => {
+                const a = (application as any).assessmentAttempt;
+                if (!a) return null;
+                const done = a.status === 'GRADED' || a.status === 'SUBMITTED';
+                if (done) return (
+                  <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-semibold ${a.passed ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'}`}>
+                    Test: {a.score != null ? `${a.score}%` : 'done'} {a.passed ? '· passed' : '· review'}
+                  </span>
+                );
+                return <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400">Test: not yet taken</span>;
+              })()}
             </div>
             <div className="flex items-center gap-2 shrink-0">
               {updating ? (
