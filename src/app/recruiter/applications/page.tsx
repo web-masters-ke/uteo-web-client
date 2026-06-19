@@ -82,6 +82,7 @@ function RecruiterApplicationsContent() {
   // Filters
   const [filterJobId, setFilterJobId] = useState(searchParams.get('jobId') ?? '');
   const [filterStatus, setFilterStatus] = useState<ApplicationStatus | ''>('');
+  const [sortBy, setSortBy] = useState<'recent' | 'score'>('recent');
 
   useEffect(() => {
     if (!authLoading && !isAuthenticated) {
@@ -331,6 +332,16 @@ function RecruiterApplicationsContent() {
           ))}
         </select>
 
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as 'recent' | 'score')}
+          title="Sort candidates"
+          className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:border-[#F77B0F]"
+        >
+          <option value="recent">Sort: Most recent</option>
+          <option value="score">Sort: Test score (high → low)</option>
+        </select>
+
         {(filterJobId || filterStatus) && (
           <button
             onClick={() => { setFilterJobId(''); setFilterStatus(''); }}
@@ -390,7 +401,17 @@ function RecruiterApplicationsContent() {
       {/* Applications list */}
       {!loading && !error && applications.length > 0 && (
         <div className="space-y-3">
-          {applications.map((app) => (
+          {[...applications]
+            .sort((a, b) => {
+              if (sortBy !== 'score') return 0; // keep API order (most recent)
+              // Rank by assessment score, highest first; untaken/untested last.
+              const sa = (a as any).assessmentAttempt?.score;
+              const sb = (b as any).assessmentAttempt?.score;
+              const va = typeof sa === 'number' ? sa : -1;
+              const vb = typeof sb === 'number' ? sb : -1;
+              return vb - va;
+            })
+            .map((app) => (
             <ApplicationCard
               key={app.id}
               application={app}
