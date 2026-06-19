@@ -35,10 +35,12 @@ export default function AssessmentTakePage() {
   const setText = (qid: string, text: string) =>
     setAnswers((a) => ({ ...a, [qid]: { text } }));
 
-  const allAnswered = data?.questions.every((q) => {
+  const isAnswered = (q: { id: string; type: string }) => {
     const ans = answers[q.id];
     return q.type === 'FREE_TEXT' ? !!ans?.text?.trim() : !!ans?.optionIds?.length;
-  });
+  };
+  const answeredCount = data?.questions.filter(isAnswered).length ?? 0;
+  const allAnswered = !!data && data.questions.every(isAnswered);
 
   async function submit() {
     if (!data) return;
@@ -84,7 +86,15 @@ export default function AssessmentTakePage() {
             {passed === true ? '✓' : passed === false ? '•' : '…'}
           </div>
           <h1 className="mt-4 text-xl font-bold text-gray-900 dark:text-white">Assessment submitted</h1>
-          <p className="mt-2 text-gray-500 dark:text-gray-400">
+          {typeof result.score === 'number' && (
+            <p className="mt-3 text-3xl font-black text-gray-900 dark:text-white">
+              {result.score}%
+              <span className={`block text-sm font-semibold mt-1 ${passed === true ? 'text-green-600' : passed === false ? 'text-amber-600' : 'text-blue-600'}`}>
+                {passed === true ? 'Passed' : passed === false ? 'Below the pass mark' : 'Received — pending review'}
+              </span>
+            </p>
+          )}
+          <p className="mt-3 text-gray-500 dark:text-gray-400">
             {passed === true
               ? 'Thanks — you’ve advanced to the next stage. The hiring team will be in touch.'
               : passed === false
@@ -162,14 +172,22 @@ export default function AssessmentTakePage() {
 
         {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
-        <button
-          type="button"
-          onClick={submit}
-          disabled={submitting || !allAnswered}
-          className="mt-6 w-full bg-[#F77B0F] text-white py-3 rounded-xl font-semibold hover:bg-[#e06d00] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {submitting ? 'Submitting…' : allAnswered ? 'Submit assessment' : 'Answer all questions to submit'}
-        </button>
+        {/* Sticky submit bar — always visible so candidates can't miss it */}
+        <div className="sticky bottom-4 mt-6 z-10">
+          <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur shadow-lg p-3">
+            <p className="text-center text-xs text-gray-500 dark:text-gray-400 mb-2">
+              {answeredCount} of {data.questions.length} answered
+            </p>
+            <button
+              type="button"
+              onClick={submit}
+              disabled={submitting || !allAnswered}
+              className="w-full bg-[#F77B0F] text-white py-3.5 rounded-xl font-bold text-base hover:bg-[#e06d00] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {submitting ? 'Submitting…' : allAnswered ? '✓ Submit assessment' : `Answer all ${data.questions.length} questions to submit`}
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
