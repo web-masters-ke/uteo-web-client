@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { applicationsService } from '@/lib/services/applications';
+import { assessmentsService } from '@/lib/services/assessments';
 import type { Application, ApplicationStatus } from '@/lib/uteo-types';
 import { ListSkeleton } from '@/components/ui/LoadingSkeleton';
 import EmptyState from '@/components/ui/EmptyState';
@@ -48,11 +49,29 @@ const TABS: { key: TabKey; label: string }[] = [
 
 function ApplicationRow({ app }: { app: Application }) {
   const cfg = STATUS_CONFIG[app.status] ?? STATUS_CONFIG.SUBMITTED;
+  const router = useRouter();
+  const isAssessment = app.status === 'ASSESSMENT';
+  const [going, setGoing] = useState(false);
+
+  const takeAssessment = async () => {
+    setGoing(true);
+    try {
+      const link = await assessmentsService.myLink(app.id);
+      if (link?.token && !link.done && !link.expired) {
+        router.push(`/assessment/${link.token}`);
+        return;
+      }
+    } catch { /* fall through */ }
+    setGoing(false);
+    // No usable link — open the application so they at least see the status.
+    router.push(`/applications/${app.id}`);
+  };
 
   return (
+    <div className={`bg-white dark:bg-gray-800 rounded-xl border transition-all ${isAssessment ? 'border-[#F77B0F]/40' : 'border-gray-200 dark:border-gray-700'}`}>
     <Link
       href={`/applications/${app.id}`}
-      className="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-[#192C67] dark:hover:border-[#5b8bc7] transition-all group"
+      className="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/30 rounded-xl transition-all group"
     >
       {/* Company logo */}
       {app.job?.company?.logoUrl ? (
@@ -106,6 +125,20 @@ function ApplicationRow({ app }: { app: Application }) {
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
       </svg>
     </Link>
+
+    {isAssessment && (
+      <div className="px-4 pb-4 -mt-1">
+        <button
+          onClick={takeAssessment}
+          disabled={going}
+          className="w-full flex items-center justify-center gap-2 bg-[#F77B0F] text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-[#e06d00] disabled:opacity-50"
+        >
+          {going ? 'Opening…' : '📝 Take assessment now'}
+        </button>
+        <p className="text-center text-[11px] text-gray-400 mt-1.5">A short test is required for this application. You can do it right here.</p>
+      </div>
+    )}
+    </div>
   );
 }
 

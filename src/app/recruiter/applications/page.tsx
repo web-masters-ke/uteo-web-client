@@ -40,6 +40,14 @@ const STATUS_COLORS: Record<ApplicationStatus, string> = {
 const NEXT_ACTIONS: Partial<Record<ApplicationStatus, { status: ApplicationStatus; label: string; color: string }[]>> = {
   SUBMITTED: [
     { status: 'REVIEWED', label: 'Mark Reviewed', color: 'text-yellow-600 border-yellow-300 hover:bg-yellow-50 dark:text-yellow-400 dark:border-yellow-700 dark:hover:bg-yellow-900/20' },
+    { status: 'INTERVIEW', label: 'Invite to Interview', color: 'text-indigo-600 border-indigo-300 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-700 dark:hover:bg-indigo-900/20' },
+    { status: 'REJECTED', label: 'Reject', color: 'text-red-600 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900/20' },
+  ],
+  // A candidate mid-assessment can still be advanced — e.g. invite to interview
+  // regardless of whether they've completed the test.
+  ASSESSMENT: [
+    { status: 'INTERVIEW', label: 'Invite to Interview', color: 'text-indigo-600 border-indigo-300 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-700 dark:hover:bg-indigo-900/20' },
+    { status: 'REVIEWED', label: 'Mark Reviewed', color: 'text-yellow-600 border-yellow-300 hover:bg-yellow-50 dark:text-yellow-400 dark:border-yellow-700 dark:hover:bg-yellow-900/20' },
     { status: 'REJECTED', label: 'Reject', color: 'text-red-600 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900/20' },
   ],
   REVIEWED: [

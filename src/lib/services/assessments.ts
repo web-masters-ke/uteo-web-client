@@ -80,6 +80,9 @@ export const assessmentsService = {
   overrideScore: (applicationId: string, score: number, passed?: boolean) =>
     apiPatch<{ score: number; passed: boolean }>(`/assessments/application/${applicationId}/score`, { score, passed }),
 
+  // Candidate: my own pending assessment link for an application (no email needed)
+  myLink: (applicationId: string) =>
+    apiGet<{ token: string; status: string; expired: boolean; done: boolean } | null>(`/assessments/my/${applicationId}`),
   // Candidate (token-gated)
   take: (token: string) => apiGet<TakeAssessment>(`/assessments/take/${token}`),
   submit: (token: string, answers: SubmitAnswer[]) =>
