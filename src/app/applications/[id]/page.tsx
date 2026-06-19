@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { applicationsService } from '@/lib/services/applications';
+import { assessmentsService } from '@/lib/services/assessments';
 import { api, unwrap } from '@/lib/api';
 import { openSignedFile } from '@/lib/s3-url';
 import type { Application, ApplicationStatus } from '@/lib/uteo-types';
@@ -153,6 +154,20 @@ export default function ApplicationDetailPage() {
   const [withdrawing, setWithdrawing] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [openingResume, setOpeningResume] = useState(false);
+  const [goingToTest, setGoingToTest] = useState(false);
+
+  async function takeAssessment() {
+    setGoingToTest(true);
+    try {
+      const link = await assessmentsService.myLink(id);
+      if (link?.token && !link.done && !link.expired) { router.push(`/assessment/${link.token}`); return; }
+      setToast({ type: 'error', msg: link?.done ? 'You have already completed this assessment.' : 'This assessment is no longer available.' });
+    } catch {
+      setToast({ type: 'error', msg: 'Could not open the assessment. Please try again.' });
+    } finally {
+      setGoingToTest(false);
+    }
+  }
   const [updatingResume, setUpdatingResume] = useState(false);
   const resumeInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -254,6 +269,22 @@ export default function ApplicationDetailPage() {
         </svg>
         Back to Applications
       </Link>
+
+      {application.status === 'ASSESSMENT' && (
+        <div className="mb-6 rounded-2xl border border-[#F77B0F]/40 bg-[#F77B0F]/5 p-5 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+          <div>
+            <p className="font-semibold text-gray-900 dark:text-white">A screening assessment is waiting for you</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Complete it here to move forward — it only takes a few minutes.</p>
+          </div>
+          <button
+            onClick={takeAssessment}
+            disabled={goingToTest}
+            className="shrink-0 bg-[#F77B0F] text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-[#e06d00] disabled:opacity-50"
+          >
+            {goingToTest ? 'Opening…' : '📝 Take assessment now'}
+          </button>
+        </div>
+      )}
 
       <div className="lg:flex gap-8">
         {/* Main */}
