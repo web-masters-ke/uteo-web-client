@@ -48,7 +48,9 @@ function AssessmentResultSection({ applicationId }: { applicationId: string }) {
 
   useEffect(() => { load(); }, [load]);
 
-  if (loading || !result) return null; // no assessment taken → nothing to show
+  if (loading || !result) return null; // no assessment issued → nothing to show
+
+  const completed = result.status === 'GRADED' || result.status === 'SUBMITTED' || result.score != null;
 
   async function saveScore() {
     const score = Number(scoreInput);
@@ -56,7 +58,7 @@ function AssessmentResultSection({ applicationId }: { applicationId: string }) {
     setSaving(true);
     try {
       const res = await assessmentsService.overrideScore(applicationId, score);
-      setResult((r) => (r ? { ...r, score: res.score, passed: res.passed } : r));
+      setResult((r) => (r ? { ...r, score: res.score, passed: res.passed, status: 'GRADED' } : r));
       addToast('success', `Score updated to ${res.score}% (${res.passed ? 'pass' : 'fail'})`);
     } catch (e: any) {
       addToast('error', e?.response?.data?.message ?? 'Could not update score');
@@ -65,57 +67,76 @@ function AssessmentResultSection({ applicationId }: { applicationId: string }) {
 
   return (
     <div className="rounded-3xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 p-6 lg:p-8">
-      <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white">Assessment responses</h2>
-        <div className="flex items-center gap-3">
-          {result.score != null && (
-            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${result.passed ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300' : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'}`}>
-              {result.score}% · {result.passed ? 'Pass' : 'Below'} (mark {result.passThreshold}%)
+      <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Assessment</h2>
+
+      {/* Clear, worded score summary */}
+      {completed ? (
+        <div className={`rounded-2xl p-4 mb-5 ${result.passed ? 'bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800' : 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'}`}>
+          <div className="flex items-end gap-3 flex-wrap">
+            <span className="text-3xl font-black text-gray-900 dark:text-white">{result.score ?? 0}%</span>
+            <span className={`text-sm font-semibold mb-1 ${result.passed ? 'text-emerald-700 dark:text-emerald-300' : 'text-amber-700 dark:text-amber-300'}`}>
+              {result.passed ? `PASSED — at or above the ${result.passThreshold}% pass mark` : `BELOW the ${result.passThreshold}% pass mark`}
             </span>
-          )}
-          <div className="flex items-center gap-1">
+          </div>
+          <div className="mt-3 flex items-center gap-2">
+            <label className="text-xs text-gray-500 dark:text-gray-400">Override score:</label>
             <input type="number" min={0} max={100} value={scoreInput} onChange={(e) => setScoreInput(e.target.value)}
-              className="w-16 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-2 py-1 text-sm text-gray-900 dark:text-white" />
+              className="w-16 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 px-2 py-1 text-sm text-gray-900 dark:text-white" />
             <button onClick={saveScore} disabled={saving}
               className="text-xs px-3 py-1.5 rounded-lg border border-[#F77B0F] text-[#F77B0F] hover:bg-[#F77B0F]/5 disabled:opacity-50">
-              {saving ? 'Saving…' : 'Override'}
+              {saving ? 'Saving…' : 'Save score'}
             </button>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="rounded-2xl p-4 mb-5 bg-gray-50 dark:bg-gray-700/40 border border-gray-200 dark:border-gray-700">
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Not completed yet</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">This candidate hasn’t submitted the assessment, so there’s no score yet. They’ll be graded automatically once they do.</p>
+        </div>
+      )}
 
-      <div className="space-y-4">
-        {result.questions.map((q, i) => (
-          <div key={q.id} className="rounded-2xl border border-gray-100 dark:border-gray-700 p-4">
-            <div className="flex items-start justify-between gap-2">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">{i + 1}. {q.prompt}</p>
-              {q.isCorrect === true && <span className="text-xs text-emerald-600 shrink-0">✓ Correct</span>}
-              {q.isCorrect === false && <span className="text-xs text-red-500 shrink-0">✗ Incorrect</span>}
-              {q.isCorrect === null && <span className="text-xs text-gray-400 shrink-0">AI-graded</span>}
-            </div>
-            {q.type === 'FREE_TEXT' ? (
-              <div className="mt-2">
-                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">{q.response.text || <span className="italic text-gray-400">No answer</span>}</p>
-                {q.aiFeedback && <p className="mt-1 text-xs text-gray-500 italic">AI: {q.aiFeedback.feedback} ({q.aiFeedback.points}/{q.points})</p>}
+      {completed && (
+        <>
+          <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Responses</h3>
+          <p className="text-xs text-gray-400 mt-1 mb-3">✓ = the correct answer · the highlighted row is what the candidate picked.</p>
+          <div className="space-y-4">
+            {result.questions.map((q, i) => (
+              <div key={q.id} className="rounded-2xl border border-gray-100 dark:border-gray-700 p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{i + 1}. {q.prompt}</p>
+                  {q.isCorrect === true && <span className="text-xs font-semibold text-emerald-600 shrink-0">✓ Correct ({q.points}/{q.points})</span>}
+                  {q.isCorrect === false && <span className="text-xs font-semibold text-red-500 shrink-0">✗ Incorrect (0/{q.points})</span>}
+                  {q.isCorrect === null && (
+                    <span className="text-xs font-semibold text-gray-400 shrink-0">
+                      {q.aiFeedback ? `AI-graded ${q.aiFeedback.points}/${q.points}` : 'AI-graded'}
+                    </span>
+                  )}
+                </div>
+                {q.type === 'FREE_TEXT' ? (
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">{q.response.text || <span className="italic text-gray-400">No answer</span>}</p>
+                    {q.aiFeedback && <p className="mt-1 text-xs text-gray-500 italic">AI note: {q.aiFeedback.feedback}</p>}
+                  </div>
+                ) : (
+                  <div className="mt-2 space-y-1">
+                    {(q.options ?? []).map((opt) => {
+                      const chosen = q.response.optionIds.includes(opt.id);
+                      const isAnswer = q.correct.includes(opt.id);
+                      return (
+                        <div key={opt.id} className={`text-sm px-3 py-1.5 rounded-lg flex items-center gap-2 ${chosen ? 'bg-[#F77B0F]/10' : ''}`}>
+                          <span className={`text-xs ${isAnswer ? 'text-emerald-600' : 'text-gray-300'}`}>{isAnswer ? '✓' : '○'}</span>
+                          <span className={`${chosen ? 'font-medium text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>{opt.text}</span>
+                          {chosen && <span className="text-[10px] font-semibold text-[#F77B0F] ml-auto">CANDIDATE’S ANSWER</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="mt-2 space-y-1">
-                {(q.options ?? []).map((opt) => {
-                  const chosen = q.response.optionIds.includes(opt.id);
-                  const isAnswer = q.correct.includes(opt.id);
-                  return (
-                    <div key={opt.id} className={`text-sm px-3 py-1.5 rounded-lg flex items-center gap-2 ${chosen ? 'bg-[#F77B0F]/10' : ''}`}>
-                      <span className={`text-xs ${isAnswer ? 'text-emerald-600' : 'text-gray-300'}`}>{isAnswer ? '✓' : '○'}</span>
-                      <span className={`${chosen ? 'font-medium text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>{opt.text}</span>
-                      {chosen && <span className="text-[10px] text-[#F77B0F] ml-auto">their answer</span>}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 }
