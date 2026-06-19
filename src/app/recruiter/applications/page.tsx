@@ -52,6 +52,7 @@ const NEXT_ACTIONS: Partial<Record<ApplicationStatus, { status: ApplicationStatu
   ],
   REVIEWED: [
     { status: 'SHORTLISTED', label: 'Shortlist', color: 'text-purple-600 border-purple-300 hover:bg-purple-50 dark:text-purple-400 dark:border-purple-700 dark:hover:bg-purple-900/20' },
+    { status: 'INTERVIEW', label: 'Invite to Interview', color: 'text-indigo-600 border-indigo-300 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-700 dark:hover:bg-indigo-900/20' },
     { status: 'REJECTED', label: 'Reject', color: 'text-red-600 border-red-300 hover:bg-red-50 dark:text-red-400 dark:border-red-700 dark:hover:bg-red-900/20' },
   ],
   SHORTLISTED: [
